@@ -1,0 +1,6 @@
+{
+  "name": "TESDA Skills-to-Jobs Matcher",
+  "description": "An AI-powered skills-to-jobs matching portal and enrollment assistant helping Filipino out-of-school youth discover vocational programs linked to local job demand.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
