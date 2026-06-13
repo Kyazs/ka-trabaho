@@ -408,6 +408,11 @@ ${groundContext}
   }
 });
 
+// Test route
+app.get("/api/test", (req, res) => {
+  res.json({ status: "ok", message: "Server is running", env: process.env.FIREWORKS_API_KEY ? "key-set" : "key-missing" });
+});
+
 // Serve assets / Vite middleware
 const distPath = path.join(process.cwd(), "dist");
 app.use(express.static(distPath));
