@@ -407,43 +407,46 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" id="app-main">
+      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12" id="app-main">
         
         {/* Banner Informational Header */}
-        <div id="welcome-alert-banner" className="mb-8 rounded-2xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-6 shadow-xl text-white sm:p-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div id="welcome-alert-banner" className="mb-10 rounded-3xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-8 shadow-2xl text-white sm:p-10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/20 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
+          
+          <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="max-w-3xl">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider backdrop-blur-sm">
-                <Sparkles className="h-3.5 w-3.5" /> Special AI Guidance for OSYs & Youth (Ages 15-24)
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold uppercase tracking-wider backdrop-blur-md border border-white/20">
+                <Sparkles className="h-4 w-4 animate-pulse-soft" /> Special AI Guidance for OSYs & Youth (Ages 15-24)
               </span>
-              <h1 className="mt-4 font-display text-2xl font-extrabold tracking-tight sm:text-3.5xl">
+              <h1 className="mt-6 font-display text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl leading-tight">
                 {lang === "fil" 
                   ? "I-Match ang Iyong Galing sa Libreng Kurso ng TESDA!" 
                   : "Match Your Talents to High-Demand Free TESDA Courses!"
                 }
               </h1>
-              <p className="mt-3 text-sm text-blue-100 sm:text-base leading-relaxed">
+              <p className="mt-4 text-base text-blue-100 sm:text-lg leading-relaxed max-w-2xl">
                 {lang === "fil"
                   ? "Huwag hayaang maging balakid ang kahirapan o kawalan ng diploma sa ngayon. Sa tulong ng ating AI Counselor, maghanap ng de-kalidad na kurso na may kaakibat na trabaho sa inyong rehiyon—at may kaukulang daily allowance!"
                   : "Find vocational routes mapped directly to local vacancies and salaries. Completely free under government scholarships with daily stipends."
                 }
               </p>
             </div>
-            <div className="flex flex-wrap gap-3 shrink-0">
+            <div className="flex flex-wrap gap-4 shrink-0">
               <button 
                 id="banner-profile-start"
                 onClick={startAiMatching}
-                className="rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-700 shadow-lg hover:bg-blue-50 transition-all flex items-center gap-2"
+                className="rounded-2xl bg-white px-6 py-4 text-base font-bold text-blue-700 shadow-xl hover:bg-blue-50 hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center gap-2"
               >
-                <Sparkles className="h-4 w-4" />
+                <Sparkles className="h-5 w-5" />
                 {lang === "fil" ? "Simulan ang AI Matching" : "Start AI Assessment"}
               </button>
               <button 
                 id="banner-chat-assistant"
                 onClick={() => setCurrentTab("chat")}
-                className="rounded-xl bg-blue-500/20 border border-white/20 px-5 py-3 text-sm font-bold text-white hover:bg-white/10 transition-all flex items-center gap-2"
+                className="rounded-2xl bg-white/15 border border-white/30 px-6 py-4 text-base font-bold text-white hover:bg-white/25 hover:-translate-y-1 transition-all flex items-center gap-2 backdrop-blur-sm"
               >
-                <MessageSquare className="h-4 w-4" />
+                <MessageSquare className="h-5 w-5" />
                 {lang === "fil" ? "Kausapin si Ka-TrabaHO" : "Talk to Counselor"}
               </button>
             </div>
@@ -459,25 +462,25 @@ export default function App() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               
               {/* Questionnaire Form Side */}
-              <div id="matching-questionnaire-card" ref={matchingCardRef} className="lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
-                <div className="flex items-center gap-2.5 pb-4 mb-6 border-b border-slate-100">
-                  <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
-                    <User className="h-5 w-5" />
+              <div id="matching-questionnaire-card" ref={matchingCardRef} className="lg:col-span-6 bg-white rounded-3xl border border-slate-200 p-8 md:p-10 shadow-lg card-hover">
+                <div className="flex items-center gap-3 pb-5 mb-8 border-b border-slate-100">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 shadow-sm">
+                    <User className="h-6 w-6" />
                   </div>
                   <div>
-                    <h2 className="font-display font-bold text-lg text-slate-900">
+                    <h2 className="font-display font-bold text-xl text-slate-900">
                       {lang === "fil" ? "Mabilisang Profile Assessment" : "Quick Profile Assessment"}
                     </h2>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-sm text-slate-500 mt-1">
                       {lang === "fil" ? "Gamitin ang AI upang hanapin ang akmang trabaho" : "Let AI evaluate your custom preferences"}
                     </p>
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-8">
                   {/* Age Input */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                    <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
                       {lang === "fil" ? "Ilang Taon Ka Na? (Bukas para sa edad 15-24+)" : "Your Age (Targeting 15-24)"}
                     </label>
                     <div className="flex items-center gap-4">
@@ -488,9 +491,9 @@ export default function App() {
                         max="35" 
                         value={age}
                         onChange={(e) => setAge(parseInt(e.target.value))}
-                        className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                        className="w-full h-3 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
                       />
-                      <span className="flex-shrink-0 inline-block bg-blue-50 text-blue-700 font-bold px-3 py-1.5 rounded-lg text-sm border border-blue-200">
+                      <span className="flex-shrink-0 inline-block bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 font-bold px-4 py-2 rounded-xl text-base border border-blue-200 shadow-sm">
                         {age} {lang === "fil" ? "taong gulang" : "years old"}
                       </span>
                     </div>
@@ -498,14 +501,14 @@ export default function App() {
 
                   {/* Completed Education Level */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                    <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
                       {lang === "fil" ? "Ano ang huling antas ng pinag-aralan mo?" : "What is your highest educational attainment?"}
                     </label>
                     <select
                       id="select-profile-edu"
                       value={education}
                       onChange={(e) => setEducation(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 font-medium"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all"
                     >
                       <option value="Elementary Graduate">Grade 6 / Elementary Graduate (Completer)</option>
                       <option value="Elementary Undergrad">Elementary Undergraduate</option>
@@ -518,16 +521,16 @@ export default function App() {
                   </div>
 
                   {/* Region selection */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                      <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
                         {lang === "fil" ? "Rehiyon (Region)" : "Desired Region"}
                       </label>
                       <select
                         id="select-profile-region"
                         value={selectedRegion}
                         onChange={(e) => handleRegionChange(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 font-medium"
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all"
                       >
                         {PHILIPPINES_REGIONS.map((region) => (
                           <option key={region.code} value={region.code}>
@@ -538,14 +541,14 @@ export default function App() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                      <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
                         {lang === "fil" ? "Probinsya / City Hub" : "Province / City Hub"}
                       </label>
                       <select
                         id="select-profile-province"
                         value={selectedProvince}
                         onChange={(e) => setSelectedProvince(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 font-medium"
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all"
                       >
                         {selectedProvincesList.map((prov) => (
                           <option key={prov} value={prov}>
@@ -558,20 +561,20 @@ export default function App() {
 
                   {/* Interests Selection */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                      Step 4: {lang === "fil" ? "Pilahan ng lyong mga Interes (Pumili ng higit sa isa):" : "Select Your Main Interests:"}
+                    <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
+                      Step 4: {lang === "fil" ? "Pilahan ng Iyong mga Interes (Pumili ng higit sa isa):" : "Select Your Main Interests:"}
                     </label>
-                    <div className="flex flex-wrap gap-2 mb-3">
+                    <div className="flex flex-wrap gap-3 mb-4">
                       {QUICK_INTERESTS.map((int) => (
                         <button
                           key={int.label}
                           type="button"
                           id={`interest-quick-${int.label.replace(/\s+/g, "-")}`}
                           onClick={() => toggleInterestTag(int.label)}
-                          className={`rounded-full px-3 py-1.5 text-xs font-medium border transition-all ${
+                          className={`rounded-full px-4 py-2 text-sm font-medium border transition-all ${
                             customInterests.includes(int.label)
-                              ? "bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-100"
-                              : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                              ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-md shadow-blue-200 scale-105"
+                              : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm"
                           }`}
                         >
                           {int.label}
@@ -580,19 +583,19 @@ export default function App() {
                     </div>
 
                     {/* Manual interest add */}
-                    <form onSubmit={handleAddCustomInterest} className="flex gap-2">
+                    <form onSubmit={handleAddCustomInterest} className="flex gap-3">
                       <input
                         id="input-custom-interest"
                         type="text"
                         placeholder={lang === "fil" ? "Magsulat ng iba pang interes (e.g., cellphones)" : "Type other custom interests..."}
                         value={interestInput}
                         onChange={(e) => setInterestInput(e.target.value)}
-                        className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-blue-500"
+                        className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
                       />
                       <button
                         id="btn-add-custom-interest"
                         type="submit"
-                        className="rounded-xl bg-slate-800 text-white px-3 py-2 text-xs font-bold hover:bg-slate-700"
+                        className="rounded-xl bg-gradient-to-r from-slate-800 to-slate-700 text-white px-5 py-3 text-sm font-bold hover:from-slate-700 hover:to-slate-600 shadow-md hover:shadow-lg transition-all"
                       >
                         {lang === "fil" ? "I-add" : "Add"}
                       </button>
@@ -601,20 +604,20 @@ export default function App() {
 
                   {/* Practical Skills Selection */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                    <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
                       Step 5: {lang === "fil" ? "Anong mga praktikal na bagay ang marunong ka na?" : "What practical skills do you already have?"}
                     </label>
-                    <div className="flex flex-wrap gap-2 mb-3">
+                    <div className="flex flex-wrap gap-3 mb-4">
                       {QUICK_SKILLS.map((skill) => (
                         <button
                           key={skill.label}
                           type="button"
                           id={`skill-quick-${skill.label.replace(/\s+/g, "-")}`}
                           onClick={() => toggleSkillTag(skill.label)}
-                          className={`rounded-full px-3 py-1.5 text-xs font-medium border transition-all ${
+                          className={`rounded-full px-4 py-2 text-sm font-medium border transition-all ${
                             customSkills.includes(skill.label)
-                              ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
-                              : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                              ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-indigo-600 shadow-md shadow-indigo-200 scale-105"
+                              : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm"
                           }`}
                         >
                           {skill.label}
@@ -623,19 +626,19 @@ export default function App() {
                     </div>
 
                     {/* Manual skill add */}
-                    <form onSubmit={handleAddCustomSkill} className="flex gap-2">
+                    <form onSubmit={handleAddCustomSkill} className="flex gap-3">
                       <input
                         id="input-custom-skill"
                         type="text"
                         placeholder={lang === "fil" ? "Magsulat ng iba pang galing o hilig" : "Type other skill..."}
                         value={skillInput}
                         onChange={(e) => setSkillInput(e.target.value)}
-                        className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-blue-500"
+                        className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
                       />
                       <button
                         id="btn-add-custom-skill"
                         type="submit"
-                        className="rounded-xl bg-slate-800 text-white px-3 py-2 text-xs font-bold hover:bg-slate-700"
+                        className="rounded-xl bg-gradient-to-r from-slate-800 to-slate-700 text-white px-5 py-3 text-sm font-bold hover:from-slate-700 hover:to-slate-600 shadow-md hover:shadow-lg transition-all"
                       >
                         {lang === "fil" ? "I-add" : "Add"}
                       </button>
@@ -644,16 +647,16 @@ export default function App() {
 
                   {/* Career Goal Textarea */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                    <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
                       {lang === "fil" ? "Ano ang pangarap o plano mong maging trabaho?" : "Any specific job or lifetime plan?"}
                     </label>
                     <textarea
                       id="textarea-profile-goal"
-                      rows={2}
+                      rows={3}
                       value={careerGoal}
                       onChange={(e) => setCareerGoal(e.target.value)}
                       placeholder={lang === "fil" ? "E.g., Gusto ko pong makatrabaho sa mga malalaking barko o maging sikat na chef sa amin" : "Example: I want to build a career in computer repair and help my family financially."}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs focus:bg-white focus:border-blue-500 font-medium"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all resize-none"
                     />
                   </div>
 
@@ -663,22 +666,22 @@ export default function App() {
                     type="button"
                     onClick={handleSubmitProfile}
                     disabled={isMatching || (customInterests.length === 0 && !careerGoal)}
-                    className={`w-full rounded-xl py-4 text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 ${
+                    className={`w-full rounded-2xl py-5 text-base font-bold shadow-xl transition-all flex items-center justify-center gap-3 ${
                       isMatching
-                        ? "bg-amber-100 text-amber-700 cursor-wait border-2 border-amber-300"
+                        ? "bg-amber-50 text-amber-700 cursor-wait border-2 border-amber-300"
                         : customInterests.length === 0 && !careerGoal
-                        ? "bg-slate-100 text-slate-400 cursor-not-allowed border-2 border-dashed border-slate-300"
-                        : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl hover:scale-[1.01]"
+                        ? "bg-slate-50 text-slate-400 cursor-not-allowed border-2 border-dashed border-slate-300"
+                        : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 hover:shadow-2xl hover:-translate-y-1 active:translate-y-0"
                     }`}
                   >
                     {isMatching ? (
                       <>
-                        <span className="animate-spin inline-block h-5 w-5 border-3 border-amber-500 border-t-transparent rounded-full" />
+                        <span className="animate-spin inline-block h-6 w-6 border-[3px] border-amber-500 border-t-transparent rounded-full" />
                         <span className="font-extrabold">{lang === "fil" ? "Sinusuri ng AI ang iyong profile..." : "AI is analyzing your profile..."}</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles className="h-4 w-4" />
+                        <Sparkles className="h-5 w-5" />
                         <span>
                           {lang === "fil" 
                             ? "I-Match Akong Libreng TESDA Courses!" 
@@ -690,9 +693,9 @@ export default function App() {
                   </button>
 
                   {(customInterests.length === 0 && !careerGoal) && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2">
-                      <span className="text-amber-500 text-lg leading-none">&#9888;</span>
-                      <p className="text-xs text-amber-800 font-semibold">
+                    <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 flex items-start gap-3">
+                      <span className="text-amber-500 text-xl leading-none mt-0.5">&#9888;</span>
+                      <p className="text-sm text-amber-800 font-semibold leading-relaxed">
                         {lang === "fil" 
                           ? "Pumili ng kahit isang interes sa itaas o magsulat sa career goal para ma-unlock ang Matching."
                           : "Select at least one interest above or type a career goal to unlock Matching."
@@ -704,73 +707,82 @@ export default function App() {
               </div>
 
               {/* Informational Guidance on how it works */}
-              <div id="matching-intro-info-card" className="lg:col-span-6 space-y-6">
+              <div id="matching-intro-info-card" className="lg:col-span-6 space-y-8">
                 
                 {/* Visual Banner */}
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 text-white border border-slate-700 shadow-xl">
-                  <h3 className="font-display font-black text-lg text-blue-400 flex items-center gap-2">
-                    <Award className="h-5 w-5 text-yellow-400" />
+                <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 text-white border border-slate-700 shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl" />
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl" />
+                  
+                  <h3 className="font-display font-black text-xl text-blue-400 flex items-center gap-3 relative">
+                    <div className="p-2 rounded-xl bg-yellow-400/20">
+                      <Award className="h-6 w-6 text-yellow-400" />
+                    </div>
                     Bakit maganda mag-aral sa TESDA?
                   </h3>
-                  <ul className="mt-4 space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                    <li className="flex items-start gap-2.5">
-                      <span className="flex h-5 w-5 text-xs text-blue-400 font-bold items-center justify-center rounded-full bg-blue-500/10 shrink-0 mt-0.5">✓</span>
-                      <span><strong>100% Libreng Matrikula:</strong> Walang bayad ang pagsasanay sa pampublikong TESDA schools.</span>
+                  <ul className="mt-6 space-y-4 text-sm text-slate-300 leading-relaxed relative">
+                    <li className="flex items-start gap-3">
+                      <span className="flex h-7 w-7 text-sm text-blue-400 font-bold items-center justify-center rounded-full bg-blue-500/20 shrink-0 mt-0.5">✓</span>
+                      <span><strong className="text-white">100% Libreng Matrikula:</strong> Walang bayad ang pagsasanay sa pampublikong TESDA schools.</span>
                     </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="flex h-5 w-5 text-xs text-blue-400 font-bold items-center justify-center rounded-full bg-blue-500/10 shrink-0 mt-0.5">✓</span>
-                      <span><strong>May Daily Allowance:</strong> Karamihan ng may scholarship ay tumatanggap ng <strong>₱160 kada araw</strong> para sa pamasahe at pagkain.</span>
+                    <li className="flex items-start gap-3">
+                      <span className="flex h-7 w-7 text-sm text-blue-400 font-bold items-center justify-center rounded-full bg-blue-500/20 shrink-0 mt-0.5">✓</span>
+                      <span><strong className="text-white">May Daily Allowance:</strong> Karamihan ng may scholarship ay tumatanggap ng <strong className="text-yellow-400">₱160 kada araw</strong> para sa pamasahe at pagkain.</span>
                     </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="flex h-5 w-5 text-xs text-blue-400 font-bold items-center justify-center rounded-full bg-blue-500/10 shrink-0 mt-0.5">✓</span>
-                      <span><strong>National Certificate (NC):</strong> Ang lisensyang ibinibigay ng TESDA ay napakalakas na credential para makapasok sa mga kumpanya rito o sa ibang bansa!</span>
+                    <li className="flex items-start gap-3">
+                      <span className="flex h-7 w-7 text-sm text-blue-400 font-bold items-center justify-center rounded-full bg-blue-500/20 shrink-0 mt-0.5">✓</span>
+                      <span><strong className="text-white">National Certificate (NC):</strong> Ang lisensyang ibinibigay ng TESDA ay napakalakas na credential para makapasok sa mga kumpanya rito o sa ibang bansa!</span>
                     </li>
                   </ul>
                 </div>
 
                 {/* Regional Hotjobs Highlight */}
-                <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-                  <h3 className="font-display font-bold text-sm text-slate-800 mb-3 flex items-center gap-1.5">
-                    <Briefcase className="h-4 w-4 text-indigo-600" />
+                <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-lg">
+                  <h3 className="font-display font-bold text-base text-slate-800 mb-4 flex items-center gap-2">
+                    <div className="p-2 rounded-xl bg-indigo-50">
+                      <Briefcase className="h-5 w-5 text-indigo-600" />
+                    </div>
                     Sektor na May Mataas na Demand sa {PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion}:
                   </h3>
-                  <p className="text-xs text-slate-500 mb-4">
+                  <p className="text-sm text-slate-500 mb-6 leading-relaxed">
                     Ang TESDA programs ay iniaakma sa pangangailangan ng inyong lokal na merkado. Narito ang mga naghahanap ng mas maraming skilled labor sa iyong piniling rehiyon:
                   </p>
                   
-                  <div className="space-y-3" id="regional-high-sectors">
+                  <div className="space-y-4" id="regional-high-sectors">
                     {SECTORS_DATA.filter(s => 
                       PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.topSectors.includes(s.id)
-                    ).map((sector) => (
+                    ).map((sector, idx) => (
                       <div 
                         key={sector.id} 
                         onClick={() => {
                           setSelectedSector(sector);
                           setCurrentTab("explorer");
                         }}
-                        className="flex items-center justify-between p-3.5 rounded-xl border border-slate-100 hover:border-blue-200 bg-slate-50/50 hover:bg-blue-50/30 transition-all cursor-pointer"
+                        className="flex items-center justify-between p-4 rounded-2xl border border-slate-100 hover:border-blue-300 bg-slate-50/50 hover:bg-blue-50/50 transition-all cursor-pointer group card-hover"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-white shadow-sm border border-slate-100">
+                        <div className="flex items-center gap-4">
+                          <div className="p-2.5 rounded-xl bg-white shadow-md border border-slate-100 group-hover:scale-110 transition-transform">
                             {getSectorIcon(sector.iconName)}
                           </div>
                           <div>
-                            <span className="block text-xs font-bold text-slate-850">{sector.name}</span>
-                            <span className="block text-[10px] text-slate-500">May {sector.courses.length} na akreditadong mga kurso</span>
+                            <span className="block text-sm font-bold text-slate-900">{sector.name}</span>
+                            <span className="block text-xs text-slate-500 mt-1">May {sector.courses.length} na akreditadong mga kurso</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 text-xs text-blue-600 font-bold">
+                        <div className="flex items-center gap-1 text-sm text-blue-600 font-bold group-hover:translate-x-1 transition-transform">
                           <span>Suriin</span>
-                          <ChevronRight className="h-3 w-3" />
+                          <ChevronRight className="h-4 w-4" />
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="mt-4 rounded-xl bg-slate-50 p-3.5 border border-slate-100 flex items-start gap-2.5">
-                    <Info className="h-4 w-4 text-slate-500/80 mt-0.5" />
-                    <p className="text-[11px] text-slate-500 leading-normal">
-                      <strong>Paano sumailalim?</strong> I-accomplish lamang ang form sa kaliwa upang matukoy ng aming AI counselor kung alin sa mga sector ang pinaka-akma sa iyong hilig at tapos na baitang.
+                  <div className="mt-6 rounded-2xl bg-blue-50/50 p-4 border border-blue-100 flex items-start gap-3">
+                    <div className="p-1.5 rounded-lg bg-blue-100 mt-0.5">
+                      <Info className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      <strong className="text-slate-900">Paano sumailalim?</strong> I-accomplish lamang ang form sa kaliwa upang matukoy ng aming AI counselor kung alin sa mga sector ang pinaka-akma sa iyong hilig at tapos na baitang.
                     </p>
                   </div>
                 </div>
@@ -781,87 +793,93 @@ export default function App() {
 
             {/* Results Mapping View */}
             {matchError && (
-              <div id="matching-error bg-rose-50" className="p-4 rounded-xl border border-rose-100 flex items-start gap-3 bg-red-50 text-red-700">
-                <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+              <div id="matching-error" className="p-6 rounded-2xl border border-red-200 flex items-start gap-4 bg-red-50 text-red-700 max-w-2xl mx-auto shadow-lg">
+                <div className="p-2 rounded-xl bg-red-100">
+                  <AlertCircle className="h-6 w-6 shrink-0" />
+                </div>
                 <div>
-                  <h4 className="font-bold text-sm">May kaunting aberya</h4>
-                  <p className="text-xs text-red-600 mt-1">{matchError}</p>
+                  <h4 className="font-bold text-base">May kaunting aberya</h4>
+                  <p className="text-sm text-red-600 mt-2 leading-relaxed">{matchError}</p>
                 </div>
               </div>
             )}
 
             {matchResult && Array.isArray(matchResult.recommendedCourses) && (
-              <div id="matching-results-section" className="space-y-6 pt-4 border-t border-slate-200">
-                <div className="text-center max-w-xl mx-auto">
-                  <span className="inline-block bg-emerald-50 text-emerald-800 font-extrabold text-[10px] px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-wider mb-2">
-                    ✓ Match Found Successfully
+              <div id="matching-results-section" className="space-y-8 pt-8 border-t border-slate-200">
+                <div className="text-center max-w-2xl mx-auto">
+                  <span className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 font-extrabold text-xs px-4 py-2 rounded-full border border-emerald-200 uppercase tracking-wider mb-4">
+                    <CheckCircle2 className="h-4 w-4" /> Match Found Successfully
                   </span>
-                  <h2 className="font-display font-extrabold text-xl text-slate-900 sm:text-2xl">
+                  <h2 className="font-display font-extrabold text-2xl text-slate-900 sm:text-3xl">
                     Iyong AI Course Compatibility Report
                   </h2>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-sm text-slate-500 mt-3 leading-relaxed">
                     Narito ang sadyang dinisenyo na analysis pagkatapos tignan ang iyong edad, lokasyon, at galing.
                   </p>
                 </div>
 
                 {/* AI Summary card */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 shadow-sm">
-                  <h4 className="font-display font-extrabold text-sm text-slate-900 mb-2 flex items-center gap-1.5">
-                    <Sparkles className="h-4 w-4 text-blue-600" />
+                <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border border-blue-200 rounded-3xl p-8 shadow-lg max-w-3xl mx-auto">
+                  <h4 className="font-display font-extrabold text-base text-slate-900 mb-4 flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-blue-100">
+                      <Sparkles className="h-5 w-5 text-blue-600" />
+                    </div>
                     AI Counseling Insights:
                   </h4>
-                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                  <p className="text-base text-slate-700 leading-relaxed font-medium italic">
                     "{matchResult.matchedSummary || "Walang summary available."}"
                   </p>
                 </div>
 
                 {/* Courses Match List */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="matching-recommendation-grid">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="matching-recommendation-grid">
                   {matchResult.recommendedCourses.map((recCourse, idx) => (
                     <div 
                       key={idx} 
-                      className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-all flex flex-col h-full"
+                      className="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden hover:shadow-2xl transition-all flex flex-col h-full card-hover group"
                     >
                       {/* Percent badge heading */}
-                      <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-5 border-b border-slate-100 flex justify-between items-center">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
                           Recommended Match #{idx + 1}
                         </span>
-                        <span className="flex items-center gap-1 font-mono text-xs font-bold px-2 rounded bg-emerald-100 text-emerald-800 border-emerald-200 border">
+                        <span className="flex items-center gap-1 font-mono text-sm font-bold px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-800 border border-emerald-200">
                           {recCourse.matchScore}% Match
                         </span>
                       </div>
 
-                      <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div className="p-6 flex-1 flex flex-col justify-between">
                         <div>
-                          <span className="text-[10px] font-extrabold font-mono text-blue-600 bg-blue-50 px-2.5 py-1 rounded">
+                          <span className="inline-block text-xs font-extrabold font-mono text-blue-600 bg-gradient-to-r from-blue-50 to-blue-100 px-3 py-1.5 rounded-lg border border-blue-100">
                             Code: {recCourse.courseCode}
                           </span>
-                          <h3 className="font-display font-bold text-base text-slate-900 mt-2.5 leading-tight">
+                          <h3 className="font-display font-bold text-lg text-slate-900 mt-4 leading-tight">
                             {recCourse.courseName}
                           </h3>
                           
-                          <p className="text-xs text-slate-600 mt-3 leading-relaxed italic bg-slate-50 p-3 rounded-lg border border-slate-100">
-                            <strong>Bakit para sa iyo:</strong> "{recCourse.reasonForYouth}"
+                          <p className="text-sm text-slate-600 mt-4 leading-relaxed bg-gradient-to-r from-slate-50 to-slate-100 p-4 rounded-2xl border border-slate-100">
+                            <strong className="text-slate-900">Bakit para sa iyo:</strong> "{recCourse.reasonForYouth}"
                           </p>
                         </div>
 
-                        <div className="mt-6 pt-4 border-t border-slate-100 space-y-3">
-                          <div className="flex items-center gap-2">
-                            <Briefcase className="h-4 w-4 text-slate-400 shrink-0" />
+                        <div className="mt-8 pt-5 border-t border-slate-100 space-y-4">
+                          <div className="flex items-start gap-3">
+                            <div className="p-2 rounded-xl bg-indigo-50 mt-0.5">
+                              <Briefcase className="h-5 w-5 text-indigo-600" />
+                            </div>
                             <div>
-                              <span className="block text-[10px] uppercase text-slate-400">Pag-asensong Trabaho (Job Demand)</span>
-                              <span className="block text-xs font-extrabold text-indigo-700">{recCourse.immediateJobTitle}</span>
+                              <span className="block text-xs uppercase tracking-wider text-slate-400 font-semibold">Pag-asensong Trabaho</span>
+                              <span className="block text-sm font-extrabold text-indigo-700 mt-1">{recCourse.immediateJobTitle}</span>
                             </div>
                           </div>
 
-                          <div className="flex gap-2 pt-2">
+                          <div className="flex gap-3 pt-3">
                             <button
                               id={`btn-match-chat-course-${recCourse.courseCode}`}
                               onClick={() => askChatAboutCourse(recCourse.courseCode, recCourse.courseName)}
-                              className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 text-center flex items-center justify-center gap-1.5 transition-all"
+                              className="flex-1 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-sm py-3 text-center flex items-center justify-center gap-2 shadow-lg shadow-blue-200 hover:shadow-xl hover:-translate-y-0.5 transition-all"
                             >
-                              <MessageSquare className="h-3.5 w-3.5" />
+                              <MessageSquare className="h-4 w-4" />
                               <span>Itanong sa Chat</span>
                             </button>
                             <button
@@ -877,7 +895,7 @@ export default function App() {
                                 }
                                 setCurrentTab("explorer");
                               }}
-                              className="rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs px-3.5"
+                              className="rounded-2xl border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-sm px-5 hover:-translate-y-0.5 transition-all"
                             >
                               Detalyado
                             </button>
@@ -889,42 +907,46 @@ export default function App() {
                 </div>
 
                 {/* Enrollment Tips & Next Steps */}
-                <div className="bg-slate-900 rounded-2xl p-6 text-white border border-slate-800 shadow-lg mt-8" id="matching-result-enrollment-card">
-                  <div className="flex flex-col md:flex-row gap-6 items-start justify-between">
+                <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 text-white border border-slate-700 shadow-2xl mt-10 relative overflow-hidden" id="matching-result-enrollment-card">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
+                  
+                  <div className="relative flex flex-col md:flex-row gap-8 items-start justify-between">
                     <div className="max-w-2xl">
-                      <h3 className="font-display font-black text-lg text-emerald-400 flex items-center gap-2">
-                        <CheckCircle2 className="h-5 w-5" />
+                      <h3 className="font-display font-black text-xl text-emerald-400 flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-emerald-500/20">
+                          <CheckCircle2 className="h-6 w-6" />
+                        </div>
                         Mahalagang Hakbang ukol sa Scholarship & Allowance:
                       </h3>
-                      <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                      <p className="text-sm text-slate-300 mt-4 leading-relaxed">
                         {matchResult.faqTip || "Pumunta sa pinakamalapit na TESDA Regional/Provincial Office upang mag-apply ng libreng scholarship."}
                       </p>
-                      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="bg-white/5 rounded-xl p-3 border border-white/10 space-y-1">
-                          <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Required Document #1</span>
-                          <span className="block text-xs font-bold text-white">PSA Birth Certificate</span>
-                          <span className="block text-[10px] text-slate-400">Patunay na ikaw ay Pilipino at sapat sa edad.</span>
+                      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div className="bg-white/10 rounded-2xl p-5 border border-white/20 space-y-2 hover:bg-white/15 transition-all">
+                          <span className="block text-xs text-slate-400 font-bold uppercase tracking-wider">Required Document #1</span>
+                          <span className="block text-sm font-bold text-white">PSA Birth Certificate</span>
+                          <span className="block text-xs text-slate-400">Patunay na ikaw ay Pilipino at sapat sa edad.</span>
                         </div>
-                        <div className="bg-white/5 rounded-xl p-3 border border-white/10 space-y-1">
-                          <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Required Document #2</span>
-                          <span className="block text-xs font-bold text-white">Diploma o ALS Certificate</span>
-                          <span className="block text-[10px] text-slate-400">Kung wala pa, barangay indigency ay tinatanggap.</span>
+                        <div className="bg-white/10 rounded-2xl p-5 border border-white/20 space-y-2 hover:bg-white/15 transition-all">
+                          <span className="block text-xs text-slate-400 font-bold uppercase tracking-wider">Required Document #2</span>
+                          <span className="block text-sm font-bold text-white">Diploma o ALS Certificate</span>
+                          <span className="block text-xs text-slate-400">Kung wala pa, barangay indigency ay tinatanggap.</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-3 shrink-0 w-full md:w-auto">
+                    <div className="flex flex-col gap-4 shrink-0 w-full md:w-auto">
                       <button 
                         id="btn-goto-chat-counselor"
                         onClick={() => setCurrentTab("chat")}
-                        className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs py-3 px-5 flex items-center justify-center gap-2 transition-all shadow-md shadow-emerald-950"
+                        className="rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-slate-950 font-bold text-sm py-4 px-6 flex items-center justify-center gap-3 transition-all shadow-lg shadow-emerald-900/50 hover:shadow-xl hover:-translate-y-1"
                       >
                         <span>Kausapin ang AI Counselor</span>
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight className="h-5 w-5" />
                       </button>
                       <button 
                         id="btn-goto-faq"
                         onClick={() => setCurrentTab("faq")}
-                        className="rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs py-3 px-5 text-center"
+                        className="rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm py-4 px-6 text-center hover:-translate-y-1 transition-all"
                       >
                         Tignan ang Buong FAQ Guide
                       </button>
@@ -1162,144 +1184,140 @@ export default function App() {
         {/* TAB 3: KA-TRABAHO AI CHAT COUNSELOR */}
         {/* ======================================= */}
         {currentTab === "chat" && (
-          <div id="tab-chat-content" className="space-y-6 animate-fade-in max-w-4xl mx-auto">
+          <div id="tab-chat-content" className="space-y-8 animate-fade-in max-w-4xl mx-auto">
             
             {/* Header chat instruction */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm text-center">
-              <span className="inline-block bg-blue-50 text-blue-800 font-bold text-xs px-3 py-1 rounded-full mb-2">
-                🟢 Live AI Companion Assistance
+            <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-lg text-center">
+              <span className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-800 font-bold text-sm px-4 py-2 rounded-full mb-4 border border-emerald-200">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Live AI Companion Assistance
               </span>
-              <h2 className="font-display font-black text-xl text-slate-900">
+              <h2 className="font-display font-black text-2xl text-slate-900">
                 Kausapin si Ka-TrabaHO
               </h2>
-              <p className="text-xs text-slate-500 max-w-lg mx-auto leading-relaxed mt-1">
+              <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed mt-3">
                 Kumpanero mo sa pagpili at pag-apply sa TESDA. Huwag mahiyang magtanong gamit ang sariling wika o Taglish ukol sa matrikula, matitirhan, o allowance.
               </p>
             </div>
 
             {/* Quick pre-seeded questions */}
-            <div className="flex flex-wrap gap-2 justify-center" id="frequent-questions-row">
+            <div className="flex flex-wrap gap-3 justify-center" id="frequent-questions-row">
               <button
                 id="preset-q-allowance"
                 onClick={() => handleSendChatMessage("May allowance po ba habang nag-aaral sa TESDA?")}
-                className="rounded-full bg-blue-50/50 hover:bg-blue-100/50 text-blue-700 text-xs px-4 py-2 border border-blue-200 font-bold transition-all"
+                className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
                 💸 May daily allowance po ba?
               </button>
               <button
                 id="preset-q-als"
                 onClick={() => handleSendChatMessage("Pwede po ba akong mag-TESDA kahit ALS Graduate lang ako?")}
-                className="rounded-full bg-blue-50/50 hover:bg-blue-100/50 text-blue-700 text-xs px-4 py-2 border border-blue-200 font-bold transition-all"
+                className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
                 🎓 Pwede ba ang ALS graduate?
               </button>
               <button
                 id="preset-q-docs"
                 onClick={() => handleSendChatMessage("Ano-ano po bang dokumento ang kailangan ko ihanda kapag mag-e-enroll?")}
-                className="rounded-full bg-blue-50/50 hover:bg-blue-100/50 text-blue-700 text-xs px-4 py-2 border border-blue-200 font-bold transition-all"
+                className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
                 📂 Dokumentong kailangan?
               </button>
               <button
                 id="preset-q-nc"
                 onClick={() => handleSendChatMessage("Ano po ba ang makukuha kong certificate pagkatapos ng training?")}
-                className="rounded-full bg-blue-50/50 hover:bg-blue-100/50 text-blue-700 text-xs px-4 py-2 border border-blue-200 font-bold transition-all"
+                className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
                 🏆 Ano ang National Certificate (NC)?
               </button>
             </div>
 
             {/* Chat Messages Log Frame */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden flex flex-col h-[500px]">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col h-[600px]">
               
               {/* Profile Bar indicator */}
-              <div className="bg-slate-900 text-white px-5 py-3.5 flex items-center justify-between border-b border-slate-800">
+              <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-6 py-4 flex items-center justify-between border-b border-slate-700">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 font-black text-sm text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 font-black text-sm text-white shadow-lg">
                     KT
                   </div>
                   <div>
-                    <span className="block text-xs font-bold leading-tight">Ka-TrabaHO AI Companion</span>
-                    <span className="block text-[10px] text-emerald-400">Handang tumulong ngayon</span>
+                    <span className="block text-sm font-bold leading-tight">Ka-TrabaHO AI Companion</span>
+                    <span className="block text-xs text-emerald-400 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Handang tumulong ngayon
+                    </span>
                   </div>
                 </div>
 
-                <div className="text-[10px] text-slate-400 text-right hidden sm:block">
+                <div className="text-xs text-slate-400 text-right hidden sm:block">
                   <span>Rehiyon: {PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion}</span>
                 </div>
               </div>
 
               {/* Message log */}
-              <div id="chat-messages-scrollarea" className="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50/50">
+              <div id="chat-messages-scrollarea" className="flex-1 p-6 overflow-y-auto space-y-5 bg-gradient-to-b from-slate-50/50 to-white">
                 {chatMessages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} max-w-full`}
+                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} max-w-full animate-slide-in`}
                   >
                     <div
-                      className={`rounded-2xl px-4 py-3 text-xs sm:text-sm leading-relaxed max-w-[85%] sm:max-w-[75%] shadow-sm ${
+                      className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed max-w-[85%] sm:max-w-[75%] shadow-md ${
                         msg.role === "user"
-                          ? "bg-blue-600 text-white rounded-tr-none"
+                          ? "bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-tr-none"
                           : "bg-white text-slate-800 border border-slate-200 rounded-tl-none whitespace-pre-line"
                       }`}
                     >
-                      <p>{msg.text}</p>
-                      <span className={`block text-[8px] text-right mt-1.5 ${msg.role === "user" ? "text-blue-200" : "text-slate-400"}`}>
+                      <div className="font-medium">{msg.text}</div>
+                      <div className={`text-[10px] mt-2 ${msg.role === "user" ? "text-blue-200" : "text-slate-400"}`}>
                         {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
+                      </div>
                     </div>
                   </div>
                 ))}
-
                 {isSendingMessage && (
                   <div className="flex justify-start">
-                    <div className="rounded-2xl rounded-tl-none bg-white border border-slate-200 px-4 py-3 flex items-center gap-2">
-                      <span className="animate-bounce inline-block h-1.5 w-1.5 rounded-full bg-slate-400" />
-                      <span className="animate-bounce inline-block h-1.5 w-1.5 rounded-full bg-slate-400 [animation-delay:0.2s]" />
-                      <span className="animate-bounce inline-block h-1.5 w-1.5 rounded-full bg-slate-400 [animation-delay:0.4s]" />
+                    <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-none px-5 py-4 shadow-md">
+                      <div className="flex items-center gap-2">
+                        <div className="flex gap-1">
+                          <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                          <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                          <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                        </div>
+                        <span className="text-sm text-slate-500">Nagta-type si Ka-TrabaHO...</span>
+                      </div>
                     </div>
                   </div>
                 )}
-                
                 <div ref={chatBottomRef} />
               </div>
 
-              {/* Chat Form panel */}
-              <div className="p-4 bg-white border-t border-slate-200">
-                <form 
+              {/* Chat Input Area */}
+              <div className="border-t border-slate-200 bg-white p-4">
+                <form
                   onSubmit={(e) => {
                     e.preventDefault();
                     handleSendChatMessage();
                   }}
-                  className="flex gap-2.5"
+                  className="flex gap-3"
                 >
                   <input
-                    id="input-chat-query"
+                    id="chat-input"
                     type="text"
-                    placeholder={lang === "fil" ? "Magsulat o magtanong kay Ka-TrabaHO dito..." : "Ask your vocational query here..."}
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
-                    disabled={isSendingMessage}
-                    className="flex-1 rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-xs sm:text-sm focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-medium"
+                    placeholder={lang === "fil" ? "Magtanong tungkol sa TESDA..." : "Ask about TESDA..."}
+                    className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
                   />
                   <button
-                    id="btn-send-chat"
                     type="submit"
                     disabled={isSendingMessage || !chatInput.trim()}
-                    className={`rounded-xl px-5 py-3 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
-                      isSendingMessage || !chatInput.trim()
-                        ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-100"
-                    }`}
+                    className="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-5 py-3 font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-200 hover:shadow-xl"
                   >
-                    <span>Send</span>
-                    <Send className="h-3.5 w-3.5" />
+                    <Send className="h-5 w-5" />
                   </button>
                 </form>
               </div>
-
             </div>
-
           </div>
         )}
 
@@ -1433,91 +1451,95 @@ export default function App() {
 
             {/* Job Match Error */}
             {jobMatchError && (
-              <div id="job-matching-error" className="p-4 rounded-xl border border-rose-100 flex items-start gap-3 bg-red-50 text-red-700 max-w-2xl mx-auto">
-                <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+              <div id="job-matching-error" className="p-6 rounded-2xl border border-red-200 flex items-start gap-4 bg-red-50 text-red-700 max-w-2xl mx-auto shadow-lg">
+                <div className="p-2 rounded-xl bg-red-100">
+                  <AlertCircle className="h-6 w-6 shrink-0" />
+                </div>
                 <div>
-                  <h4 className="font-bold text-sm">May kaunting aberya</h4>
-                  <p className="text-xs text-red-600 mt-1">{jobMatchError}</p>
+                  <h4 className="font-bold text-base">May kaunting aberya</h4>
+                  <p className="text-sm text-red-600 mt-2 leading-relaxed">{jobMatchError}</p>
                 </div>
               </div>
             )}
 
             {/* Job Results */}
             {jobMatchResult && Array.isArray(jobMatchResult.recommendedJobs) && (
-              <div id="job-results-section" className="space-y-6 max-w-4xl mx-auto">
+              <div id="job-results-section" className="space-y-8 max-w-5xl mx-auto">
                 <div className="text-center">
-                  <span className="inline-block bg-emerald-50 text-emerald-800 font-extrabold text-[10px] px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-wider mb-2">
-                    ✓ Job Matches Found
+                  <span className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 font-extrabold text-xs px-4 py-2 rounded-full border border-emerald-200 uppercase tracking-wider mb-4">
+                    <CheckCircle2 className="h-4 w-4" /> Job Matches Found
                   </span>
-                  <h2 className="font-display font-extrabold text-xl text-slate-900 sm:text-2xl">
+                  <h2 className="font-display font-extrabold text-2xl text-slate-900 sm:text-3xl">
                     {lang === "fil" ? "Mga Trabahong Akma sa Iyo" : "Jobs Matched to Your Profile"}
                   </h2>
-                  <p className="text-xs text-slate-500 mt-1 max-w-xl mx-auto">
+                  <p className="text-sm text-slate-500 mt-3 max-w-2xl mx-auto leading-relaxed">
                     {jobMatchResult.matchedSummary}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {jobMatchResult.recommendedJobs.map((job: any, idx: number) => (
                     <div 
                       key={idx} 
-                      className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-all flex flex-col h-full"
+                      className="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden hover:shadow-2xl transition-all flex flex-col h-full card-hover group"
                     >
-                      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 px-6 py-5 border-b border-slate-100 flex justify-between items-center">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
                           Job Match #{idx + 1}
                         </span>
-                        <span className="flex items-center gap-1 font-mono text-xs font-bold px-2 rounded bg-emerald-100 text-emerald-800 border-emerald-200 border">
+                        <span className="flex items-center gap-1 font-mono text-sm font-bold px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-800 border border-emerald-200">
                           {job.matchScore}% Match
                         </span>
                       </div>
 
-                      <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div className="p-6 flex-1 flex flex-col justify-between">
                         <div>
-                          <h3 className="font-display font-bold text-base text-slate-900 leading-tight">
+                          <h3 className="font-display font-bold text-lg text-slate-900 leading-tight">
                             {job.jobTitle}
                           </h3>
                           
-                          <div className="flex items-center gap-2 mt-2">
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                          <div className="flex items-center gap-3 mt-3">
+                            <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${
                               job.demandLevel === "Very High" 
-                                ? "bg-red-100 text-red-700" 
+                                ? "bg-gradient-to-r from-red-100 to-red-50 text-red-700 border border-red-200" 
                                 : job.demandLevel === "High"
-                                ? "bg-orange-100 text-orange-700"
-                                : "bg-blue-100 text-blue-700"
+                                ? "bg-gradient-to-r from-orange-100 to-orange-50 text-orange-700 border border-orange-200"
+                                : "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-200"
                             }`}>
                               {job.demandLevel} Demand
                             </span>
-                            <span className="text-[10px] text-slate-500 font-mono">
+                            <span className="text-xs text-slate-500 font-mono font-semibold">
                               {job.averageSalary}
                             </span>
                           </div>
 
-                          <p className="text-xs text-slate-600 mt-3 leading-relaxed italic bg-slate-50 p-3 rounded-lg border border-slate-100">
-                            <strong>Bakit para sa iyo:</strong> &ldquo;{job.reasonForYouth}&rdquo;
+                          <p className="text-sm text-slate-600 mt-4 leading-relaxed bg-gradient-to-r from-slate-50 to-slate-100 p-4 rounded-2xl border border-slate-100">
+                            <strong className="text-slate-900">Bakit para sa iyo:</strong> &ldquo;{job.reasonForYouth}&rdquo;
                           </p>
 
                           {job.description && (
-                            <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                            <p className="text-sm text-slate-500 mt-3 leading-relaxed">
                               {job.description}
                             </p>
                           )}
                         </div>
 
-                        <div className="mt-6 pt-4 border-t border-slate-100 space-y-3">
+                        <div className="mt-8 pt-5 border-t border-slate-100 space-y-4">
                           {job.requiredCourses && job.requiredCourses.length > 0 && (
                             <div>
-                              <span className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+                              <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">
                                 Kailangang TESDA Courses:
                               </span>
-                              <div className="mt-2 space-y-2">
+                              <div className="mt-3 space-y-3">
                                 {job.requiredCourses.map((course: any, cidx: number) => (
-                                  <div key={cidx} className="flex items-center justify-between bg-slate-50 rounded-lg p-2 border border-slate-100">
-                                    <div className="flex items-center gap-2">
-                                      <GraduationCap className="h-4 w-4 text-blue-600" />
+                                  <div key={cidx} className="flex items-center justify-between bg-gradient-to-r from-slate-50 to-slate-100 rounded-2xl p-3 border border-slate-100 group-hover:border-blue-200 transition-all">
+                                    <div className="flex items-center gap-3">
+                                      <div className="p-2 rounded-xl bg-blue-50">
+                                        <GraduationCap className="h-5 w-5 text-blue-600" />
+                                      </div>
                                       <div>
-                                        <span className="text-xs font-bold text-slate-800">{course.name}</span>
-                                        <span className="text-[10px] text-slate-500 block">{course.code} | {course.duration}</span>
+                                        <span className="text-sm font-bold text-slate-800">{course.name}</span>
+                                        <span className="text-xs text-slate-500 block">{course.code} | {course.duration}</span>
                                       </div>
                                     </div>
                                     <button
@@ -1526,7 +1548,7 @@ export default function App() {
                                         if (sector) setSelectedSector(sector);
                                         setCurrentTab("explorer");
                                       }}
-                                      className="text-xs text-blue-600 font-bold hover:text-blue-800 px-2 py-1 rounded hover:bg-blue-50 transition-all"
+                                      className="text-sm text-blue-600 font-bold hover:text-blue-800 px-3 py-2 rounded-xl hover:bg-blue-50 transition-all"
                                     >
                                       Detalye
                                     </button>
@@ -1538,9 +1560,9 @@ export default function App() {
 
                           <button
                             onClick={() => askChatAboutJob(job.jobTitle, job.requiredCourses)}
-                            className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 text-center flex items-center justify-center gap-1.5 transition-all"
+                            className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-sm py-3 text-center flex items-center justify-center gap-2 shadow-lg shadow-blue-200 hover:shadow-xl hover:-translate-y-0.5 transition-all"
                           >
-                            <MessageSquare className="h-3.5 w-3.5" />
+                            <MessageSquare className="h-4 w-4" />
                             <span>Kausapin ang Counselor</span>
                           </button>
                         </div>
@@ -1551,12 +1573,15 @@ export default function App() {
 
                 {/* FAQ Tip */}
                 {jobMatchResult.faqTip && (
-                  <div className="bg-slate-900 rounded-2xl p-6 text-white border border-slate-800 shadow-lg">
-                    <div className="flex items-start gap-3">
-                      <Info className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                  <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 text-white border border-slate-700 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl" />
+                    <div className="relative flex items-start gap-4">
+                      <div className="p-3 rounded-xl bg-emerald-500/20">
+                        <Info className="h-6 w-6 text-emerald-400" />
+                      </div>
                       <div>
-                        <h3 className="font-bold text-sm text-emerald-400">Next Step</h3>
-                        <p className="text-xs text-slate-300 mt-1 leading-relaxed">{jobMatchResult.faqTip}</p>
+                        <h3 className="font-bold text-lg text-emerald-400 mb-2">Next Step</h3>
+                        <p className="text-sm text-slate-300 leading-relaxed">{jobMatchResult.faqTip}</p>
                       </div>
                     </div>
                   </div>
@@ -1569,11 +1594,21 @@ export default function App() {
       </main>
 
       {/* Footer Branding Area */}
-      <footer id="app-footer" className="mt-16 border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-400">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-2">
-          <p className="font-bold text-slate-500">Ka-TrabaHO Career Guidance System</p>
-          <p className="font-medium">Hindi opisyal ngunit magalang na sumusuporta sa mga kabataang Pilipino na kumuha ng libreng TESDA vocational training.</p>
-          <p className="text-[10px] text-slate-350">Platform built using Google Gemini 3.5 AI support and local job insights.</p>
+      <footer id="app-footer" className="mt-20 border-t border-slate-200 bg-gradient-to-b from-white to-slate-50 py-12 text-center">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg shadow-blue-200">
+              <GraduationCap className="h-6 w-6 text-white" />
+            </div>
+            <span className="font-display text-xl font-extrabold text-slate-900">
+              Ka-Traba<span className="text-blue-600">HO</span>
+            </span>
+          </div>
+          <p className="font-bold text-slate-700 text-base">Ka-TrabaHO Career Guidance System</p>
+          <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">Hindi opisyal ngunit magalang na sumusuporta sa mga kabataang Pilipino na kumuha ng libreng TESDA vocational training.</p>
+          <div className="pt-4 border-t border-slate-200 mt-6">
+            <p className="text-xs text-slate-400">Platform built using AI support and local job insights.</p>
+          </div>
         </div>
       </footer>
     </div>
