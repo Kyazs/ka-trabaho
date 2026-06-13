@@ -1,4 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { isDummyKey, getTesdaGroundingContext, SECTORS_DATA } from './_utils';
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -9,10 +10,22 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
   
-  res.json({ 
-    status: 'ok', 
-    message: 'Test API working',
-    env: process.env.FIREWORKS_API_KEY ? 'key-set' : 'key-missing',
-    timestamp: new Date().toISOString()
-  });
+  try {
+    const context = getTesdaGroundingContext();
+    res.json({ 
+      status: 'ok', 
+      message: 'Test API working',
+      env: process.env.FIREWORKS_API_KEY ? 'key-set' : 'key-missing',
+      isDummyKey: isDummyKey,
+      sectorsCount: SECTORS_DATA.length,
+      contextLength: context.length,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      status: 'error', 
+      message: (err as Error).message,
+      stack: (err as Error).stack 
+    });
+  }
 }
