@@ -4,12 +4,36 @@
     {
       "src": "api/test.ts",
       "use": "@vercel/node"
+    },
+    {
+      "src": "api/recommendation.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/chat.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/job-recommendation.ts",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/test",
       "dest": "api/test.ts"
+    },
+    {
+      "src": "/api/recommendation",
+      "dest": "api/recommendation.ts"
+    },
+    {
+      "src": "/api/chat",
+      "dest": "api/chat.ts"
+    },
+    {
+      "src": "/api/job-recommendation",
+      "dest": "api/job-recommendation.ts"
     }
   ]
 }
