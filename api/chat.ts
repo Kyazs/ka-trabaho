@@ -1,0 +1,82 @@
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import {
+  client,
+  isDummyKey,
+  getTesdaGroundingContext,
+  setCorsHeaders
+} from './_utils';
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Handle CORS preflight
+  setCorsHeaders(res);
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  // Simple health check for GET requests
+  if (req.method === 'GET') {
+    return res.json({ status: 'ok', endpoint: 'chat', env: isDummyKey ? 'dummy' : 'live' });
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { history, message, userProfile } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ error: "No message sent from student." });
+    }
+
+    if (isDummyKey) {
+      return res.json({
+        text: "Mabuhay! Ako si Ka-TrabaHO, ang iyong TESDA AI counselor companion. Humihingi ako ng pasensya dahil hindi pa fully activated ang Fireworks API key. Pero maaari pa rin nating tignan ang mga kurso sa pamamagitan ng filter sa ibaba!"
+      });
+    }
+
+    const groundContext = getTesdaGroundingContext();
+    const studentContext = userProfile
+      ? `You are chatting with a student who is ${userProfile.age} years old from ${userProfile.province || userProfile.region}. Active educational status: Finished ${userProfile.education}. Interests: ${userProfile.interests || "none specified"}.`
+      : "The student has not completed their assessment profile yet. Politely invite them to finish the quick matching steps above to get highly customized answers!";
+
+    const systemInstruction = `You are "Ka-TrabaHO", an official TESDA Career & Enrolment AI Counselor specifically designed for out-of-school Filipino youth aged 15-24.
+Your goal is to guide them, answer questions about vocational programs, explain requirements (birth certificate, high school credentials, ALS certificate), explain financial grants (free tuition, daily allowance), and help them feel excited about learning a new trade.
+- Speak in a heart-to-heart, friendly, warm, and highly supportive Taglish (English and Tagalog) conversational style. Use words like "Kapatid", "Ka-TrabaHO", "bilib ako sa 'yo", "galing!", "Kaya mo 'yan!".
+- Avoid robotic or cold corporate speak. Treat them with respect and empathy. Many out-of-school youth face immense financial or personal pressure — offer reassurance that TESDA is an open-door pathway to better wages.
+- Incorporate this ground truth course menu when answering queries:
+${groundContext}
+- Always prioritize safety, and motivate them to visit local TESDA assessment/training schools.
+- User status: ${studentContext}`;
+
+    const messages: any[] = [
+      {
+        role: "system",
+        content: systemInstruction
+      }
+    ];
+
+    if (history) {
+      messages.push(...history.map((item: any) => ({
+        role: item.role,
+        content: item.text
+      })));
+    }
+
+    messages.push({
+      role: "user",
+      content: message
+    });
+
+    const response = await client.chat.completions.create({
+      model: "accounts/fireworks/models/kimi-k2p7-code",
+      messages: messages,
+      temperature: 0.7,
+    });
+
+    res.json({ text: response.choices[0].message.content });
+  } catch (error: any) {
+    console.error("Chat Error:", error);
+    res.status(500).json({ error: "Oops! May konting glitch sa aking connection. Please wait standard minutes and reply again." });
+  }
+}
