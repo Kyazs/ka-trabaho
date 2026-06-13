@@ -54,9 +54,9 @@ export default function App() {
   // Form profile states
   const [age, setAge] = useState<number>(18);
   const [education, setEducation] = useState<string>("Junior High School Graduate");
-  const [selectedRegion, setSelectedRegion] = useState<string>("NCR");
-  const [selectedProvince, setSelectedProvince] = useState<string>("Metro Manila - East (Quezon City, Marikina)");
-  const [selectedProvincesList, setSelectedProvincesList] = useState<string[]>(PHILIPPINES_REGIONS[0].provinces);
+  const [selectedRegion, setSelectedRegion] = useState<string>("R9");
+  const [selectedProvince, setSelectedProvince] = useState<string>("Zamboanga City");
+  const [selectedProvincesList, setSelectedProvincesList] = useState<string[]>(PHILIPPINES_REGIONS.find(r => r.code === "R9")?.provinces || []);
   
   // Custom Tag selections for interests
   const [customInterests, setCustomInterests] = useState<string[]>([]);
@@ -370,6 +370,14 @@ export default function App() {
   const askChatAboutCourse = (courseCode: string, courseName: string) => {
     setCurrentTab("chat");
     const promptText = `Interesado po ako mag-enroll sa ${courseName} (Code: ${courseCode}). Ano po ba ang eksaktong Requirements at paano mag-apply ng scholarship?`;
+    handleSendChatMessage(promptText);
+  };
+
+  // Helper trigger to ask chatbot directly about any job
+  const askChatAboutJob = (jobTitle: string, requiredCourses: any[]) => {
+    setCurrentTab("chat");
+    const courseNames = requiredCourses.map((c: any) => c.name).join(", ");
+    const promptText = `Interesado po ako sa trabahong ${jobTitle}. Ano po ba ang mga kailangang TESDA courses para makapag-apply? Naririnig ko na kailangan ng ${courseNames}. Pwede po bang magbigay ng detalye?`;
     handleSendChatMessage(promptText);
   };
 
@@ -1345,6 +1353,216 @@ export default function App() {
               </div>
             </div>
 
+          </div>
+        )}
+
+        {/* ======================================= */}
+        {/* TAB 5: JOB MARKET */}
+        {/* ======================================= */}
+        {currentTab === "jobs" && (
+          <div id="tab-jobs-content" className="space-y-8 animate-fade-in">
+            {/* Job Matching Form */}
+            <div className="max-w-2xl mx-auto bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+              <div className="flex items-center gap-2.5 pb-4 mb-6 border-b border-slate-100">
+                <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                  <Briefcase className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="font-display font-bold text-lg text-slate-900">
+                    {lang === "fil" ? "Hanapin ang Angkop na Trabaho" : "Find Matching Jobs"}
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    {lang === "fil" ? "Gamitin ang AI para malaman ang mga trabahong akma sa iyong profile" : "Let AI find jobs that match your skills and interests"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                  <p className="text-sm text-slate-700">
+                    <strong>Current Profile:</strong> {age} years old, {education}, {selectedRegion}
+                    {customInterests.length > 0 && ` | Interests: ${customInterests.join(", ")}`}
+                    {careerGoal && ` | Goal: ${careerGoal}`}
+                  </p>
+                </div>
+
+                <button
+                  id="btn-submit-job-matching"
+                  type="button"
+                  onClick={handleSubmitJobMatching}
+                  disabled={isJobMatching || (customInterests.length === 0 && !careerGoal)}
+                  className={`w-full rounded-xl py-4 text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 ${
+                    isJobMatching
+                      ? "bg-amber-100 text-amber-700 cursor-wait border-2 border-amber-300"
+                      : customInterests.length === 0 && !careerGoal
+                      ? "bg-slate-100 text-slate-400 cursor-not-allowed border-2 border-dashed border-slate-300"
+                      : "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 hover:shadow-xl hover:scale-[1.01]"
+                  }`}
+                >
+                  {isJobMatching ? (
+                    <>
+                      <span className="animate-spin inline-block h-5 w-5 border-3 border-emerald-500 border-t-transparent rounded-full" />
+                      <span className="font-extrabold">{lang === "fil" ? "Sinusuri ng AI ang mga trabaho..." : "AI is analyzing jobs..."}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Briefcase className="h-4 w-4" />
+                      <span>
+                        {lang === "fil" 
+                          ? "Hanapin ang Trabaho para sa Akin!" 
+                          : "Find Jobs for Me!"
+                        }
+                      </span>
+                    </>
+                  )}
+                </button>
+
+                {(customInterests.length === 0 && !careerGoal) && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2">
+                    <span className="text-amber-500 text-lg leading-none">&#9888;</span>
+                    <p className="text-xs text-amber-800 font-semibold">
+                      {lang === "fil" 
+                        ? "Pumili ng kahit isang interes sa 'AI Matcher' tab o magsulat sa career goal para ma-unlock ang Job Matching."
+                        : "Select at least one interest in the 'AI Matcher' tab or type a career goal to unlock Job Matching."
+                      }
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Job Match Error */}
+            {jobMatchError && (
+              <div id="job-matching-error" className="p-4 rounded-xl border border-rose-100 flex items-start gap-3 bg-red-50 text-red-700 max-w-2xl mx-auto">
+                <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-bold text-sm">May kaunting aberya</h4>
+                  <p className="text-xs text-red-600 mt-1">{jobMatchError}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Job Results */}
+            {jobMatchResult && Array.isArray(jobMatchResult.recommendedJobs) && (
+              <div id="job-results-section" className="space-y-6 max-w-4xl mx-auto">
+                <div className="text-center">
+                  <span className="inline-block bg-emerald-50 text-emerald-800 font-extrabold text-[10px] px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-wider mb-2">
+                    ✓ Job Matches Found
+                  </span>
+                  <h2 className="font-display font-extrabold text-xl text-slate-900 sm:text-2xl">
+                    {lang === "fil" ? "Mga Trabahong Akma sa Iyo" : "Jobs Matched to Your Profile"}
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1 max-w-xl mx-auto">
+                    {jobMatchResult.matchedSummary}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {jobMatchResult.recommendedJobs.map((job: any, idx: number) => (
+                    <div 
+                      key={idx} 
+                      className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-all flex flex-col h-full"
+                    >
+                      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          Job Match #{idx + 1}
+                        </span>
+                        <span className="flex items-center gap-1 font-mono text-xs font-bold px-2 rounded bg-emerald-100 text-emerald-800 border-emerald-200 border">
+                          {job.matchScore}% Match
+                        </span>
+                      </div>
+
+                      <div className="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                          <h3 className="font-display font-bold text-base text-slate-900 leading-tight">
+                            {job.jobTitle}
+                          </h3>
+                          
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                              job.demandLevel === "Very High" 
+                                ? "bg-red-100 text-red-700" 
+                                : job.demandLevel === "High"
+                                ? "bg-orange-100 text-orange-700"
+                                : "bg-blue-100 text-blue-700"
+                            }`}>
+                              {job.demandLevel} Demand
+                            </span>
+                            <span className="text-[10px] text-slate-500 font-mono">
+                              {job.averageSalary}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-slate-600 mt-3 leading-relaxed italic bg-slate-50 p-3 rounded-lg border border-slate-100">
+                            <strong>Bakit para sa iyo:</strong> &ldquo;{job.reasonForYouth}&rdquo;
+                          </p>
+
+                          {job.description && (
+                            <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                              {job.description}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="mt-6 pt-4 border-t border-slate-100 space-y-3">
+                          {job.requiredCourses && job.requiredCourses.length > 0 && (
+                            <div>
+                              <span className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+                                Kailangang TESDA Courses:
+                              </span>
+                              <div className="mt-2 space-y-2">
+                                {job.requiredCourses.map((course: any, cidx: number) => (
+                                  <div key={cidx} className="flex items-center justify-between bg-slate-50 rounded-lg p-2 border border-slate-100">
+                                    <div className="flex items-center gap-2">
+                                      <GraduationCap className="h-4 w-4 text-blue-600" />
+                                      <div>
+                                        <span className="text-xs font-bold text-slate-800">{course.name}</span>
+                                        <span className="text-[10px] text-slate-500 block">{course.code} | {course.duration}</span>
+                                      </div>
+                                    </div>
+                                    <button
+                                      onClick={() => {
+                                        const sector = SECTORS_DATA.find((s: any) => s.id === course.sectorId);
+                                        if (sector) setSelectedSector(sector);
+                                        setCurrentTab("explorer");
+                                      }}
+                                      className="text-xs text-blue-600 font-bold hover:text-blue-800 px-2 py-1 rounded hover:bg-blue-50 transition-all"
+                                    >
+                                      Detalye
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <button
+                            onClick={() => askChatAboutJob(job.jobTitle, job.requiredCourses)}
+                            className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 text-center flex items-center justify-center gap-1.5 transition-all"
+                          >
+                            <MessageSquare className="h-3.5 w-3.5" />
+                            <span>Kausapin ang Counselor</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* FAQ Tip */}
+                {jobMatchResult.faqTip && (
+                  <div className="bg-slate-900 rounded-2xl p-6 text-white border border-slate-800 shadow-lg">
+                    <div className="flex items-start gap-3">
+                      <Info className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                      <div>
+                        <h3 className="font-bold text-sm text-emerald-400">Next Step</h3>
+                        <p className="text-xs text-slate-300 mt-1 leading-relaxed">{jobMatchResult.faqTip}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

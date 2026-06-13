@@ -68,6 +68,12 @@ export const PHILIPPINES_REGIONS: RegionInfo[] = [
     name: "Region XI (Davao Region)",
     provinces: ["Davao del Sur", "Davao del Norte", "Davao de Oro", "Davao Oriental", "Davao Occidental"],
     topSectors: ["agriculture", "tourism", "ict"]
+  },
+  {
+    code: "R9",
+    name: "Region IX (Zamboanga Peninsula)",
+    provinces: ["Zamboanga del Sur (Zamboanga City, Pagadian)", "Zamboanga del Norte (Dipolog, Dapitan)", "Zamboanga Sibugay (Ipil)", "Zamboanga City"],
+    topSectors: ["tourism", "agriculture", "construction"]
   }
 ];
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Sparkles, BarChart, BookOpen, MessageSquare, HelpCircle, GraduationCap } from "lucide-react";
+import { Sparkles, BarChart, BookOpen, Briefcase, MessageSquare, HelpCircle, GraduationCap } from "lucide-react";
 
 interface NavbarProps {
   currentTab: string;
@@ -59,6 +59,19 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang, hasPr
           >
             <BookOpen className="h-4 w-4" />
             <span>{lang === "fil" ? "Sektor at Kurso" : "Explore Courses"}</span>
+          </button>
+
+          <button
+            id="tab-jobs-btn"
+            onClick={() => setCurrentTab("jobs")}
+            className={`flex items-center space-x-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+              currentTab === "jobs"
+                ? "bg-blue-50 text-blue-700 font-semibold"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            }`}
+          >
+            <Briefcase className="h-4 w-4" />
+            <span>{lang === "fil" ? "Mga Trabaho" : "Job Market"}</span>
           </button>
 
           <button
