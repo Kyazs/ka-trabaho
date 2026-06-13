@@ -17,7 +17,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Simple health check for GET requests
   if (req.method === 'GET') {
-    return res.json({ status: 'ok', endpoint: 'recommendation', env: isDummyKey ? 'dummy' : 'live' });
+    try {
+      return res.json({ 
+        status: 'ok', 
+        endpoint: 'recommendation', 
+        env: isDummyKey ? 'dummy' : 'live'
+      });
+    } catch (err) {
+      return res.json({ status: 'error', message: (err as Error).message });
+    }
   }
 
   if (req.method !== 'POST') {
