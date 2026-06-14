@@ -40,6 +40,30 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
   const [fadeIn, setFadeIn] = useState(true);
   const [validationError, setValidationError] = useState<string>("");
 
+  const processingSteps = lang === 'fil'
+    ? [
+        "Sinusuri ang iyong profile...",
+        "Tinitignan ang 300+ kurso...",
+        "Sinusuri ang demand sa iyong rehiyon...",
+        "Pini-finalize ang top matches...",
+      ]
+    : [
+        "Analyzing your profile...",
+        "Matching with 300+ courses...",
+        "Checking job demand in your region...",
+        "Finalizing your top matches...",
+      ];
+
+  const [processingStepIndex, setProcessingStepIndex] = useState(0);
+
+  useEffect(() => {
+    if (currentStep !== 'processing') return;
+    const interval = setInterval(() => {
+      setProcessingStepIndex((prev) => (prev + 1) % processingSteps.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [currentStep, lang]);
+
   const stepLabels = {
     basic: lang === 'fil' ? 'Profile' : 'Profile',
     interests: lang === 'fil' ? 'Interes' : 'Interests',
@@ -48,6 +72,16 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
     review: lang === 'fil' ? 'Suriin' : 'Review',
     processing: lang === 'fil' ? 'Sinusuri' : 'Processing',
     results: lang === 'fil' ? 'Resulta' : 'Results'
+  };
+
+  const stepColors: Record<WizardStep, string> = {
+    basic: 'bg-blue-500',
+    interests: 'bg-amber-500',
+    skills: 'bg-purple-500',
+    goal: 'bg-emerald-500',
+    review: 'bg-slate-500',
+    processing: 'bg-blue-500',
+    results: 'bg-emerald-500',
   };
 
   const stepIndex = stepOrder.indexOf(currentStep);
@@ -149,42 +183,54 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
 
   const renderStepIndicator = () => {
     return (
-      <div className="w-full mb-8">
-        <div className="flex flex-wrap gap-2 justify-center items-center">
-          {stepOrder.map((step, idx) => {
-            const isActive = step === currentStep;
-            const isCompleted = stepIndex > idx;
-            const isFuture = stepIndex < idx;
-            
-            return (
-              <React.Fragment key={step}>
-                  <button
-                  onClick={() => {
-                    if (!isFuture && step !== 'processing' && step !== 'results') {
-                      goToStep(step as WizardStep);
-                    }
-                  }}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold transition-all ${
-                    isActive 
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-                      : isCompleted
-                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                      : 'bg-slate-100 text-slate-400 border border-slate-200'
-                  } ${isFuture || step === 'processing' || step === 'results' ? 'cursor-default' : 'cursor-pointer hover:scale-105'}`}
-                >
-                  <span className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${
-                    isActive ? 'bg-white text-blue-600' : isCompleted ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-500'
-                  }`}>
-                    {isCompleted ? <Check className="h-3.5 w-3.5" /> : idx + 1}
-                  </span>
-                  <span className="hidden sm:inline">{stepLabels[step as keyof typeof stepLabels]}</span>
-                </button>
-                {idx < stepOrder.length - 1 && (
-                  <div className={`hidden md:block w-8 h-0.5 ${isCompleted ? 'bg-blue-400' : 'bg-slate-200'}`} />
+      <div className="mb-6">
+        {/* Mobile progress bar */}
+        <div className="md:hidden">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              {lang === 'fil' ? `Hakbang ${stepIndex + 1} ng ${stepOrder.length}` : `Step ${stepIndex + 1} of ${stepOrder.length}`}
+            </span>
+            <span className="text-xs font-bold text-blue-600">
+              {stepLabels[currentStep]}
+            </span>
+          </div>
+          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-500"
+              style={{ width: `${((stepIndex + 1) / stepOrder.length) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Desktop step dots */}
+        <div className="hidden md:flex items-center justify-center gap-2">
+          {stepOrder.map((step, idx) => (
+            <button
+              key={step}
+              onClick={() => {
+                if (idx <= stepIndex) goToStep(step);
+              }}
+              className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+                idx === stepIndex
+                  ? "bg-blue-600 text-white shadow-md"
+                  : idx < stepIndex
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-slate-100 text-slate-400"
+              }`}
+              disabled={idx > stepIndex}
+            >
+              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                idx === stepIndex ? "bg-white text-blue-600" : ""
+              }`}>
+                {idx < stepIndex ? (
+                  <CheckCircle2 className="h-4 w-4" />
+                ) : (
+                  idx + 1
                 )}
-              </React.Fragment>
-            );
-          })}
+              </span>
+              <span className="hidden lg:inline">{stepLabels[step]}</span>
+            </button>
+          ))}
         </div>
       </div>
     );
@@ -242,8 +288,8 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                   id="select-profile-edu"
                   value={education}
                   onChange={(e) => setEducation(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all"
-                >
+                    className="w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none font-medium transition-all"
+                  >
                   <option value="Elementary Graduate">Grade 6 / Elementary Graduate (Completer)</option>
                   <option value="Elementary Undergrad">Elementary Undergraduate</option>
                   <option value="Junior High School Graduate">Junior High School Graduate (Grade 10 Completer)</option>
@@ -264,7 +310,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                     id="select-profile-region"
                     value={selectedRegion}
                     onChange={(e) => handleRegionChange(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all"
+                    className="w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none font-medium transition-all"
                   >
                     {PHILIPPINES_REGIONS.map((region) => (
                       <option key={region.code} value={region.code}>
@@ -282,7 +328,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                     id="select-profile-province"
                     value={selectedProvince}
                     onChange={(e) => setSelectedProvince(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all"
+                    className="w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none font-medium transition-all"
                   >
                     {selectedProvincesList.map((prov) => (
                       <option key={prov} value={prov}>
@@ -319,21 +365,25 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                   {lang === "fil" ? "Pilahan ng Iyong mga Interes (Pumili ng higit sa isa):" : "Select Your Main Interests:"}
                 </label>
                 <div className="flex flex-wrap gap-3 mb-4">
-                  {QUICK_INTERESTS.map((int) => (
+                  {QUICK_INTERESTS.map((int) => {
+                    const isSelected = customInterests.includes(int.label);
+                    return (
                     <button
                       key={int.label}
                       type="button"
                       id={`interest-quick-${int.label.replace(/\s+/g, "-")}`}
                       onClick={() => toggleInterestTag(int.label)}
-                      className={`rounded-full px-4 py-2 text-sm font-medium border transition-all ${
-                        customInterests.includes(int.label)
-                          ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-md shadow-blue-200 scale-105"
-                          : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm"
+                      className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-all touch-manipulation ${
+                        isSelected
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "bg-white border-2 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
                       }`}
                     >
+                      {isSelected && <Check className="h-3.5 w-3.5" />}
                       {int.label}
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Manual interest add */}
@@ -344,7 +394,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                     placeholder={lang === "fil" ? "Magsulat ng iba pang interes (e.g., cellphones)" : "Type other custom interests..."}
                     value={interestInput}
                     onChange={(e) => setInterestInput(e.target.value)}
-                    className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="flex-1 rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                   />
                   <button
                     id="btn-add-custom-interest"
@@ -401,21 +451,25 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                   {lang === "fil" ? "Anong mga praktikal na bagay ang marunong ka na?" : "What practical skills do you already have?"}
                 </label>
                 <div className="flex flex-wrap gap-3 mb-4">
-                  {QUICK_SKILLS.map((skill) => (
+                  {QUICK_SKILLS.map((skill) => {
+                    const isSelected = customSkills.includes(skill.label);
+                    return (
                     <button
                       key={skill.label}
                       type="button"
                       id={`skill-quick-${skill.label.replace(/\s+/g, "-")}`}
                       onClick={() => toggleSkillTag(skill.label)}
-                      className={`rounded-full px-4 py-2 text-sm font-medium border transition-all ${
-                        customSkills.includes(skill.label)
-                          ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-indigo-600 shadow-md shadow-indigo-200 scale-105"
-                          : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm"
+                      className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-all touch-manipulation ${
+                        isSelected
+                          ? "bg-purple-600 text-white shadow-sm"
+                          : "bg-white border-2 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
                       }`}
                     >
+                      {isSelected && <Check className="h-3.5 w-3.5" />}
                       {skill.label}
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Manual skill add */}
@@ -426,7 +480,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                     placeholder={lang === "fil" ? "Magsulat ng iba pang galing o hilig" : "Type other skill..."}
                     value={skillInput}
                     onChange={(e) => setSkillInput(e.target.value)}
-                    className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="flex-1 rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                   />
                   <button
                     id="btn-add-custom-skill"
@@ -496,7 +550,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                 value={careerGoal}
                 onChange={(e) => setCareerGoal(e.target.value)}
                 placeholder={lang === "fil" ? "E.g., Gusto ko pong makatrabaho sa mga malalaking barko o maging sikat na chef sa amin" : "Example: I want to build a career in computer repair and help my family financially."}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all resize-none"
+                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all resize-none"
               />
             </div>
           </div>
@@ -616,17 +670,19 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
 
       case 'processing':
         return (
-          <div className={`${containerClass} flex flex-col items-center justify-center py-20`}>
-            <div className="animate-spin inline-block h-16 w-16 border-[4px] border-blue-600 border-t-transparent rounded-full mb-6" />
-            <h2 className="font-display font-bold text-2xl text-slate-900 mb-3">
-              {lang === "fil" ? "Sinusuri ng AI..." : "AI is analyzing..."}
-            </h2>
-            <p className="text-sm text-slate-500 max-w-md text-center leading-relaxed">
-              {lang === "fil" 
-                ? "Ini-evaluate ng aming AI counselor ang iyong profile, interes, at lokasyon para makahanap ng pinaka-angkop na TESDA courses at trabaho." 
-                : "Our AI counselor is evaluating your profile, interests, and location to find the best TESDA courses and jobs for you."
-              }
-            </p>
+          <div className={containerClass}>
+            <div className="text-center py-12">
+              <div className="relative w-16 h-16 mx-auto mb-6">
+                <div className="absolute inset-0 rounded-full border-4 border-slate-100" />
+                <div className="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+              </div>
+              <h3 className="font-display text-xl font-bold text-slate-900 mb-2">
+                {lang === 'fil' ? 'Sinusuri ng AI...' : 'AI is analyzing...'}
+              </h3>
+              <p className="text-slate-500 transition-opacity duration-500" key={processingStepIndex}>
+                {processingSteps[processingStepIndex]}
+              </p>
+            </div>
           </div>
         );
 
@@ -890,9 +946,12 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
     <div className="w-full max-w-4xl mx-auto">
       {renderStepIndicator()}
       
-      <div className="bg-white rounded-3xl border border-slate-200 p-8 md:p-10 shadow-lg card-hover animate-fade-in">
-        {renderStepContent()}
-        {renderNavigation()}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className={`h-1.5 ${stepColors[currentStep]}`} />
+        <div className="p-6 md:p-8">
+          {renderStepContent()}
+          {renderNavigation()}
+        </div>
       </div>
     </div>
   );
