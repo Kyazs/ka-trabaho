@@ -34,5 +34,12 @@ Plans:
 
 **Goal:** Create a clear sequential flow for the AI assessment (input → processing → results) rather than showing everything at once.
 
-**Status:** Pending
+**Status:** Planned
 **Depends on:** Phase 1
+**Mode:** Standard
+
+**Plan count:** 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Create AssessmentWizard component with sequential steps and step indicator
+- [ ] 03-02-PLAN.md — Integrate wizard into App.tsx and remove monolithic form
