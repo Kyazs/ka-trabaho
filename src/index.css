@@ -131,15 +131,15 @@ button, a, input, select, textarea {
   border-radius: 1rem;
   padding: 1.5rem;
   text-align: center;
-  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 6px -1px color-mix(in srgb, var(--color-blue-500) 20%, transparent);
 }
 
 /* Left accent border cards */
 .accent-card {
-  background: white;
+  background: var(--color-white);
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px 0 color-mix(in srgb, var(--color-slate-900) 10%, transparent);
   position: relative;
 }
 .accent-card::before {
