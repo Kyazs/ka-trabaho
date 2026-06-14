@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Sparkles,
   BookOpen,
@@ -20,6 +20,31 @@ interface NavbarProps {
 
 export default function Navbar({ currentTab, setCurrentTab, lang, setLang }: NavbarProps) {
   const [overflowOpen, setOverflowOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!overflowOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOverflowOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOverflowOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [overflowOpen]);
 
   const handleTabClick = (tab: string) => {
     setCurrentTab(tab);
@@ -61,7 +86,7 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang }: Nav
                 <button
                   key={tab.id}
                   id={`tab-${tab.id}-btn`}
-                  onClick={() => setCurrentTab(tab.id)}
+                  onClick={() => handleTabClick(tab.id)}
                   aria-current={currentTab === tab.id ? "page" : undefined}
                   className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
                     currentTab === tab.id
@@ -79,9 +104,10 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang }: Nav
           {/* Right Controls */}
           <div className="flex items-center gap-2">
             {/* Language Toggle - compact on mobile */}
-            <div className="inline-flex rounded-lg bg-slate-100 p-0.5 border border-slate-200">
+            <div className="inline-flex rounded-lg bg-slate-100 p-0.5 border border-slate-200" aria-label="Switch language">
               <button
                 onClick={() => setLang("fil")}
+                aria-pressed={lang === "fil"}
                 className={`rounded-md px-2 py-1 text-xs font-bold transition-all ${
                   lang === "fil"
                     ? "bg-white text-slate-800 shadow-sm border border-slate-200"
@@ -92,6 +118,7 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang }: Nav
               </button>
               <button
                 onClick={() => setLang("en")}
+                aria-pressed={lang === "en"}
                 className={`rounded-md px-2 py-1 text-xs font-bold transition-all ${
                   lang === "en"
                     ? "bg-white text-slate-800 shadow-sm border border-slate-200"
@@ -108,12 +135,14 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang }: Nav
                 onClick={() => setOverflowOpen(!overflowOpen)}
                 className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-all"
                 aria-label="More options"
+                aria-expanded={overflowOpen}
               >
                 <MoreVertical className="h-5 w-5" />
               </button>
               {overflowOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl border border-slate-200 shadow-xl py-1 z-50">
+                <div ref={menuRef} role="menu" className="absolute right-0 mt-2 w-48 bg-white rounded-xl border border-slate-200 shadow-xl py-1 z-50">
                   <button
+                    role="menuitem"
                     onClick={() => handleTabClick("faq")}
                     className={`w-full flex items-center gap-2 px-4 py-3 text-sm font-semibold transition-all ${
                       currentTab === "faq"
@@ -125,6 +154,7 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang }: Nav
                     FAQ
                   </button>
                   <a
+                    role="menuitem"
                     href="https://www.tesda.gov.ph"
                     target="_blank"
                     rel="noopener noreferrer"
