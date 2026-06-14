@@ -7,7 +7,7 @@ import {
   FALLBACK_JOB_RECOMMENDATION,
   mapAiJobsToExistingData,
   PHILIPPINES_REGIONS
-} from '../lib/api-utils';
+} from './lib/api-utils';
 import {
   applySecurityMiddleware,
   logAfterRequest,
@@ -18,7 +18,7 @@ import {
   validateRequest,
   callAiWithRetry,
   sanitizeOutput
-} from '../lib/api-middleware';
+} from './lib/api-middleware';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const startTime = Date.now();
