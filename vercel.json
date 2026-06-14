@@ -2,13 +2,13 @@
   "version": 2,
   "functions": {
     "api/recommendation.ts": {
-      "includeFiles": ["src/data/**", "api/lib/**"]
+      "includeFiles": "{src/data/**,api/lib/**}"
     },
     "api/chat.ts": {
-      "includeFiles": ["src/data/**", "api/lib/**"]
+      "includeFiles": "{src/data/**,api/lib/**}"
     },
     "api/job-recommendation.ts": {
-      "includeFiles": ["src/data/**", "api/lib/**"]
+      "includeFiles": "{src/data/**,api/lib/**}"
     }
   }
 }
