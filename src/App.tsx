@@ -738,7 +738,7 @@ export default function App() {
         {/* TAB 3: KA-TRABAHO AI CHAT COUNSELOR */}
         {/* ======================================= */}
         {currentTab === "chat" && (
-          <div id="tab-chat-content" className="space-y-8 animate-fade-in max-w-4xl mx-auto">
+          <div id="tab-chat-content" className="space-y-8 animate-fade-in max-w-5xl mx-auto">
             
             {/* Header chat instruction */}
             <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-lg text-center">
@@ -879,7 +879,7 @@ export default function App() {
         {/* TAB 4: FREQUENTLY ASKED QUESTIONS */}
         {/* ======================================= */}
         {currentTab === "faq" && (
-          <div id="tab-faq-content" className="space-y-6 animate-fade-in max-w-4xl mx-auto">
+          <div id="tab-faq-content" className="space-y-6 animate-fade-in max-w-5xl mx-auto">
             
             <div className="text-center max-w-md mx-auto mb-8">
               <span className="p-2 rounded-xl bg-indigo-50 text-indigo-700 inline-block mb-3">
