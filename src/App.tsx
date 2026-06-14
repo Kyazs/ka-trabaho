@@ -26,6 +26,7 @@ import {
   Info
 } from "lucide-react";
 import Navbar from "./components/Navbar";
+import LandingPage from "./components/LandingPage";
 import { PHILIPPINES_REGIONS, SECTORS_DATA, TESDA_FAQ, Sector, TesdaCourse, JobRole, RegionInfo } from "./data/tesdaData";
 import { UserProfile, MatchingResult, ChatMessage } from "./types";
 
@@ -48,7 +49,7 @@ const getSectorIcon = (iconName: string) => {
 };
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<string>("match");
+  const [currentTab, setCurrentTab] = useState<string>("landing");
   const [lang, setLang] = useState<"fil" | "en">("fil");
   
   // Form profile states
@@ -408,6 +409,10 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12" id="app-main">
+        {currentTab === "landing" ? (
+          <LandingPage lang={lang} setCurrentTab={setCurrentTab} />
+        ) : (
+          <>
         
         {/* Banner Informational Header */}
         <div id="welcome-alert-banner" className="mb-10 rounded-3xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-8 shadow-2xl text-white sm:p-10 relative overflow-hidden">
@@ -1590,6 +1595,8 @@ export default function App() {
             )}
           </div>
         )}
+
+      </>)}
 
       </main>
 

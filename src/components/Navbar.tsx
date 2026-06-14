@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Sparkles, BarChart, BookOpen, Briefcase, MessageSquare, HelpCircle, GraduationCap, Menu, X } from "lucide-react";
+import { Sparkles, BarChart, BookOpen, Briefcase, MessageSquare, HelpCircle, GraduationCap, Menu, X, Home } from "lucide-react";
 
 interface NavbarProps {
   currentTab: string;
@@ -23,7 +23,7 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang, hasPr
         
         {/* Logo and Brand */}
         <div 
-          onClick={() => setCurrentTab("match")}
+          onClick={() => setCurrentTab("landing")}
           className="flex cursor-pointer items-center space-x-3 group"
           id="nav-brand"
         >
@@ -42,6 +42,19 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang, hasPr
 
         {/* Navigation Tabs */}
         <nav className="hidden md:flex items-center space-x-2" id="nav-tabs-desktop">
+          <button
+            id="tab-landing-btn"
+            onClick={() => setCurrentTab("landing")}
+            className={`flex items-center space-x-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all ${
+              currentTab === "landing"
+                ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-md border border-blue-100"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            }`}
+          >
+            <Home className="h-5 w-5" />
+            <span>{lang === "fil" ? "Simula" : "Home"}</span>
+          </button>
+
           <button
             id="tab-match-btn"
             onClick={() => setCurrentTab("match")}
@@ -152,6 +165,18 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang, hasPr
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-slate-200 shadow-lg">
           <div className="px-4 py-4 space-y-2">
+            <button
+              onClick={() => handleTabClick("landing")}
+              className={`w-full flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                currentTab === "landing"
+                  ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm border border-blue-100"
+                  : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              <Home className="h-5 w-5" />
+              <span>{lang === "fil" ? "Simula" : "Home"}</span>
+            </button>
+
             <button
               onClick={() => handleTabClick("match")}
               className={`w-full flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
