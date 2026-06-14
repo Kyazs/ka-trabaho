@@ -7,17 +7,24 @@ export { PHILIPPINES_REGIONS };
 // Load environment variables
 dotenv.config();
 
-// Initialize Fireworks Client
-const apiKey = process.env.FIREWORKS_API_KEY;
-if (!apiKey) {
-  throw new Error("FIREWORKS_API_KEY environment variable is required");
-}
-export const client = new OpenAI({
-  apiKey: apiKey,
-  baseURL: "https://api.fireworks.ai/inference/v1",
-});
-
+// Initialize Fireworks Client (lazy-safe for Vercel builds)
+const apiKey = process.env.FIREWORKS_API_KEY || "dummy_key_for_build";
 export const isDummyKey = apiKey === "dummy_key_for_build";
+
+let _client: OpenAI | null = null;
+
+export const getClient = (): OpenAI => {
+  if (!_client) {
+    if (isDummyKey) {
+      throw new Error("FIREWORKS_API_KEY environment variable is required for production API calls.");
+    }
+    _client = new OpenAI({
+      apiKey: apiKey,
+      baseURL: "https://api.fireworks.ai/inference/v1",
+    });
+  }
+  return _client;
+};
 
 // Helper: Provide local context summarizing the TESDA courses
 export const getTesdaGroundingContext = () => {
