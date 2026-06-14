@@ -142,7 +142,15 @@ const sanitizeInput = (input: string | undefined, maxLength: number = 500): stri
 };
 
 const validateAge = (age: number): boolean => typeof age === 'number' && age >= 15 && age <= 24;
-const validateEducation = (education: string): boolean => ['elementary', 'high-school', 'als', 'college', 'none'].includes(education?.toLowerCase());
+const validateEducation = (education: string): boolean => [
+  'Elementary Graduate',
+  'Elementary Undergrad',
+  'Junior High School Graduate',
+  'Junior High Undergrad',
+  'Senior High School Graduate',
+  'ALS Graduate',
+  'Vocational College Undergraduate'
+].includes(education);
 
 // Helper: Provide local context summarizing the TESDA courses we offer to the AI
 const getTesdaGroundingContext = () => {

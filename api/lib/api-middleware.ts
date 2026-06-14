@@ -33,7 +33,15 @@ export const AI_RETRY_DELAY_MS = 3000; // 3 seconds
 // Zod Schemas
 export const ProfileSchema = z.object({
   age: z.number().int().min(15).max(24),
-  education: z.enum(['elementary', 'high-school', 'als', 'college', 'none']),
+  education: z.enum([
+    'Elementary Graduate',
+    'Elementary Undergrad',
+    'Junior High School Graduate',
+    'Junior High Undergrad',
+    'Senior High School Graduate',
+    'ALS Graduate',
+    'Vocational College Undergraduate'
+  ]),
   region: z.string().min(1).max(10),
   province: z.string().max(100).optional(),
   interests: z.string().max(500).optional(),
@@ -367,10 +375,18 @@ export const sanitizeOutput = (output: string | null | undefined): string => {
 };
 
 // Validate education enum
-export const VALID_EDUCATION_LEVELS = ['elementary', 'high-school', 'als', 'college', 'none'];
+export const VALID_EDUCATION_LEVELS = [
+  'Elementary Graduate',
+  'Elementary Undergrad',
+  'Junior High School Graduate',
+  'Junior High Undergrad',
+  'Senior High School Graduate',
+  'ALS Graduate',
+  'Vocational College Undergraduate'
+];
 
 export const validateEducation = (education: string): boolean => {
-  return VALID_EDUCATION_LEVELS.includes(education?.toLowerCase());
+  return VALID_EDUCATION_LEVELS.includes(education);
 };
 
 // Validate age
