@@ -2,14 +2,9 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { z } from 'zod';
-import DOMPurify from 'dompurify';
-import { JSDOM } from 'jsdom';
+import xss from 'xss';
 
 dotenv.config();
-
-// Initialize DOMPurify for server-side
-const window = new JSDOM('').window;
-const purify = DOMPurify(window);
 
 // Supabase client (lazy init)
 let _supabase: SupabaseClient | null = null;
@@ -338,8 +333,12 @@ export const sanitizeOutput = (output: string | null | undefined): string => {
   
   let sanitized = output;
   
-  // Strip ALL HTML using DOMPurify
-  sanitized = purify.sanitize(sanitized, { ALLOWED_TAGS: [] });
+  // Strip ALL HTML using xss (keeps only plain text, no DOM dependency)
+  sanitized = xss(sanitized, {
+    whiteList: {},
+    stripIgnoreTag: true,
+    stripIgnoreTagBody: ['script']
+  });
   
   // Detect and redact system prompt leakage
   const systemPromptLeakagePatterns = [
