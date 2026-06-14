@@ -166,5 +166,5 @@ export const mapAiJobsToExistingData = (aiJobs: any[], regionCode: string) => {
   });
 };
 
-// Note: CORS is now handled by api/_middleware.ts for security
+// Note: CORS is now handled by lib/api-middleware.ts for security
 // Use applySecurityMiddleware() in your endpoint handlers

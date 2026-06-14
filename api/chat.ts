@@ -3,7 +3,7 @@ import {
   getClient,
   isDummyKey,
   getTesdaGroundingContext
-} from './_utils';
+} from '../lib/api-utils';
 import {
   applySecurityMiddleware,
   logAfterRequest,
@@ -13,7 +13,7 @@ import {
   callAiWithRetry,
   sanitizeOutput,
   MAX_HISTORY_LENGTH
-} from './_middleware';
+} from '../lib/api-middleware';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const startTime = Date.now();
