@@ -9,8 +9,53 @@ dotenv.config({ path: ".env.local" });
 const app = express();
 const PORT = 3000;
 
-// Enable JSON bodies
-app.use(express.json());
+// Enable JSON bodies with size limit
+app.use(express.json({ limit: '50kb' }));
+
+// Content-Type enforcement for POST requests
+app.use((req, res, next) => {
+  if (req.method === 'POST' && !req.headers['content-type']?.includes('application/json')) {
+    return res.status(415).json({
+      error: 'Unsupported Media Type',
+      message: 'Content-Type must be application/json for POST requests.'
+    });
+  }
+  next();
+});
+
+// Body size check
+app.use((req, res, next) => {
+  const contentLength = parseInt(req.headers['content-length'] || '0');
+  if (contentLength > 50 * 1024) {
+    return res.status(413).json({
+      error: 'Payload Too Large',
+      message: 'Request body too large. Maximum size is 50KB.'
+    });
+  }
+  next();
+});
+
+// Security headers for all responses
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader('Content-Security-Policy', "default-src 'self'");
+  next();
+});
+
+// CORS for local development
+app.use((req, res, next) => {
+  const origin = req.headers.origin || '';
+  res.setHeader('Access-Control-Allow-Origin', origin || 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
 
 // Initialize Fireworks Client safely
 // Ensure process.env.FIREWORKS_API_KEY is defined
@@ -19,6 +64,85 @@ const client = new OpenAI({
   apiKey: apiKey,
   baseURL: "https://api.fireworks.ai/inference/v1",
 });
+
+// In-memory rate limiter for local development (no Supabase dependency)
+interface LocalRateLimitEntry {
+  count: number;
+  date: string;
+}
+const localRateLimits = new Map<string, LocalRateLimitEntry>();
+
+const getLocalRateLimitKey = (ip: string, endpoint: string): string => `${ip}:${endpoint}:${new Date().toISOString().split('T')[0]}`;
+
+const checkLocalRateLimit = (ip: string, endpoint: string): { allowed: boolean; remaining: number } => {
+  // Exempt localhost
+  if (ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1') {
+    return { allowed: true, remaining: 5 };
+  }
+  
+  const key = getLocalRateLimitKey(ip, endpoint);
+  const entry = localRateLimits.get(key);
+  const today = new Date().toISOString().split('T')[0];
+  
+  if (!entry || entry.date !== today) {
+    localRateLimits.set(key, { count: 0, date: today });
+    return { allowed: true, remaining: 5 };
+  }
+  
+  const remaining = Math.max(0, 5 - entry.count);
+  return { allowed: entry.count < 5, remaining };
+};
+
+const incrementLocalRateLimit = (ip: string, endpoint: string): void => {
+  if (ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1') return;
+  
+  const key = getLocalRateLimitKey(ip, endpoint);
+  const entry = localRateLimits.get(key);
+  const today = new Date().toISOString().split('T')[0];
+  
+  if (!entry || entry.date !== today) {
+    localRateLimits.set(key, { count: 1, date: today });
+  } else {
+    entry.count += 1;
+  }
+};
+
+// Extract client IP
+const getClientIp = (req: express.Request): string => {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (typeof forwarded === 'string') {
+    return forwarded.split(',')[0].trim();
+  }
+  if (Array.isArray(forwarded)) {
+    return forwarded[0].split(',')[0].trim();
+  }
+  return req.socket?.remoteAddress || 'unknown';
+};
+
+// Input sanitization for local dev
+const sanitizeInput = (input: string | undefined, maxLength: number = 500): string => {
+  if (!input) return '';
+  let sanitized = input.replace(/<[^>]*>/g, '').trim().substring(0, maxLength);
+  
+  const injectionPatterns = [
+    /ignore\s+(previous|above|the\s+above)/i,
+    /system\s+prompt/i,
+    /you\s+are\s+now/i,
+    /DAN\b/i,
+    /jailbreak/i,
+    /ignore\s+all\s+previous/i,
+  ];
+  
+  for (const pattern of injectionPatterns) {
+    if (pattern.test(sanitized)) {
+      throw new Error('Invalid input: Potential prompt injection detected.');
+    }
+  }
+  return sanitized;
+};
+
+const validateAge = (age: number): boolean => typeof age === 'number' && age >= 15 && age <= 24;
+const validateEducation = (education: string): boolean => ['elementary', 'high-school', 'als', 'college', 'none'].includes(education?.toLowerCase());
 
 // Helper: Provide local context summarizing the TESDA courses we offer to the AI
 const getTesdaGroundingContext = () => {
@@ -158,8 +282,30 @@ const mapAiJobsToExistingData = (aiJobs: any[], regionCode: string) => {
   });
 };
 
+// Rate limit middleware for Express
+const rateLimitMiddleware = (endpoint: string) => (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const ip = getClientIp(req);
+  const rateLimit = checkLocalRateLimit(ip, endpoint);
+  
+  res.setHeader('X-RateLimit-Limit', '5');
+  res.setHeader('X-RateLimit-Remaining', String(rateLimit.remaining));
+  
+  if (!rateLimit.allowed) {
+    return res.status(429).json({
+      error: 'Rate limit exceeded',
+      message: 'You have reached your daily limit of 5 requests for this feature. To ensure fair access for all users, please try again tomorrow. If you need assistance, contact the site administrator.',
+      retry_after: '24 hours',
+      requests_used: 5,
+      requests_limit: 5
+    });
+  }
+  
+  incrementLocalRateLimit(ip, endpoint);
+  next();
+};
+
 // Endpoint 1: Match Profile to TESDA Courses
-app.post("/api/recommendation", async (req, res) => {
+app.post("/api/recommendation", rateLimitMiddleware('recommendation'), async (req, res) => {
   try {
     const {
       age,
@@ -174,6 +320,18 @@ app.post("/api/recommendation", async (req, res) => {
     if (!age || !education || !region) {
       return res.status(400).json({ error: "Missing required profile fields (age, education, region)." });
     }
+
+    if (!validateAge(age)) {
+      return res.status(400).json({ error: "Age must be between 15 and 24." });
+    }
+
+    if (!validateEducation(education)) {
+      return res.status(400).json({ error: "Invalid education level." });
+    }
+
+    const sanitizedInterests = sanitizeInput(interests, 500);
+    const sanitizedSkills = sanitizeInput(practicalSkills, 500);
+    const sanitizedCareerGoal = sanitizeInput(careerGoal, 500);
 
     if (apiKey === "dummy_key_for_build") {
       return res.json(FALLBACK_RECOMMENDATION);
@@ -211,9 +369,9 @@ ${groundContext}`;
 - Education Level completed: ${education}
 - General Region: ${region}
 - Specific Province: ${province || "Any Province"}
-- Interests: ${interests || "None specified"}
-- Practical Skills: ${practicalSkills || "None specified"}
-- Personal Career Goal or Ambition: ${careerGoal || "None specified"}
+- Interests: ${sanitizedInterests || "None specified"}
+- Practical Skills: ${sanitizedSkills || "None specified"}
+- Personal Career Goal or Ambition: ${sanitizedCareerGoal || "None specified"}
 
 Recommend 2 to 3 specific TESDA courses with matchScore between 70 and 99. Provide target sector IDs (like 'ict', 'tourism', 'construction'). Return ONLY valid JSON, no other text.`;
 
@@ -252,7 +410,7 @@ Recommend 2 to 3 specific TESDA courses with matchScore between 70 and 99. Provi
 });
 
 // Endpoint 3: Job Recommendation based on Profile
-app.post("/api/job-recommendation", async (req, res) => {
+app.post("/api/job-recommendation", rateLimitMiddleware('job-recommendation'), async (req, res) => {
   try {
     const {
       age,
@@ -267,6 +425,18 @@ app.post("/api/job-recommendation", async (req, res) => {
     if (!age || !education || !region) {
       return res.status(400).json({ error: "Missing required profile fields (age, education, region)." });
     }
+
+    if (!validateAge(age)) {
+      return res.status(400).json({ error: "Age must be between 15 and 24." });
+    }
+
+    if (!validateEducation(education)) {
+      return res.status(400).json({ error: "Invalid education level." });
+    }
+
+    const sanitizedInterests = sanitizeInput(interests, 500);
+    const sanitizedSkills = sanitizeInput(practicalSkills, 500);
+    const sanitizedCareerGoal = sanitizeInput(careerGoal, 500);
 
     if (apiKey === "dummy_key_for_build") {
       return res.json(FALLBACK_JOB_RECOMMENDATION);
@@ -307,9 +477,9 @@ ${groundContext}`;
 - Education: ${education}
 - Region: ${regionName} (Top sectors: ${topSectors.join(", ")})
 - Province: ${province || "Any"}
-- Interests: ${interests || "None"}
-- Practical Skills: ${practicalSkills || "None"}
-- Career Goal: ${careerGoal || "None"}
+- Interests: ${sanitizedInterests || "None"}
+- Practical Skills: ${sanitizedSkills || "None"}
+- Career Goal: ${sanitizedCareerGoal || "None"}
 
 Return ONLY valid JSON, no other text.`;
 
@@ -347,13 +517,15 @@ Return ONLY valid JSON, no other text.`;
 });
 
 // Endpoint 2: Ka-TrabaHO Intelligent Chatbot Counseling
-app.post("/api/chat", async (req, res) => {
+app.post("/api/chat", rateLimitMiddleware('chat'), async (req, res) => {
   try {
     const { history, message, userProfile } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: "No message sent from student." });
     }
+
+    const sanitizedMessage = sanitizeInput(message, 2000);
 
     if (apiKey === "dummy_key_for_build") {
       return res.json({
@@ -362,9 +534,13 @@ app.post("/api/chat", async (req, res) => {
     }
 
     const groundContext = getTesdaGroundingContext();
-    const studentContext = userProfile
-      ? `You are chatting with a student who is ${userProfile.age} years old from ${userProfile.province || userProfile.region}. Active educational status: Finished ${userProfile.education}. Interests: ${userProfile.interests || "none specified"}.`
-      : "The student has not completed their assessment profile yet. Politely invite them to finish the quick matching steps above to get highly customized answers!";
+    
+    let studentContext = "The student has not completed their assessment profile yet. Politely invite them to finish the quick matching steps above to get highly customized answers!";
+    
+    if (userProfile) {
+      const sanitizedInterests = sanitizeInput(userProfile.interests, 500);
+      studentContext = `You are chatting with a student who is ${userProfile.age} years old from ${userProfile.province || userProfile.region}. Active educational status: Finished ${userProfile.education}. Interests: ${sanitizedInterests || "none specified"}.`;
+    }
 
     const systemInstruction = `You are "Ka-TrabaHO", an official TESDA Career & Enrolment AI Counselor specifically designed for out-of-school Filipino youth aged 15-24.
 Your goal is to guide them, answer questions about vocational programs, explain requirements (birth certificate, high school credentials, ALS certificate), explain financial grants (free tuition, daily allowance), and help them feel excited about learning a new trade.
@@ -384,15 +560,17 @@ ${groundContext}
     ];
 
     if (history) {
-      messages.push(...history.map((item: any) => ({
+      const sanitizedHistory = history.map((item: any) => ({
         role: item.role,
-        content: item.text
-      })));
+        content: sanitizeInput(item.text, 2000)
+      })).filter((item: any) => item.content);
+      
+      messages.push(...sanitizedHistory);
     }
 
     messages.push({
       role: "user",
-      content: message
+      content: sanitizedMessage
     });
 
     const response = await client.chat.completions.create({

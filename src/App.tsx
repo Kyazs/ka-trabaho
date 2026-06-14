@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import DOMPurify from 'dompurify';
 import { 
   Sparkles, 
   MapPin, 
@@ -94,6 +95,17 @@ export default function App() {
   const [chatInput, setChatInput] = useState<string>("");
   const [isSendingMessage, setIsSendingMessage] = useState<boolean>(false);
   
+  // Rate limit tracking
+  const [rateLimits, setRateLimits] = useState<Record<string, { remaining: number; resetDate: string }>>({
+    recommendation: { remaining: 5, resetDate: '' },
+    'job-recommendation': { remaining: 5, resetDate: '' },
+    chat: { remaining: 5, resetDate: '' }
+  });
+  
+  // Input validation states
+  const [chatInputError, setChatInputError] = useState<string | null>(null);
+  const [careerGoalError, setCareerGoalError] = useState<string | null>(null);
+  
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const matchingCardRef = useRef<HTMLDivElement>(null);
 
@@ -183,6 +195,7 @@ export default function App() {
 
   // Core API call: Match Profile
   const handleSubmitProfile = async () => {
+    if (isMatching) return; // Prevent double submission
 
     setIsMatching(true);
     setMatchError(null);
@@ -206,9 +219,27 @@ export default function App() {
         body: JSON.stringify(profile)
       });
       
-
+      // Update rate limit tracking from headers
+      const remainingHeader = response.headers.get('X-RateLimit-Remaining');
+      const resetHeader = response.headers.get('X-RateLimit-Reset');
+      if (remainingHeader) {
+        setRateLimits(prev => ({
+          ...prev,
+          recommendation: { remaining: parseInt(remainingHeader), resetDate: resetHeader || '' }
+        }));
+      }
       
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 429) {
+          throw new Error(`Daily limit reached: ${errorData.message || 'You have used all 5 requests for today. Try again tomorrow.'}`);
+        } else if (response.status === 403) {
+          throw new Error(`Access blocked: ${errorData.message || 'Your IP has been blocked due to abuse.'}`);
+        } else if (response.status === 413) {
+          throw new Error(`Request too large: ${errorData.message || 'Please reduce the amount of text.'}`);
+        } else if (response.status === 415) {
+          throw new Error(`Invalid request format: ${errorData.message || 'Please try again.'}`);
+        }
         throw new Error(`Server returned ${response.status}: Failed to load recommendation.`);
       }
 
@@ -246,6 +277,7 @@ export default function App() {
 
   // Job matching handler
   const handleSubmitJobMatching = async () => {
+    if (isJobMatching) return; // Prevent double submission
 
     setIsJobMatching(true);
     setJobMatchError(null);
@@ -268,7 +300,23 @@ export default function App() {
         body: JSON.stringify(profile)
       });
 
+      // Update rate limit tracking from headers
+      const remainingHeader = response.headers.get('X-RateLimit-Remaining');
+      const resetHeader = response.headers.get('X-RateLimit-Reset');
+      if (remainingHeader) {
+        setRateLimits(prev => ({
+          ...prev,
+          'job-recommendation': { remaining: parseInt(remainingHeader), resetDate: resetHeader || '' }
+        }));
+      }
+
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 429) {
+          throw new Error(`Daily limit reached: ${errorData.message || 'You have used all 5 requests for today. Try again tomorrow.'}`);
+        } else if (response.status === 403) {
+          throw new Error(`Access blocked: ${errorData.message || 'Your IP has been blocked due to abuse.'}`);
+        }
         throw new Error(`Server returned ${response.status}`);
       }
 
@@ -282,17 +330,38 @@ export default function App() {
       setJobMatchResult(data);
       
     } catch (err: any) {
-
-      setJobMatchError("Hindi namin ma-konekta sa aming AI server. Subukang muli o manu-manong tignan ang mga sektor sa itaas.");
+      setJobMatchError(err.message || "Hindi namin ma-konekta sa aming AI server. Subukang muli o manu-manong tignan ang mga sektor sa itaas.");
     } finally {
       setIsJobMatching(false);
     }
+  };
+
+  // Chat input validation
+  const validateChatInput = (input: string): boolean => {
+    if (input.length > 500) {
+      setChatInputError("Masyadong mahaba ang mensahe. Maximum 500 characters lang.");
+      return false;
+    }
+    setChatInputError(null);
+    return true;
+  };
+
+  // Career goal validation
+  const validateCareerGoal = (input: string): boolean => {
+    if (input.length > 200) {
+      setCareerGoalError("Masyadong mahaba. Maximum 200 characters lang.");
+      return false;
+    }
+    setCareerGoalError(null);
+    return true;
   };
 
   // Chat message submission
   const handleSendChatMessage = async (presetText?: string) => {
     const textToSend = presetText || chatInput;
     if (!textToSend.trim()) return;
+    if (!validateChatInput(textToSend)) return;
+    if (isSendingMessage) return; // Prevent double submission
 
     if (!presetText) {
       setChatInput("");
@@ -320,8 +389,8 @@ export default function App() {
     };
 
     try {
-      // Map history to fit server structure
-      const apiHistory = chatMessages.slice(-8).map(msg => ({
+      // Map history to fit server structure (limit to 20 messages)
+      const apiHistory = chatMessages.slice(-20).map(msg => ({
         role: msg.role === "user" ? "user" : "model",
         text: msg.text
       }));
@@ -336,7 +405,63 @@ export default function App() {
         })
       });
 
+      // Update rate limit tracking from headers
+      const remainingHeader = response.headers.get('X-RateLimit-Remaining');
+      const resetHeader = response.headers.get('X-RateLimit-Reset');
+      if (remainingHeader) {
+        setRateLimits(prev => ({
+          ...prev,
+          chat: { remaining: parseInt(remainingHeader), resetDate: resetHeader || '' }
+        }));
+      }
+
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 429) {
+          throw new Error(`Daily limit reached: ${errorData.message || 'You have used all 5 chat requests for today. Try again tomorrow.'}`);
+        } else if (response.status === 403) {
+          throw new Error(`Access blocked: ${errorData.message || 'Your IP has been blocked due to abuse.'}`);
+        } else if (response.status === 504) {
+          // Auto-retry after timeout
+          setChatMessages(prev => [
+            ...prev,
+            {
+              id: `ai-retry-${Date.now()}`,
+              role: "model",
+              text: "Nag-time out ang connection. Susubukan ulit...",
+              timestamp: new Date()
+            }
+          ]);
+          
+          // Wait 3 seconds and retry
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          
+          const retryResponse = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message: textToSend,
+              history: apiHistory,
+              userProfile
+            })
+          });
+          
+          if (retryResponse.ok) {
+            const retryData = await retryResponse.json();
+            setChatMessages(prev => [
+              ...prev.filter(m => !m.id.startsWith('ai-retry-')),
+              {
+                id: `ai-${Date.now()}`,
+                role: "model",
+                text: retryData.text || "Humihingi ako ng pasensya, parang may problema sa pag-proseso ng aking sagot. Pakisubukang muli.",
+                timestamp: new Date()
+              }
+            ]);
+            setIsSendingMessage(false);
+            return;
+          }
+          throw new Error("Retry failed after timeout");
+        }
         throw new Error("Chat connection breakdown");
       }
 
@@ -351,14 +476,13 @@ export default function App() {
           timestamp: new Date()
         }
       ]);
-    } catch (err) {
-
+    } catch (err: any) {
       setChatMessages(prev => [
         ...prev,
         {
           id: `ai-err-${Date.now()}`,
           role: "model",
-          text: "Pasensya na po, parang naputol ang aking koneksyon. Pakiunawa na palagi kang pwedeng pumunta sa pinakamalapit na sangay ng TESDA sa inyong komunidad para sa agarang suporta!",
+          text: err.message || "Pasensya na po, parang naputol ang aking koneksyon. Pakiunawa na palagi kang pwedeng pumunta sa pinakamalapit na sangay ng TESDA sa inyong komunidad para sa agarang suporta!",
           timestamp: new Date()
         }
       ]);
@@ -479,6 +603,7 @@ export default function App() {
               setCustomSkills={setCustomSkills}
               careerGoal={careerGoal}
               setCareerGoal={setCareerGoal}
+              careerGoalError={careerGoalError}
               interestInput={interestInput}
               setInterestInput={setInterestInput}
               skillInput={skillInput}
@@ -803,10 +928,10 @@ export default function App() {
             </div>
 
             {/* Chat Messages Log Frame */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col h-[600px]">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col h-[60vh] sm:h-[600px]">
               
               {/* Profile Bar indicator */}
-              <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-6 py-4 flex items-center justify-between border-b border-slate-700">
+              <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-4 sm:px-6 py-4 flex items-center justify-between border-b border-slate-700">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 font-black text-sm text-white shadow-lg">
                     KT
@@ -819,26 +944,40 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="text-xs text-slate-400 text-right hidden sm:block">
-                  <span>Rehiyon: {PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion}</span>
+                <div className="flex items-center gap-3">
+                  {/* Rate Limit Badge */}
+                  {rateLimits.chat.remaining < 5 && (
+                    <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                      rateLimits.chat.remaining > 2 
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                        : rateLimits.chat.remaining > 0 
+                          ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                          : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                    }`}>
+                      <span>{rateLimits.chat.remaining}/5 left</span>
+                    </div>
+                  )}
+                  <div className="text-xs text-slate-400 text-right hidden sm:block">
+                    <span>Rehiyon: {PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion}</span>
+                  </div>
                 </div>
               </div>
 
               {/* Message log */}
-              <div id="chat-messages-scrollarea" className="flex-1 p-6 overflow-y-auto space-y-5 bg-gradient-to-b from-slate-50/50 to-white">
+              <div id="chat-messages-scrollarea" className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 bg-gradient-to-b from-slate-50/50 to-white">
                 {chatMessages.map((msg) => (
                   <div
                     key={msg.id}
                     className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} max-w-full animate-slide-in`}
                   >
                     <div
-                      className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed max-w-[85%] sm:max-w-[75%] shadow-md ${
+                      className={`rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm leading-relaxed max-w-[80%] sm:max-w-[75%] shadow-md ${
                         msg.role === "user"
                           ? "bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-tr-none"
                           : "bg-white text-slate-800 border border-slate-200 rounded-tl-none whitespace-pre-line"
                       }`}
                     >
-                      <div className="font-medium">{msg.text}</div>
+                      <div className="font-medium break-words">{msg.text}</div>
                       <div className={`text-[10px] mt-2 ${msg.role === "user" ? "text-blue-200" : "text-slate-400"}`}>
                         {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
@@ -847,12 +986,12 @@ export default function App() {
                 ))}
                 {isSendingMessage && (
                   <div className="flex justify-start">
-                    <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-none px-5 py-4 shadow-md">
+                    <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-none px-4 sm:px-5 py-3 sm:py-4 shadow-md">
                       <div className="flex items-center gap-2">
-                        <div className="flex gap-1">
-                          <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-                          <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-                          <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                        <div className="flex gap-1.5">
+                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }} />
                         </div>
                         <span className="text-sm text-slate-500">Nagsusulat si Ka-TrabaHO...</span>
                       </div>
@@ -863,30 +1002,68 @@ export default function App() {
               </div>
 
               {/* Chat Input Area */}
-              <div className="border-t border-slate-200 bg-white p-4">
+              <div className="border-t border-slate-200 bg-white p-3 sm:p-4">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
                     handleSendChatMessage();
                   }}
-                  className="flex gap-3"
+                  className="flex gap-2 sm:gap-3"
                 >
-                  <input
-                    id="chat-input"
-                    type="text"
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    placeholder={lang === "fil" ? "Magtanong tungkol sa TESDA..." : "Ask about TESDA..."}
-                    className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
-                  />
+                  <div className="flex-1 relative">
+                    <input
+                      id="chat-input"
+                      type="text"
+                      value={chatInput}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value.length <= 500) {
+                          setChatInput(value);
+                          setChatInputError(null);
+                        }
+                      }}
+                      placeholder={lang === "fil" ? "Magtanong tungkol sa TESDA..." : "Ask about TESDA..."}
+                      className={`w-full rounded-xl border px-3 sm:px-4 py-2.5 sm:py-3 text-sm focus:bg-white focus:ring-2 transition-all ${
+                        chatInputError 
+                          ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-100' 
+                          : 'border-slate-200 bg-slate-50 focus:border-blue-500 focus:ring-blue-100'
+                      }`}
+                      maxLength={500}
+                    />
+                    {/* Character Counter */}
+                    <div className="absolute right-2 bottom-1 text-[10px] text-slate-400">
+                      {chatInput.length}/500
+                    </div>
+                  </div>
                   <button
                     type="submit"
-                    disabled={isSendingMessage || !chatInput.trim()}
-                    className="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-5 py-3 font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-200 hover:shadow-xl"
+                    disabled={isSendingMessage || !chatInput.trim() || chatInput.length > 500}
+                    className="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 sm:px-5 py-2.5 sm:py-3 font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-200 hover:shadow-xl flex items-center gap-2"
                   >
-                    <Send className="h-5 w-5" />
+                    <Send className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="hidden sm:inline">Send</span>
                   </button>
                 </form>
+                {/* Input Error Message */}
+                {chatInputError && (
+                  <div className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {chatInputError}
+                  </div>
+                )}
+                {/* Rate Limit Warning */}
+                {rateLimits.chat.remaining <= 2 && rateLimits.chat.remaining > 0 && (
+                  <div className="mt-2 text-xs text-amber-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {rateLimits.chat.remaining} request{rateLimits.chat.remaining !== 1 ? 's' : ''} remaining today
+                  </div>
+                )}
+                {rateLimits.chat.remaining === 0 && (
+                  <div className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    Daily limit reached. Try again tomorrow.
+                  </div>
+                )}
               </div>
             </div>
           </div>

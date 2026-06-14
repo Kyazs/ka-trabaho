@@ -166,9 +166,5 @@ export const mapAiJobsToExistingData = (aiJobs: any[], regionCode: string) => {
   });
 };
 
-// CORS handler for Vercel
-export const setCorsHeaders = (res: VercelResponse) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-};
+// Note: CORS is now handled by api/_middleware.ts for security
+// Use applySecurityMiddleware() in your endpoint handlers

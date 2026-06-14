@@ -48,6 +48,7 @@ export interface AssessmentWizardProps {
   setCustomSkills: (skills: string[]) => void;
   careerGoal: string;
   setCareerGoal: (goal: string) => void;
+  careerGoalError?: string | null;
   interestInput: string;
   setInterestInput: (input: string) => void;
   skillInput: string;

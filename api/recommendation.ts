@@ -4,27 +4,55 @@ import {
   isDummyKey,
   getTesdaGroundingContext,
   extractJsonFromText,
-  FALLBACK_RECOMMENDATION,
-  setCorsHeaders
+  FALLBACK_RECOMMENDATION
 } from './_utils';
+import {
+  applySecurityMiddleware,
+  logAfterRequest,
+  sanitizeInput,
+  validateAge,
+  validateEducation,
+  getClientIp,
+  RecommendationSchema,
+  validateRequest,
+  callAiWithRetry,
+  sanitizeOutput
+} from './_middleware';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Handle CORS preflight
-  setCorsHeaders(res);
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+  const startTime = Date.now();
+  const endpoint = 'recommendation';
+  
+  // Apply security middleware (rate limiting, IP blocking, CORS, headers)
+  const security = await applySecurityMiddleware(req, res, endpoint);
+  if (!security.allowed) {
+    if (security.statusCode === 200) {
+      return res.status(200).end(); // OPTIONS preflight
+    }
+    return res.status(security.statusCode || 403).json(security.body);
   }
+  
+  const ip = security.ip;
 
   // Simple health check for GET requests
   if (req.method === 'GET') {
+    await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 200, false, startTime);
     return res.json({ status: 'ok', endpoint: 'recommendation', env: isDummyKey ? 'dummy' : 'live' });
   }
 
   if (req.method !== 'POST') {
+    await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 405, false, startTime);
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
+    // Validate request body with Zod
+    const validation = validateRequest(RecommendationSchema, req.body);
+    if (!validation.success) {
+      await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 400, false, startTime);
+      return res.status(400).json({ error: validation.error });
+    }
+
     const {
       age,
       education,
@@ -33,13 +61,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       interests,
       practicalSkills,
       careerGoal
-    } = req.body;
-
-    if (!age || !education || !region) {
-      return res.status(400).json({ error: "Missing required profile fields (age, education, region)." });
-    }
+    } = validation.data;
 
     if (isDummyKey) {
+      await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 200, false, startTime);
       return res.json(FALLBACK_RECOMMENDATION);
     }
 
@@ -81,34 +106,53 @@ ${groundContext}`;
 
 Recommend 2 to 3 specific TESDA courses with matchScore between 70 and 99. Provide target sector IDs (like 'ict', 'tourism', 'construction'). Return ONLY valid JSON, no other text.`;
 
-    const response = await getClient().chat.completions.create({
-      model: "accounts/fireworks/models/kimi-k2p7-code",
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user",
-          content: userPrompt
-        }
-      ],
-      temperature: 0.3,
-      max_tokens: 2000
-    });
+    // Call AI with timeout and retry
+    const response = await callAiWithRetry(() =>
+      getClient().chat.completions.create({
+        model: "accounts/fireworks/models/kimi-k2p7-code",
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt
+          },
+          {
+            role: "user",
+            content: userPrompt
+          }
+        ],
+        temperature: 0.3,
+        max_tokens: 2000
+      })
+    );
 
     let rawContent = response.choices[0].message.content || "";
+    
+    // Sanitize AI output
+    rawContent = sanitizeOutput(rawContent);
     
     let parsedData = extractJsonFromText(rawContent);
 
     if (!parsedData || !Array.isArray(parsedData.recommendedCourses) || parsedData.recommendedCourses.length === 0) {
       console.warn("AI returned malformed recommendation data, using fallback.");
+      await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 200, false, startTime);
       return res.json(FALLBACK_RECOMMENDATION);
     }
 
+    await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 200, false, startTime);
     res.json(parsedData);
   } catch (error: any) {
     console.error("Recommendation Error:", error);
+    
+    // Handle timeout specifically
+    if (error.message === 'AI API timeout') {
+      await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 504, false, startTime);
+      return res.status(504).json({ 
+        error: "AI service timeout",
+        message: "The AI service took too long to respond. Please try again in a few moments."
+      });
+    }
+    
+    await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 500, false, startTime);
     res.status(500).json({ error: "Failed to load matching recommendation. Please try again." });
   }
 }

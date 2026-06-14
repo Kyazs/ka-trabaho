@@ -27,7 +27,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
     age, setAge, education, setEducation, selectedRegion, setSelectedRegion,
     selectedProvince, setSelectedProvince, selectedProvincesList,
     customInterests, setCustomInterests, customSkills, setCustomSkills,
-    careerGoal, setCareerGoal, interestInput, setInterestInput,
+    careerGoal, setCareerGoal, careerGoalError, interestInput, setInterestInput,
     skillInput, setSkillInput, handleAddCustomInterest, handleAddCustomSkill,
     toggleInterestTag, toggleSkillTag, handleRegionChange, handleSubmitProfile,
     isMatching, matchResult, matchError, lang,
@@ -548,10 +548,31 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                 id="textarea-profile-goal"
                 rows={4}
                 value={careerGoal}
-                onChange={(e) => setCareerGoal(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 200) {
+                    setCareerGoal(value);
+                  }
+                }}
                 placeholder={lang === "fil" ? "E.g., Gusto ko pong makatrabaho sa mga malalaking barko o maging sikat na chef sa amin" : "Example: I want to build a career in computer repair and help my family financially."}
-                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all resize-none"
+                className={`w-full border-2 rounded-xl px-4 py-3 text-base focus:ring-2 focus:outline-none transition-all resize-none ${
+                  careerGoalError 
+                    ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/20' 
+                    : 'border-slate-200 focus:border-blue-500 focus:ring-blue-500/20'
+                }`}
+                maxLength={200}
               />
+              <div className="flex justify-between items-center mt-1">
+                {careerGoalError && (
+                  <span className="text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {careerGoalError}
+                  </span>
+                )}
+                <span className={`text-xs ml-auto ${careerGoal.length >= 180 ? 'text-amber-500' : 'text-slate-400'}`}>
+                  {careerGoal.length}/200
+                </span>
+              </div>
             </div>
           </div>
         );
