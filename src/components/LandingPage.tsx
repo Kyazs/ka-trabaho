@@ -4,6 +4,8 @@ import {
   Rocket,
   BookOpen,
   Clock,
+  DollarSign,
+  Award,
   Sparkles,
   MessageSquare,
   Search,
@@ -29,17 +31,22 @@ export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
   return (
     <div className="animate-fade-in">
       {/* ========== HERO SECTION ========== */}
-      <section className="text-center py-8 px-4">
-        <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 text-blue-700 px-4 py-2 text-xs font-bold uppercase tracking-wider border border-blue-100">
+      <section className="relative text-center py-10 px-4 overflow-hidden">
+        {/* Background blobs */}
+        <div className="hero-blob hero-blob-1" />
+        <div className="hero-blob hero-blob-2" />
+        <div className="hero-blob hero-blob-3" />
+
+        <span className="relative inline-flex items-center gap-2 rounded-full bg-blue-50 text-blue-700 px-4 py-2 text-xs font-bold uppercase tracking-wider border border-blue-100">
           <Target className="h-4 w-4" />
           {lang === "fil" ? "Ang Iyong Landas sa Tagumpay" : "Your Path to Success"}
         </span>
 
-        <h1 className="mt-4 font-display text-3xl font-extrabold leading-tight text-slate-900">
+        <h1 className="relative mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.1]">
           {lang === "fil" ? "Mula sa Wala, Hanggang Tagumpay" : "From Zero to Hero"}
         </h1>
 
-        <p className="mt-3 text-base text-slate-500 max-w-sm mx-auto leading-relaxed">
+        <p className="relative mt-4 text-lg text-slate-500 max-w-sm mx-auto leading-relaxed">
           {lang === "fil"
             ? "Tingnan kung paano magbabago ng TESDA ang iyong galing sa trabaho — hakbang-hakbang."
             : "See exactly how TESDA can transform your skills into a career — step by step."}
@@ -47,7 +54,7 @@ export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
 
         <button
           onClick={() => setCurrentTab("match")}
-          className="mt-6 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 text-base font-bold text-white shadow-xl hover:from-blue-700 hover:to-indigo-700 hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center justify-center gap-2 mx-auto max-w-xs"
+          className="relative mt-8 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 text-base font-bold text-white shadow-xl shadow-blue-500/30 hover:from-blue-700 hover:to-indigo-700 hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-2 mx-auto max-w-xs touch-manipulation"
         >
           <Rocket className="h-5 w-5" />
           {lang === "fil" ? "Simulan ang Iyong Paglalakbay" : "Begin Your Journey"}
@@ -130,27 +137,51 @@ export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
       {/* ========== STATS GRID ========== */}
       <section className="px-4 pb-4 animate-fade-in stagger-3" style={{ animationDelay: "0.3s" }}>
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-xl border border-slate-200 p-5 text-center shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3">
-              <BookOpen className="h-5 w-5" />
+          <div className="gradient-stat-card">
+            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mx-auto mb-3">
+              <BookOpen className="h-5 w-5 text-white" />
             </div>
-            <div className="font-display text-2xl font-extrabold text-blue-600">
+            <div className="font-display text-3xl font-extrabold text-white">
               300+
             </div>
-            <div className="text-sm text-slate-500 font-medium">
+            <div className="text-sm text-blue-100 font-medium">
               {lang === "fil" ? "Mga Kurso" : "Courses"}
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-slate-200 p-5 text-center shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-3">
-              <Clock className="h-5 w-5" />
+          <div className="gradient-stat-card" style={{ background: "linear-gradient(135deg, #10b981 0%, #059669 100%)" }}>
+            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mx-auto mb-3">
+              <Clock className="h-5 w-5 text-white" />
             </div>
-            <div className="font-display text-2xl font-extrabold text-blue-600">
+            <div className="font-display text-3xl font-extrabold text-white">
               15-30
             </div>
-            <div className="text-sm text-slate-500 font-medium">
+            <div className="text-sm text-emerald-100 font-medium">
               {lang === "fil" ? "Araw ng Pagsasanay" : "Days Training"}
+            </div>
+          </div>
+
+          <div className="gradient-stat-card" style={{ background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)" }}>
+            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mx-auto mb-3">
+              <DollarSign className="h-5 w-5 text-white" />
+            </div>
+            <div className="font-display text-3xl font-extrabold text-white">
+              ₱160
+            </div>
+            <div className="text-sm text-amber-100 font-medium">
+              {lang === "fil" ? "Allowance / Araw" : "Daily Allowance"}
+            </div>
+          </div>
+
+          <div className="gradient-stat-card" style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)" }}>
+            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mx-auto mb-3">
+              <Award className="h-5 w-5 text-white" />
+            </div>
+            <div className="font-display text-3xl font-extrabold text-white">
+              95%
+            </div>
+            <div className="text-sm text-violet-100 font-medium">
+              {lang === "fil" ? "Nakakakuha ng Trabaho" : "Job Placement"}
             </div>
           </div>
         </div>
