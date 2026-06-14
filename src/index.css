@@ -108,7 +108,7 @@ button, a, input, select, textarea {
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
+  animation: fade-in 0.5s ease-out both;
 }
 
 /* Stagger utility classes */
@@ -116,6 +116,15 @@ button, a, input, select, textarea {
 .stagger-2 { animation-delay: 0.2s; opacity: 0; }
 .stagger-3 { animation-delay: 0.3s; opacity: 0; }
 .stagger-4 { animation-delay: 0.4s; opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .stagger-1, .stagger-2, .stagger-3, .stagger-4 {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
 
 /* Loading shimmer effect */
 @keyframes shimmer {
@@ -126,4 +135,113 @@ button, a, input, select, textarea {
   background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Safe area support */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Touch action manipulation for mobile buttons */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Active tap feedback for mobile */
+.active-tap:active {
+  background-color: #f1f5f9; /* slate-100 */
+}
+@media (hover: hover) {
+  .active-tap:hover {
+    background-color: #f8fafc; /* slate-50 */
+  }
+}
+
+/* Gradient stat card base */
+.gradient-stat-card {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+}
+
+/* Left accent border cards */
+.accent-card {
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+.accent-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 1rem 0 0 1rem;
+}
+.accent-blue::before { background-color: #3b82f6; }
+.accent-emerald::before { background-color: #10b981; }
+.accent-amber::before { background-color: #f59e0b; }
+.accent-purple::before { background-color: #a855f7; }
+.accent-slate::before { background-color: #64748b; }
+
+/* Hero background blobs */
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  pointer-events: none;
+}
+.hero-blob-1 {
+  width: 300px;
+  height: 300px;
+  background: #3b82f6;
+  top: -100px;
+  left: -50px;
+}
+.hero-blob-2 {
+  width: 250px;
+  height: 250px;
+  background: #60a5fa;
+  top: 50px;
+  right: -80px;
+}
+.hero-blob-3 {
+  width: 200px;
+  height: 200px;
+  background: #93c5fd;
+  bottom: -50px;
+  left: 30%;
+}
+
+/* Scroll smooth for anchor/tab navigation */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-fade-in,
+  .animate-slide-in,
+  .card-hover {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
