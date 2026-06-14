@@ -8,7 +8,10 @@ export { PHILIPPINES_REGIONS };
 dotenv.config();
 
 // Initialize Fireworks Client
-const apiKey = process.env.FIREWORKS_API_KEY || "dummy_key_for_build";
+const apiKey = process.env.FIREWORKS_API_KEY;
+if (!apiKey) {
+  throw new Error("FIREWORKS_API_KEY environment variable is required");
+}
 export const client = new OpenAI({
   apiKey: apiKey,
   baseURL: "https://api.fireworks.ai/inference/v1",
@@ -41,14 +44,18 @@ export const extractJsonFromText = (text: string): any | null => {
   try {
     const parsed = JSON.parse(text);
     if (parsed && typeof parsed === "object") return parsed;
-  } catch { /* ignore */ }
+  } catch (e) {
+    console.debug("[extractJsonFromText] Direct JSON parse failed:", e);
+  }
 
   const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
   if (codeBlockMatch) {
     try {
       const parsed = JSON.parse(codeBlockMatch[1]);
       if (parsed && typeof parsed === "object") return parsed;
-    } catch { /* ignore */ }
+    } catch (e) {
+      console.debug("[extractJsonFromText] Code block JSON parse failed:", e);
+    }
   }
 
   const firstBrace = text.indexOf("{");
@@ -58,7 +65,9 @@ export const extractJsonFromText = (text: string): any | null => {
     try {
       const parsed = JSON.parse(candidate);
       if (parsed && typeof parsed === "object") return parsed;
-    } catch { /* ignore */ }
+    } catch (e) {
+      console.debug("[extractJsonFromText] Brace extraction JSON parse failed:", e);
+    }
   }
 
   return null;

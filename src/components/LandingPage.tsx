@@ -203,7 +203,7 @@ export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
             className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 py-4 text-base font-bold text-white shadow-xl shadow-blue-500/30 hover:from-blue-700 hover:to-indigo-700 hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-2 touch-manipulation min-h-[56px]"
           >
             <Sparkles className="h-5 w-5" />
-            {lang === "fil" ? "AI Course Matching" : "AI Course Matching"}
+            {lang === "fil" ? "AI Pagtutugma ng Kurso" : "AI Course Matching"}
           </button>
 
           <button
@@ -211,7 +211,7 @@ export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
             className="w-full rounded-2xl border-2 border-blue-200 bg-white py-4 text-base font-bold text-slate-700 hover:border-blue-300 hover:bg-blue-50/50 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-2 touch-manipulation min-h-[56px]"
           >
             <MessageSquare className="h-5 w-5 text-blue-600" />
-            {lang === "fil" ? "Tanungin ang AI Counselor" : "Ask AI Counselor"}
+            {lang === "fil" ? "Tanungin ang AI Tagapayo" : "Ask AI Counselor"}
           </button>
 
           <button
@@ -219,7 +219,7 @@ export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
             className="w-full rounded-2xl border-2 border-slate-200 bg-white py-4 text-base font-bold text-slate-700 hover:border-slate-300 hover:bg-slate-50 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-2 touch-manipulation min-h-[56px]"
           >
             <Search className="h-5 w-5 text-slate-500" />
-            {lang === "fil" ? "Tignan ang Lahat ng Kurso" : "Browse All Courses"}
+            {lang === "fil" ? "Tingnan ang Lahat ng Kurso" : "Browse All Courses"}
           </button>
         </div>
       </section>

@@ -230,14 +230,14 @@ export default function App() {
         {
           id: `match-update-${Date.now()}`,
           role: "model",
-          text: `Salamat sa pagkumpleto ng iyong profile! Batay sa pagsusuri ko, narito ang mga pinakamagandang TESDA course para sa iyo sa ${selectedProvince || regionText}. Tignan ang listahan sa ibaba! Kung may mabilis kang tanong ukol sa enrolment, mag-chat lang dito sa "Chat kay Ka-TrabaHO" tab!`,
+           text: `Salamat sa pagkumpleto ng iyong profile! Batay sa pagsusuri ko, narito ang mga pinakamagandang TESDA course para sa iyo sa ${selectedProvince || regionText}. Tingnan ang listahan sa ibaba! Kung may mabilis kang tanong ukol sa enrolment, mag-chat lang dito sa "Chat kay Ka-TrabaHO" tab!`,
           timestamp: new Date()
         }
       ]);
 
     } catch (err: any) {
 
-      setMatchError("Hindi namin ma-konekta sa aming AI server ngayon. Huwag mag-alala! Maaari mo pa ring manual na tignan ang mga kurso sa 'Sektor at Kurso' tab sa itaas.");
+      setMatchError("Hindi namin makakonek sa aming AI server ngayon. Huwag mag-alala! Maaari mo pa ring mano-manong tingnan ang mga kurso sa 'Sektor at Kurso' tab sa itaas.");
     } finally {
 
       setIsMatching(false);
@@ -358,7 +358,7 @@ export default function App() {
         {
           id: `ai-err-${Date.now()}`,
           role: "model",
-          text: "Sensya na po, parang naputol ang aking internet. Pakiunawa na palagi kang pwedeng pumunta sa pinakamalapit na TESDA branch sa inyong komunidad para sa agarang suporta!",
+          text: "Pasensya na po, parang naputol ang aking koneksyon. Pakiunawa na palagi kang pwedeng pumunta sa pinakamalapit na sangay ng TESDA sa inyong komunidad para sa agarang suporta!",
           timestamp: new Date()
         }
       ]);
@@ -559,7 +559,7 @@ export default function App() {
               {/* Sector Selection Grid Left */}
               <div id="explorer-left-sectors" className="hidden lg:block lg:col-span-4 space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 pl-1 mb-2">
-                  {lang === "fil" ? "Pumili ng Sektor na Ninanais:" : "Choose a Vocational Sector:"}
+                  {lang === "fil" ? "Pumili ng Sektor na Gusto:" : "Choose a Vocational Sector:"}
                 </h3>
                 
                 <div className="space-y-2">
@@ -854,7 +854,7 @@ export default function App() {
                           <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }} />
                           <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }} />
                         </div>
-                        <span className="text-sm text-slate-500">Nagta-type si Ka-TrabaHO...</span>
+                        <span className="text-sm text-slate-500">Nagsusulat si Ka-TrabaHO...</span>
                       </div>
                     </div>
                   </div>
@@ -1037,12 +1037,12 @@ export default function App() {
             {jobMatchResult && Array.isArray(jobMatchResult.recommendedJobs) && (
               <div id="job-results-section" className="space-y-8 max-w-5xl mx-auto">
                 <div className="text-center">
-                  <span className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 font-extrabold text-xs px-4 py-2 rounded-full border border-emerald-200 uppercase tracking-wider mb-4">
-                    <CheckCircle2 className="h-4 w-4" /> Job Matches Found
+                    <span className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 font-extrabold text-xs px-4 py-2 rounded-full border border-emerald-200 uppercase tracking-wider mb-4">
+                    <CheckCircle2 className="h-4 w-4" /> Nakakita ng Tugma!
                   </span>
-                  <h2 className="font-display font-extrabold text-2xl text-slate-900 sm:text-3xl">
-                    {lang === "fil" ? "Mga Trabahong Akma sa Iyo" : "Jobs Matched to Your Profile"}
-                  </h2>
+                <h2 className="font-display font-extrabold text-2xl text-slate-900 sm:text-3xl">
+                Ang Iyong AI Report sa Pagtutugma ng Kurso
+              </h2>
                   <p className="text-sm text-slate-500 mt-3 max-w-2xl mx-auto leading-relaxed">
                     {jobMatchResult.matchedSummary}
                   </p>
@@ -1089,9 +1089,9 @@ export default function App() {
                           </p>
 
                           {job.description && (
-                            <p className="text-sm text-slate-500 mt-3 leading-relaxed">
-                              {job.description}
-                            </p>
+                <p className="text-sm text-slate-500 mt-3 leading-relaxed">
+                Narito ang sadyang dinisenyo na pagsusuri pagkatapos tingnan ang iyong edad, lokasyon, at kakayahan.
+              </p>
                           )}
                         </div>
 
@@ -1151,7 +1151,7 @@ export default function App() {
                         <Info className="h-6 w-6 text-emerald-400" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-lg text-emerald-400 mb-2">Next Step</h3>
+                        <h3 className="font-bold text-lg text-emerald-400 mb-2">Susunod na Hakbang</h3>
                         <p className="text-sm text-slate-300 leading-relaxed">{jobMatchResult.faqTip}</p>
                       </div>
                     </div>
