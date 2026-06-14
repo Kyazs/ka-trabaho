@@ -586,28 +586,18 @@ ${groundContext}
   }
 });
 
+// Test route
+app.get("/api/test", (req, res) => {
+  res.json({ status: "ok", message: "Server is running", env: process.env.FIREWORKS_API_KEY ? "key-set" : "key-missing" });
+});
+
 // Serve assets / Vite middleware
-async function setupVite() {
-  if (process.env.NODE_ENV !== "production") {
-    const { createServer: createViteServer } = await import("vite");
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
+const distPath = path.join(process.cwd(), "dist");
+app.use(express.static(distPath));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Skills-to-Jobs server listening on http://localhost:${PORT}`);
-  });
-}
-
-setupVite().catch((err) => {
-  console.error("Server init failure:", err);
+app.listen(Number(process.env.PORT || 3000), () => {
+  console.log(`Skills-to-Jobs server listening on port ${process.env.PORT || 3000}`);
 });

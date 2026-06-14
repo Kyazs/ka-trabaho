@@ -1,15 +1,17 @@
 {
   "version": 2,
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
+  "functions": {
+    "api/_utils.ts": {
+      "includeFiles": "src/data/**"
     },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+    "api/recommendation.ts": {
+      "includeFiles": "src/data/**"
+    },
+    "api/chat.ts": {
+      "includeFiles": "src/data/**"
+    },
+    "api/job-recommendation.ts": {
+      "includeFiles": "src/data/**"
     }
-  ]
+  }
 }
