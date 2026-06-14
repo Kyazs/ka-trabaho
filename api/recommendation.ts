@@ -5,7 +5,7 @@ import {
   getTesdaGroundingContext,
   extractJsonFromText,
   FALLBACK_RECOMMENDATION
-} from './lib/api-utils';
+} from './lib/api-utils.js';
 import {
   applySecurityMiddleware,
   logAfterRequest,
@@ -17,7 +17,7 @@ import {
   validateRequest,
   callAiWithRetry,
   sanitizeOutput
-} from './lib/api-middleware';
+} from './lib/api-middleware.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const startTime = Date.now();
