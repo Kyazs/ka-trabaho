@@ -1,7 +1,8 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
-import { SECTORS_DATA, PHILIPPINES_REGIONS } from '../src/data/tesdaData.js';
+import { SECTORS_DATA, PHILIPPINES_REGIONS } from '../src/data/tesdaData';
+export { PHILIPPINES_REGIONS };
 
 // Load environment variables
 dotenv.config();
