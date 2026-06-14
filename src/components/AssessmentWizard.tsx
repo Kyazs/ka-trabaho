@@ -871,7 +871,6 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
           {!isReview && (
             <button
               onClick={nextStep}
-              disabled={!isNextValid}
               className={`flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-all ${
                 isNextValid
                   ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:-translate-y-0.5'
