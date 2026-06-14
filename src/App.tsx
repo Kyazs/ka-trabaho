@@ -537,10 +537,27 @@ export default function App() {
               </div>
             </div>
 
+            {/* Mobile horizontal chip list */}
+            <div className="flex overflow-x-auto gap-2 pb-2 lg:hidden">
+              {filteredSectors.map((sector) => (
+                <button
+                  key={sector.id}
+                  onClick={() => setSelectedSector(sector)}
+                  className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+                    selectedSector.id === sector.id
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "bg-white border border-slate-200 text-slate-600"
+                  }`}
+                >
+                  {sector.name}
+                </button>
+              ))}
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               
               {/* Sector Selection Grid Left */}
-              <div id="explorer-left-sectors" className="lg:col-span-4 space-y-3">
+              <div id="explorer-left-sectors" className="hidden lg:block lg:col-span-4 space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 pl-1 mb-2">
                   {lang === "fil" ? "Pumili ng Sektor na Ninanais:" : "Choose a Vocational Sector:"}
                 </h3>
