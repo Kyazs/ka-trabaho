@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import {
-  client,
+  getClient,
   isDummyKey,
   getTesdaGroundingContext,
   extractJsonFromText,
@@ -81,7 +81,7 @@ ${groundContext}`;
 
 Recommend 2 to 3 specific TESDA courses with matchScore between 70 and 99. Provide target sector IDs (like 'ict', 'tourism', 'construction'). Return ONLY valid JSON, no other text.`;
 
-    const response = await client.chat.completions.create({
+    const response = await getClient().chat.completions.create({
       model: "accounts/fireworks/models/kimi-k2p7-code",
       messages: [
         {
