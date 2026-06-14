@@ -108,7 +108,7 @@ button, a, input, select, textarea {
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in {
-  animation: fade-in 0.5s ease-out both;
+  animation: fade-in 0.5s ease-out forwards;
 }
 
 /* Stagger utility classes */
@@ -116,15 +116,6 @@ button, a, input, select, textarea {
 .stagger-2 { animation-delay: 0.2s; opacity: 0; }
 .stagger-3 { animation-delay: 0.3s; opacity: 0; }
 .stagger-4 { animation-delay: 0.4s; opacity: 0; }
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-in,
-  .stagger-1, .stagger-2, .stagger-3, .stagger-4 {
-    opacity: 1 !important;
-    animation: none !important;
-    transform: none !important;
-  }
-}
 
 /* Loading shimmer effect */
 @keyframes shimmer {
