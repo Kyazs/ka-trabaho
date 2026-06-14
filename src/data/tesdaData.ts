@@ -90,7 +90,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC II",
         duration: "280 Hours (Approx. 2 months)",
         description: "Covers installing, configuring, diagnosing, and repairing computer hardware, networks, and operating systems.",
-        entryReq: "Completed Junior High School (or old HS Curriculum / ALS graduate)",
+        entryReq: "Nakapagtapos ng Junior High School (o lumang HS Curriculum / ALS graduate)",
         skillsAcquired: ["PC Assembly & Hardware Diagnosis", "Operating System Installation (Windows/Linux)", "LAN Cabling & Configuration", "Software Troubleshooting"]
       },
       {
@@ -99,7 +99,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC III",
         duration: "320 Hours (Approx. 2.5 months)",
         description: "Advanced training in creating responsive websites, writing frontend code (HTML/CSS/JS), and deploying web platforms.",
-        entryReq: "Hold CSS NC II or complete basic computer literacy screen",
+        entryReq: "May CSS NC II o kumpletuhin ang basic computer literacy screen",
         skillsAcquired: ["HTML5 & CSS3 layout design", "JavaScript interactivity", "Database integration basics", "Deploying & testing host environments"]
       },
       {
@@ -108,7 +108,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC III",
         duration: "340 Hours (Approx. 3 months)",
         description: "Teaches key skills to create key drawings, secondary 3D frame creations, modeling, and cleanups for video game and media companies.",
-        entryReq: "Completed Elementary education, with basic drawing talent",
+        entryReq: "Nakapagtapos ng Elementarya, may basic drawing talent",
         skillsAcquired: ["3D object modeling", "Character movement rendering", "Keyframe layouting", "Post-production digital editing"]
       },
       {
@@ -117,7 +117,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "Micro-credential",
         duration: "40 Hours (Approx. 1 week)",
         description: "Short course targeting computer security basic defenses, local group policy configurations, and safe online operations.",
-        entryReq: "Basic computer understanding",
+        entryReq: "Basic na pag-unawa sa computer",
         skillsAcquired: ["Threat detection basics", "Software patching", "Vulnerability assessment", "Securing personal databases"]
       }
     ],
@@ -157,7 +157,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC II",
         duration: "119 Hours (Approx. 1 month)",
         description: "Learn how to operate espresso machines, brew high-quality coffees, style latte art, and offer exemplary consumer service.",
-        entryReq: "Capable of simple English and Filipino conversation",
+        entryReq: "Kayang makipag-usap sa simple English at Filipino",
         skillsAcquired: ["Espresso machine operation", "Coffee beans selection & grinding", "Milk texturing & latte art", "Beverage preparation & storage"]
       },
       {
@@ -166,7 +166,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC II",
         duration: "356 Hours (Approx. 2.5 months)",
         description: "Comprehensive skills for dining room setup, table waiting, taking guest orders, food handling, and billing in restaurants and resorts.",
-        entryReq: "Completed Elementary/Elementary ALS, pleasant communication style",
+        entryReq: "Nakapagtapos ng Elementarya/Elementary ALS, pleasant communication style",
         skillsAcquired: ["Restaurant table setups", "Order taking & table service", "Wine/beverage service protocols", "Prompt complaint handling"]
       },
       {
@@ -175,7 +175,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC II",
         duration: "141 Hours (Approx. 1.2 months)",
         description: "Baking foundations. Train in baking delicious breads, cookies, cakes, pastries, fillings, and proper storage.",
-        entryReq: "Can read and write English and Filipino",
+        entryReq: "Marunong magbasa at magsulat sa English at Filipino",
         skillsAcquired: ["Baking temperature and measurements", "Dough kneading & proofing", "Pastry decorating", "Food preservation & hygiene"]
       },
       {
@@ -184,7 +184,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC II",
         duration: "316 Hours (Approx. 2.5 months)",
         description: "Become a professional kitchen prep and hot cook. Learn menu layouting, hot food prep, stocks, sauces, meat cooking, and hygiene.",
-        entryReq: "Completed Elementary or equivalent (ALS)",
+        entryReq: "Nakapagtapos ng Elementarya o katumbas (ALS)",
         skillsAcquired: ["Culinary knife skills", "Sauces & stock recipes", "Standard meat & vegetable cookery", "Kitchen workstation sanitation"]
       }
     ],
@@ -231,7 +231,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC I",
         duration: "224 Hours (Approx. 1.8 months)",
         description: "Basic industrial entry training covering manual stick welding, safety protocols, plate preparations, and joint selections.",
-        entryReq: "Completed Elementary education, physically fit",
+        entryReq: "Nakapagtapos ng Elementarya, physically fit",
         skillsAcquired: ["Basic machine maintenance", "Flat & horizontal welding positions", "Safety gear setup", "Structural metal cutting"]
       },
       {
@@ -240,7 +240,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC II",
         duration: "268 Hours (Approx. 2 months)",
         description: "Advanced stick welding skills focusing on pipe and groove welds, carbon steel welding, and structural joints.",
-        entryReq: "Hold SMAW NC I or verified equivalent experience",
+        entryReq: "May SMAW NC I o beripikadong katumbas na karanasan",
         skillsAcquired: ["Vertical & overhead welding techniques", "Pressure pipe joints", "Blueprint weld symbol interpretations", "Weld quality inspection"]
       },
       {
@@ -249,7 +249,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC II",
         duration: "402 Hours (Approx. 3 months)",
         description: "Crucial course for residential and industrial electricians. Teaches circuit layouts, circuit breakers, conduit piping, and repairs.",
-        entryReq: "No specific high school requirement, basic algebra, fit and active",
+        entryReq: "Walang specific high school requirement, basic algebra, fit at active",
         skillsAcquired: ["Conduit bending & pipe laying", "Breaker and outlet wiring", "Single-phase power setups", "Electrical system diagnostics"]
       }
     ],
@@ -282,7 +282,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC II",
         duration: "232 Hours (Approx. 2 months)",
         description: "Learn how to make organic fertilizers (vermicomposting), raise organic chickens, cultivate organic vegetables, and use biologic insect solutions.",
-        entryReq: "Can understand instructions; elementary graduate",
+        entryReq: "Nakakaintindi ng instructions; elementary graduate",
         skillsAcquired: ["Organic fertilizer and compost making", "Biopesticide brewing", "Organic livestock raising", "Seed bed preparation"]
       },
       {
@@ -291,7 +291,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC II",
         duration: "120 Hours (Approx. 1 month)",
         description: "Covers smoke-curing, canning, salting, fermenting, sugar-concentrating, and dehydrated packaging of agricultural yields.",
-        entryReq: "Basic sanitization knowledge, Elementary graduate",
+        entryReq: "Basic na kaalaman sa sanitization, Elementary graduate",
         skillsAcquired: ["Canning & bottling fresh food", "Brining, drying & smoke curation", "Kitchen tool calibration", "HACCP Safety Standards"]
       }
     ],
@@ -324,7 +324,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC II",
         duration: "960 Hours (Approx. 6 months)",
         description: "Intense, highly premium training to provide safe pediatric, geriatric, and disabled household care. Heavy focus on hygiene, nutrition, vitals, and CPR.",
-        entryReq: "High School / ALS Graduate; basic English comprehension",
+        entryReq: "High School / ALS Graduate; basic na pag-unawa sa English",
         skillsAcquired: ["Measuring vital signs (blood pressure, pulse)", "CPR & first-aid procedures", "Elderly mobility and bed assistance", "Patient nutrition prepping"]
       },
       {
@@ -333,7 +333,7 @@ export const SECTORS_DATA: Sector[] = [
         level: "NC II",
         duration: "560 Hours (Approx. 4 months)",
         description: "Prepares legal therapists in stroke methods ( Swedish, Shiatsu, oil therapy) and client health screening.",
-        entryReq: "High School level, fit hands and posture",
+        entryReq: "High School level, fit hands at posture",
         skillsAcquired: ["Pre-massage and post-massage protocols", "Swedish & Shiatsu techniques", "Anatomy & muscle therapy", "First aid & safety"]
       }
     ],
@@ -364,11 +364,11 @@ export interface FaqItem {
 export const TESDA_FAQ: FaqItem[] = [
   {
     question: "Magkano ang bayad sa pag-aaral sa TESDA?",
-    answer: "Libre at walang bayad ang matrikula (Tuition-free) sa mga pampublikong training centers ng TESDA sa ilalim ng UAQTE (Universal Access to Quality Tertiary Education Act). Marami ring scholarship programs na nagbibigay ng libreng gamit at daily allowance (₱160 per day)!"
+    answer: "Libre at walang bayad ang matrikula sa mga pampublikong training center ng TESDA sa ilalim ng UAQTE (Universal Access to Quality Tertiary Education Act). Marami ring scholarship program na nagbibigay ng libreng gamit at daily allowance (₱160 bawat araw)!"
   },
   {
     question: "Sino ang pwedeng mag-enroll sa TESDA?",
-    answer: "Bukas ang TESDA para sa lahat, lalo na sa mga Out-of-School Youth (OSY), High School O Elementary graduates, walang trabaho, o gustong matuto ng bagong skills. May mga kurso na kahit elementary graduate ay pwedeng sumali!"
+    answer: "Bukas ang TESDA para sa lahat, lalo na sa mga Out-of-School Youth (OSY), High School o Elementary graduate, walang trabaho, o gustong matuto ng bagong skills. May mga kurso na kahit elementary graduate ay pwedeng sumali!"
   },
   {
     question: "Ano ang ALS (Alternative Learning System), at pwede ba ito?",
@@ -376,10 +376,10 @@ export const TESDA_FAQ: FaqItem[] = [
   },
   {
     question: "Paano makakakuha ng trabaho pagkatapos ng kurso?",
-    answer: "Pagkatapos ng training, dadaan ka sa Competency Assessment upang makuha ang iyong National Certificate (NC I or NC II) na patunay ng iyong galing. Malaki ang tulong nito sa mga employers, at may job placement partnerships ang mga TESDA school sa mga lokal na kumpanya."
+    answer: "Pagkatapos ng training, dadaan ka sa Competency Assessment upang makuha ang iyong National Certificate (NC I or NC II) na patunay ng iyong kakayahan. Malaki ang tulong nito sa mga employer, at may job placement partnership ang mga TESDA school sa mga lokal na kumpanya."
   },
   {
     question: "Ano ang mga dokumento na kailangan ihanda?",
-    answer: "Karaniwang kailangan: 1) Birth Certificate (PSA), 2) High School Report Card o Diploma / ALS Certificate, 3) 1x1 or 2x2 ID Pictures, 4) Barangay Clearance, at 5) Certificate of Indigency (para sa scholarships)."
+    answer: "Karaniwang kailangan: 1) Birth Certificate (PSA), 2) High School Report Card o Diploma / ALS Certificate, 3) 1x1 o 2x2 ID Pictures, 4) Barangay Clearance, at 5) Certificate of Indigency (para sa scholarship)."
   }
 ];

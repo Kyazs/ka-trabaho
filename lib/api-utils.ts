@@ -1,19 +1,30 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
-import { SECTORS_DATA, PHILIPPINES_REGIONS } from '../src/data/tesdaData.js';
+import { SECTORS_DATA, PHILIPPINES_REGIONS } from '../src/data/tesdaData';
+export { PHILIPPINES_REGIONS };
 
 // Load environment variables
 dotenv.config();
 
-// Initialize Fireworks Client
+// Initialize Fireworks Client (lazy-safe for Vercel builds)
 const apiKey = process.env.FIREWORKS_API_KEY || "dummy_key_for_build";
-export const client = new OpenAI({
-  apiKey: apiKey,
-  baseURL: "https://api.fireworks.ai/inference/v1",
-});
-
 export const isDummyKey = apiKey === "dummy_key_for_build";
+
+let _client: OpenAI | null = null;
+
+export const getClient = (): OpenAI => {
+  if (!_client) {
+    if (isDummyKey) {
+      throw new Error("FIREWORKS_API_KEY environment variable is required for production API calls.");
+    }
+    _client = new OpenAI({
+      apiKey: apiKey,
+      baseURL: "https://api.fireworks.ai/inference/v1",
+    });
+  }
+  return _client;
+};
 
 // Helper: Provide local context summarizing the TESDA courses
 export const getTesdaGroundingContext = () => {
@@ -40,14 +51,18 @@ export const extractJsonFromText = (text: string): any | null => {
   try {
     const parsed = JSON.parse(text);
     if (parsed && typeof parsed === "object") return parsed;
-  } catch { /* ignore */ }
+  } catch (e) {
+    console.debug("[extractJsonFromText] Direct JSON parse failed:", e);
+  }
 
   const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
   if (codeBlockMatch) {
     try {
       const parsed = JSON.parse(codeBlockMatch[1]);
       if (parsed && typeof parsed === "object") return parsed;
-    } catch { /* ignore */ }
+    } catch (e) {
+      console.debug("[extractJsonFromText] Code block JSON parse failed:", e);
+    }
   }
 
   const firstBrace = text.indexOf("{");
@@ -57,7 +72,9 @@ export const extractJsonFromText = (text: string): any | null => {
     try {
       const parsed = JSON.parse(candidate);
       if (parsed && typeof parsed === "object") return parsed;
-    } catch { /* ignore */ }
+    } catch (e) {
+      console.debug("[extractJsonFromText] Brace extraction JSON parse failed:", e);
+    }
   }
 
   return null;
@@ -149,9 +166,5 @@ export const mapAiJobsToExistingData = (aiJobs: any[], regionCode: string) => {
   });
 };
 
-// CORS handler for Vercel
-export const setCorsHeaders = (res: VercelResponse) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-};
+// Note: CORS is now handled by lib/api-middleware.ts for security
+// Use applySecurityMiddleware() in your endpoint handlers

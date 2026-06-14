@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sketch 002: Assessment Flow</title>
+  <link rel="stylesheet" href="../themes/default.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+      padding-top: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Variant tabs */
+    #variant-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 9998;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 8px 12px;
+      display: flex;
+      gap: 8px;
+      font-family: var(--font-sans);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .variant-tab {
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: var(--color-bg);
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .variant-tab.active {
+      background: var(--color-primary);
+      color: white;
+    }
+    .variant-tab:hover {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+    .variant-tab.active:hover {
+      background: var(--color-primary-hover);
+      color: white;
+    }
+
+    .variant { display: none; }
+    .variant.active { display: block; }
+
+    .mobile-container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0 var(--space-4);
+    }
+
+    /* Header */
+    .page-header {
+      padding: var(--space-6) 0;
+      text-align: center;
+    }
+    .page-header h1 {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      margin-bottom: var(--space-2);
+    }
+    .page-header p {
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+    }
+
+    /* Form Card */
+    .form-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      margin-bottom: var(--space-4);
+    }
+    .form-card h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: 700;
+      margin-bottom: var(--space-1);
+    }
+    .form-card .subtitle {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-5);
+    }
+
+    /* Form fields */
+    .field-group {
+      margin-bottom: var(--space-5);
+    }
+    .field-label {
+      display: block;
+      font-size: var(--text-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+    }
+    .field-input, .field-select {
+      width: 100%;
+      padding: var(--space-4);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-bg);
+      font-size: var(--text-base);
+      font-family: var(--font-sans);
+      color: var(--color-text);
+      transition: all 0.2s ease;
+    }
+    .field-input:focus, .field-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      background: var(--color-surface);
+      box-shadow: 0 0 0 3px var(--color-primary-light);
+    }
+    .field-range {
+      width: 100%;
+      margin: var(--space-2) 0;
+    }
+    .range-value {
+      display: inline-block;
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      font-weight: 700;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      border: 1px solid var(--color-primary-light);
+    }
+
+    /* Tag pills */
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+    .tag {
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: var(--color-text-muted);
+    }
+    .tag:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .tag.selected {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Submit button */
+    .submit-btn {
+      width: 100%;
+      padding: var(--space-4) var(--space-6);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-xl);
+      font-size: var(--text-base);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+    }
+    .submit-btn:hover {
+      background: var(--color-primary-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .submit-btn:disabled {
+      background: var(--color-bg);
+      color: var(--color-text-muted);
+      cursor: not-allowed;
+      border: 2px dashed var(--color-border);
+      box-shadow: none;
+    }
+
+    /* Loading State */
+    .loading-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-10) var(--space-6);
+      text-align: center;
+      display: none;
+    }
+    .loading-card.active { display: block; }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--color-primary-light);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto var(--space-6);
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .loading-card h3 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 700;
+      margin-bottom: var(--space-2);
+    }
+    .loading-card p {
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+    }
+    .loading-steps {
+      margin-top: var(--space-6);
+      text-align: left;
+      max-width: 280px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .loading-step {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+    }
+    .loading-step.done {
+      color: var(--color-success);
+    }
+    .loading-step .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-border);
+      flex-shrink: 0;
+    }
+    .loading-step.done .step-dot {
+      background: var(--color-success);
+    }
+    .loading-step.active .step-dot {
+      background: var(--color-primary);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Results Card */
+    .results-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      display: none;
+    }
+    .results-card.active { display: block; }
+    .results-header {
+      text-align: center;
+      margin-bottom: var(--space-6);
+    }
+    .results-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: var(--color-success-light);
+      color: var(--color-success);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      margin-bottom: var(--space-3);
+    }
+    .results-header h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 800;
+    }
+    .results-header p {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-2);
+    }
+
+    /* AI Summary */
+    .ai-summary {
+      background: var(--color-primary-light);
+      border: 1px solid var(--color-primary-light);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-6);
+    }
+    .ai-summary h4 {
+      font-size: var(--text-sm);
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: var(--space-2);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .ai-summary p {
+      font-size: var(--text-sm);
+      color: var(--color-text);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    /* Course Card */
+    .course-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      margin-bottom: var(--space-4);
+      transition: all 0.2s ease;
+    }
+    .course-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    .course-header {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-4) var(--space-5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .course-header .match-score {
+      background: var(--color-success-light);
+      color: var(--color-success);
+      font-weight: 700;
+      font-size: var(--text-xs);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-success-light);
+    }
+    .course-header .course-number {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      letter-spacing: 0.05em;
+    }
+    .course-body {
+      padding: var(--space-5);
+    }
+    .course-code {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      color: var(--color-primary);
+      background: var(--color-primary-light);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-3);
+    }
+    .course-body h3 {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: 700;
+      margin-bottom: var(--space-3);
+    }
+    .course-reason {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      font-size: var(--text-sm);
+      line-height: 1.5;
+      margin-bottom: var(--space-4);
+    }
+    .course-reason strong {
+      color: var(--color-text);
+    }
+    .course-job {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+    .course-job .job-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: var(--color-indigo-light);
+      color: var(--color-indigo);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .course-job .job-label {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      display: block;
+    }
+    .course-job .job-title {
+      font-size: var(--text-sm);
+      font-weight: 700;
+      color: var(--color-indigo);
+    }
+    .course-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--space-3);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border);
+    }
+    .course-actions .btn-chat {
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+    }
+    .course-actions .btn-details {
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-surface);
+      color: var(--color-text);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    /* Back to form button */
+    .back-btn {
+      width: 100%;
+      padding: var(--space-4);
+      background: var(--color-surface);
+      color: var(--color-primary);
+      border: 2px solid var(--color-primary-light);
+      border-radius: var(--radius-xl);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+    }
+    .back-btn:hover {
+      background: var(--color-primary-light);
+    }
+
+    /* Section transition */
+    .section-transition {
+      transition: all 0.4s ease-in-out;
+    }
+
+    /* Scroll to results hint */
+    .scroll-hint {
+      text-align: center;
+      padding: var(--space-4);
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Sketch toolbar */
+    #sketch-tools {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      z-index: 9999;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      opacity: 0.4;
+      transition: opacity 0.2s;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    #sketch-tools:hover { opacity: 1; }
+    #sketch-tools select {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+    #sketch-tools button {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    #sketch-tools button:hover { background: rgba(255,255,255,0.3); }
+
+    .viewport-container {
+      max-width: 100%;
+      margin: 0 auto;
+      transition: max-width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Variant Navigation -->
+  <div id="variant-nav">
+    <button class="variant-tab active" onclick="showVariant('a')">A: Full Replace</button>
+    <button class="variant-tab" onclick="showVariant('b')">B: Scroll Reveal</button>
+    <button class="variant-tab" onclick="showVariant('c')">C: Accordion</button>
+  </div>
+
+  <!-- Sketch Toolbar -->
+  <div id="sketch-tools" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.4'">
+    <select id="theme-switcher" onchange="document.querySelector('link[href*=themes]').href='../themes/'+this.value+'.css'">
+      <option value="default">Default</option>
+    </select>
+    <button onclick="setViewport('phone')">Phone</button>
+    <button onclick="setViewport('tablet')">Tablet</button>
+    <button onclick="setViewport('desktop')">Desktop</button>
+  </div>
+
+  <div id="viewport-container" class="viewport-container">
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- VARIANT A: Full Page Replacement -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <div id="variant-a" class="variant active">
+      <div class="mobile-container">
+        <div class="page-header">
+          <h1>AI Assessment</h1>
+          <p>Find your perfect TESDA match</p>
+        </div>
+
+        <!-- Form Section -->
+        <div id="form-a" class="form-card section-transition">
+          <h2>Your Profile</h2>
+          <p class="subtitle">Answer a few questions to find your best match</p>
+
+          <div class="field-group">
+            <label class="field-label">How old are you?</label>
+            <input type="range" class="field-range" min="15" max="35" value="18" oninput="document.getElementById('age-a').textContent=this.value+' years old'">
+            <span id="age-a" class="range-value">18 years old</span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Education Level</label>
+            <select class="field-select">
+              <option>Junior High School Graduate</option>
+              <option>Senior High School Graduate</option>
+              <option>ALS Graduate</option>
+              <option>College Level</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">What interests you?</label>
+            <div class="tag-container">
+              <button class="tag" onclick="this.classList.toggle('selected')">Computers</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Cooking</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Welding</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Gardening</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Healthcare</button>
+            </div>
+          </div>
+
+          <button class="submit-btn" onclick="startAssessmentA()">
+            <span>✨</span> Find My Match
+          </button>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loading-a" class="loading-card section-transition">
+          <div class="spinner"></div>
+          <h3>Analyzing Your Profile</h3>
+          <p>Matching you with courses and jobs...</p>
+          <div class="loading-steps">
+            <div class="loading-step done">
+              <div class="step-dot"></div>
+              <span>Reading your profile</span>
+            </div>
+            <div class="loading-step active">
+              <div class="step-dot"></div>
+              <span>Scanning 300+ courses</span>
+            </div>
+            <div class="loading-step">
+              <div class="step-dot"></div>
+              <span>Finding local opportunities</span>
+            </div>
+            <div class="loading-step">
+              <div class="step-dot"></div>
+              <span>Building your report</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-a" class="results-card section-transition">
+          <div class="results-header">
+            <div class="results-badge">✓ Match Found</div>
+            <h2>Your Course Report</h2>
+            <p>Based on your interests in computers and cooking</p>
+          </div>
+
+          <div class="ai-summary">
+            <h4><span>✨</span> AI Counselor Insights</h4>
+            <p>"Given your interest in technology and hands-on work, you have strong potential in ICT and Tourism sectors. Your profile matches high-demand courses in Zamboanga City with excellent job placement rates."</p>
+          </div>
+
+          <div class="course-card">
+            <div class="course-header">
+              <span class="course-number">Recommended Match #1</span>
+              <span class="match-score">94% Match</span>
+            </div>
+            <div class="course-body">
+              <span class="course-code">Code: ICT-301</span>
+              <h3>Computer Systems Servicing NC II</h3>
+              <div class="course-reason">
+                <strong>Why for you:</strong> "Your interest in computers and basic troubleshooting skills make this an excellent fit. This course is in high demand in your region."
+              </div>
+              <div class="course-job">
+                <div class="job-icon">💼</div>
+                <div>
+                  <span class="job-label">Immediate Job</span>
+                  <span class="job-title">Computer Technician</span>
+                </div>
+              </div>
+              <div class="course-actions">
+                <button class="btn-chat">💬 Ask About Course</button>
+                <button class="btn-details">Details</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="course-card">
+            <div class="course-header">
+              <span class="course-number">Recommended Match #2</span>
+              <span class="match-score">87% Match</span>
+            </div>
+            <div class="course-body">
+              <span class="course-code">Code: HRS-101</span>
+              <h3>Bread and Pastry Production NC II</h3>
+              <div class="course-reason">
+                <strong>Why for you:</strong> "Your interest in cooking and baking aligns with this course. Local bakeries and hotels are actively hiring graduates."
+              </div>
+              <div class="course-job">
+                <div class="job-icon">💼</div>
+                <div>
+                  <span class="job-label">Immediate Job</span>
+                  <span class="job-title">Baker / Pastry Cook</span>
+                </div>
+              </div>
+              <div class="course-actions">
+                <button class="btn-chat">💬 Ask About Course</button>
+                <button class="btn-details">Details</button>
+              </div>
+            </div>
+          </div>
+
+          <button class="back-btn" onclick="resetAssessmentA()">
+            <span>←</span> Start New Assessment
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- VARIANT B: Smooth Scroll Reveal -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <div id="variant-b" class="variant">
+      <div class="mobile-container">
+        <div class="page-header">
+          <h1>AI Assessment</h1>
+          <p>Find your perfect TESDA match</p>
+        </div>
+
+        <!-- Form Section (always visible) -->
+        <div id="form-b" class="form-card">
+          <h2>Your Profile</h2>
+          <p class="subtitle">Answer a few questions to find your best match</p>
+
+          <div class="field-group">
+            <label class="field-label">How old are you?</label>
+            <input type="range" class="field-range" min="15" max="35" value="18" oninput="document.getElementById('age-b').textContent=this.value+' years old'">
+            <span id="age-b" class="range-value">18 years old</span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Education Level</label>
+            <select class="field-select">
+              <option>Junior High School Graduate</option>
+              <option>Senior High School Graduate</option>
+              <option>ALS Graduate</option>
+              <option>College Level</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">What interests you?</label>
+            <div class="tag-container">
+              <button class="tag" onclick="this.classList.toggle('selected')">Computers</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Cooking</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Welding</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Gardening</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Healthcare</button>
+            </div>
+          </div>
+
+          <button class="submit-btn" onclick="startAssessmentB()">
+            <span>✨</span> Find My Match
+          </button>
+        </div>
+
+        <!-- Loading Inline -->
+        <div id="loading-b" class="loading-card" style="margin-top: var(--space-4);">
+          <div class="spinner"></div>
+          <h3>Analyzing Your Profile</h3>
+          <p>Matching you with courses and jobs...</p>
+          <div class="loading-steps">
+            <div class="loading-step done">
+              <div class="step-dot"></div>
+              <span>Reading your profile</span>
+            </div>
+            <div class="loading-step active">
+              <div class="step-dot"></div>
+              <span>Scanning 300+ courses</span>
+            </div>
+            <div class="loading-step">
+              <div class="step-dot"></div>
+              <span>Finding local opportunities</span>
+            </div>
+            <div class="loading-step">
+              <div class="step-dot"></div>
+              <span>Building your report</span>
+            </div>
+          </div>
+          <div class="scroll-hint">↓ Results will appear below</div>
+        </div>
+
+        <!-- Results Inline -->
+        <div id="results-b" class="results-card" style="margin-top: var(--space-4);">
+          <div class="results-header">
+            <div class="results-badge">✓ Match Found</div>
+            <h2>Your Course Report</h2>
+            <p>Based on your interests in computers and cooking</p>
+          </div>
+
+          <div class="ai-summary">
+            <h4><span>✨</span> AI Counselor Insights</h4>
+            <p>"Given your interest in technology and hands-on work, you have strong potential in ICT and Tourism sectors. Your profile matches high-demand courses in Zamboanga City with excellent job placement rates."</p>
+          </div>
+
+          <div class="course-card">
+            <div class="course-header">
+              <span class="course-number">Recommended Match #1</span>
+              <span class="match-score">94% Match</span>
+            </div>
+            <div class="course-body">
+              <span class="course-code">Code: ICT-301</span>
+              <h3>Computer Systems Servicing NC II</h3>
+              <div class="course-reason">
+                <strong>Why for you:</strong> "Your interest in computers and basic troubleshooting skills make this an excellent fit. This course is in high demand in your region."
+              </div>
+              <div class="course-job">
+                <div class="job-icon">💼</div>
+                <div>
+                  <span class="job-label">Immediate Job</span>
+                  <span class="job-title">Computer Technician</span>
+                </div>
+              </div>
+              <div class="course-actions">
+                <button class="btn-chat">💬 Ask About Course</button>
+                <button class="btn-details">Details</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="course-card">
+            <div class="course-header">
+              <span class="course-number">Recommended Match #2</span>
+              <span class="match-score">87% Match</span>
+            </div>
+            <div class="course-body">
+              <span class="course-code">Code: HRS-101</span>
+              <h3>Bread and Pastry Production NC II</h3>
+              <div class="course-reason">
+                <strong>Why for you:</strong> "Your interest in cooking and baking aligns with this course. Local bakeries and hotels are actively hiring graduates."
+              </div>
+              <div class="course-job">
+                <div class="job-icon">💼</div>
+                <div>
+                  <span class="job-label">Immediate Job</span>
+                  <span class="job-title">Baker / Pastry Cook</span>
+                </div>
+              </div>
+              <div class="course-actions">
+                <button class="btn-chat">💬 Ask About Course</button>
+                <button class="btn-details">Details</button>
+              </div>
+            </div>
+          </div>
+
+          <button class="back-btn" onclick="resetAssessmentB()">
+            <span>←</span> Edit My Profile
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- VARIANT C: Accordion Expand -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <div id="variant-c" class="variant">
+      <div class="mobile-container">
+        <div class="page-header">
+          <h1>AI Assessment</h1>
+          <p>Find your perfect TESDA match</p>
+        </div>
+
+        <!-- Collapsed Form Header (when results showing) -->
+        <div id="form-collapsed-c" class="form-card" style="display: none; padding: var(--space-4); cursor: pointer;" onclick="expandFormC()">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <h2 style="font-size: var(--text-base);">Your Profile</h2>
+              <p class="subtitle" style="margin-bottom: 0; font-size: var(--text-xs);">18 yrs, JHS Grad, Interests: Computers, Cooking</p>
+            </div>
+            <span style="font-size: var(--text-lg);">▼</span>
+          </div>
+        </div>
+
+        <!-- Form Section -->
+        <div id="form-c" class="form-card">
+          <h2>Your Profile</h2>
+          <p class="subtitle">Answer a few questions to find your best match</p>
+
+          <div class="field-group">
+            <label class="field-label">How old are you?</label>
+            <input type="range" class="field-range" min="15" max="35" value="18" oninput="document.getElementById('age-c').textContent=this.value+' years old'">
+            <span id="age-c" class="range-value">18 years old</span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Education Level</label>
+            <select class="field-select">
+              <option>Junior High School Graduate</option>
+              <option>Senior High School Graduate</option>
+              <option>ALS Graduate</option>
+              <option>College Level</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">What interests you?</label>
+            <div class="tag-container">
+              <button class="tag" onclick="this.classList.toggle('selected')">Computers</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Cooking</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Welding</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Gardening</button>
+              <button class="tag" onclick="this.classList.toggle('selected')">Healthcare</button>
+            </div>
+          </div>
+
+          <button class="submit-btn" onclick="startAssessmentC()">
+            <span>✨</span> Find My Match
+          </button>
+        </div>
+
+        <!-- Loading Inline -->
+        <div id="loading-c" class="loading-card" style="margin-top: var(--space-4);">
+          <div class="spinner"></div>
+          <h3>Analyzing Your Profile</h3>
+          <p>Matching you with courses and jobs...</p>
+          <div class="loading-steps">
+            <div class="loading-step done">
+              <div class="step-dot"></div>
+              <span>Reading your profile</span>
+            </div>
+            <div class="loading-step active">
+              <div class="step-dot"></div>
+              <span>Scanning 300+ courses</span>
+            </div>
+            <div class="loading-step">
+              <div class="step-dot"></div>
+              <span>Finding local opportunities</span>
+            </div>
+            <div class="loading-step">
+              <div class="step-dot"></div>
+              <span>Building your report</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Inline -->
+        <div id="results-c" class="results-card" style="margin-top: var(--space-4);">
+          <div class="results-header">
+            <div class="results-badge">✓ Match Found</div>
+            <h2>Your Course Report</h2>
+            <p>Based on your interests in computers and cooking</p>
+          </div>
+
+          <div class="ai-summary">
+            <h4><span>✨</span> AI Counselor Insights</h4>
+            <p>"Given your interest in technology and hands-on work, you have strong potential in ICT and Tourism sectors. Your profile matches high-demand courses in Zamboanga City with excellent job placement rates."</p>
+          </div>
+
+          <div class="course-card">
+            <div class="course-header">
+              <span class="course-number">Recommended Match #1</span>
+              <span class="match-score">94% Match</span>
+            </div>
+            <div class="course-body">
+              <span class="course-code">Code: ICT-301</span>
+              <h3>Computer Systems Servicing NC II</h3>
+              <div class="course-reason">
+                <strong>Why for you:</strong> "Your interest in computers and basic troubleshooting skills make this an excellent fit. This course is in high demand in your region."
+              </div>
+              <div class="course-job">
+                <div class="job-icon">💼</div>
+                <div>
+                  <span class="job-label">Immediate Job</span>
+                  <span class="job-title">Computer Technician</span>
+                </div>
+              </div>
+              <div class="course-actions">
+                <button class="btn-chat">💬 Ask About Course</button>
+                <button class="btn-details">Details</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="course-card">
+            <div class="course-header">
+              <span class="course-number">Recommended Match #2</span>
+              <span class="match-score">87% Match</span>
+            </div>
+            <div class="course-body">
+              <span class="course-code">Code: HRS-101</span>
+              <h3>Bread and Pastry Production NC II</h3>
+              <div class="course-reason">
+                <strong>Why for you:</strong> "Your interest in cooking and baking aligns with this course. Local bakeries and hotels are actively hiring graduates."
+              </div>
+              <div class="course-job">
+                <div class="job-icon">💼</div>
+                <div>
+                  <span class="job-label">Immediate Job</span>
+                  <span class="job-title">Baker / Pastry Cook</span>
+                </div>
+              </div>
+              <div class="course-actions">
+                <button class="btn-chat">💬 Ask About Course</button>
+                <button class="btn-details">Details</button>
+              </div>
+            </div>
+          </div>
+
+          <button class="back-btn" onclick="resetAssessmentC()">
+            <span>✏️</span> Edit Profile & Recalculate
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function showVariant(id) {
+      document.querySelectorAll('.variant').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.variant-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('variant-' + id).classList.add('active');
+      event.target.classList.add('active');
+      // Reset all variants when switching
+      resetAll();
+    }
+
+    function setViewport(size) {
+      const container = document.getElementById('viewport-container');
+      if (size === 'phone') container.style.maxWidth = '375px';
+      else if (size === 'tablet') container.style.maxWidth = '768px';
+      else container.style.maxWidth = '100%';
+    }
+
+    // Variant A: Full replacement
+    function startAssessmentA() {
+      document.getElementById('form-a').style.display = 'none';
+      document.getElementById('loading-a').classList.add('active');
+      // Simulate loading steps
+      setTimeout(() => updateLoadingStep('loading-a', 2), 1000);
+      setTimeout(() => updateLoadingStep('loading-a', 3), 2500);
+      setTimeout(() => {
+        document.getElementById('loading-a').classList.remove('active');
+        document.getElementById('results-a').classList.add('active');
+      }, 4000);
+    }
+
+    function resetAssessmentA() {
+      document.getElementById('results-a').classList.remove('active');
+      document.getElementById('form-a').style.display = 'block';
+      document.getElementById('form-a').style.opacity = '0';
+      setTimeout(() => document.getElementById('form-a').style.opacity = '1', 50);
+    }
+
+    // Variant B: Scroll reveal
+    function startAssessmentB() {
+      document.getElementById('loading-b').classList.add('active');
+      document.getElementById('results-b').classList.remove('active');
+      // Scroll to loading
+      document.getElementById('loading-b').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => updateLoadingStep('loading-b', 2), 1000);
+      setTimeout(() => updateLoadingStep('loading-b', 3), 2500);
+      setTimeout(() => {
+        document.getElementById('loading-b').classList.remove('active');
+        document.getElementById('results-b').classList.add('active');
+        document.getElementById('results-b').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 4000);
+    }
+
+    function resetAssessmentB() {
+      document.getElementById('results-b').classList.remove('active');
+      document.getElementById('form-b').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Variant C: Accordion
+    function startAssessmentC() {
+      document.getElementById('form-c').style.display = 'none';
+      document.getElementById('form-collapsed-c').style.display = 'block';
+      document.getElementById('loading-c').classList.add('active');
+      document.getElementById('results-c').classList.remove('active');
+      document.getElementById('loading-c').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => updateLoadingStep('loading-c', 2), 1000);
+      setTimeout(() => updateLoadingStep('loading-c', 3), 2500);
+      setTimeout(() => {
+        document.getElementById('loading-c').classList.remove('active');
+        document.getElementById('results-c').classList.add('active');
+        document.getElementById('results-c').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 4000);
+    }
+
+    function expandFormC() {
+      document.getElementById('form-collapsed-c').style.display = 'none';
+      document.getElementById('form-c').style.display = 'block';
+      document.getElementById('form-c').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function resetAssessmentC() {
+      document.getElementById('results-c').classList.remove('active');
+      expandFormC();
+    }
+
+    function updateLoadingStep(variantId, stepIndex) {
+      const steps = document.querySelectorAll('#' + variantId + ' .loading-step');
+      steps.forEach((step, i) => {
+        step.classList.remove('active', 'done');
+        if (i < stepIndex) step.classList.add('done');
+        else if (i === stepIndex) step.classList.add('active');
+      });
+    }
+
+    function resetAll() {
+      // Reset A
+      document.getElementById('form-a').style.display = 'block';
+      document.getElementById('loading-a').classList.remove('active');
+      document.getElementById('results-a').classList.remove('active');
+      // Reset B
+      document.getElementById('loading-b').classList.remove('active');
+      document.getElementById('results-b').classList.remove('active');
+      // Reset C
+      document.getElementById('form-c').style.display = 'block';
+      document.getElementById('form-collapsed-c').style.display = 'none';
+      document.getElementById('loading-c').classList.remove('active');
+      document.getElementById('results-c').classList.remove('active');
+      // Reset loading steps
+      document.querySelectorAll('.loading-step').forEach(s => s.classList.remove('active', 'done'));
+    }
+  </script>
+</body>
+</html>
