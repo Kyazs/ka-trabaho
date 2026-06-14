@@ -27,7 +27,7 @@ Plans:
 **Plan count:** 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Create LandingPage infographic component (Step-by-Step Journey)
+- [x] 02-01-PLAN.md — Create LandingPage infographic component (Step-by-Step Journey)
 - [ ] 02-02-PLAN.md — Integrate landing page into app flow and navigation
 
 ## Phase 3: Assessment Flow Optimization
