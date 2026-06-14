@@ -11,9 +11,7 @@ import {
   Send, 
   CheckCircle2, 
   AlertCircle, 
-  BookOpen, 
   Clock, 
-  User, 
   Briefcase, 
   DollarSign, 
   Award, 
@@ -23,10 +21,14 @@ import {
   Utensils,
   Sprout,
   HeartPulse,
-  Info
+  Info,
+  FileText,
+  AlertTriangle
 } from "lucide-react";
 import Navbar from "./components/Navbar";
+import BottomNav from "./components/BottomNav";
 import LandingPage from "./components/LandingPage";
+import AssessmentWizard from "./components/AssessmentWizard";
 import { PHILIPPINES_REGIONS, SECTORS_DATA, TESDA_FAQ, Sector, TesdaCourse, JobRole, RegionInfo } from "./data/tesdaData";
 import { UserProfile, MatchingResult, ChatMessage } from "./types";
 
@@ -181,7 +183,7 @@ export default function App() {
 
   // Core API call: Match Profile
   const handleSubmitProfile = async () => {
-    console.log("[handleSubmitProfile] Clicked!");
+
     setIsMatching(true);
     setMatchError(null);
     setMatchResult(null);
@@ -195,7 +197,7 @@ export default function App() {
       practicalSkills: customSkills.join(", "),
       careerGoal: careerGoal.trim()
     };
-    console.log("[handleSubmitProfile] Sending profile:", profile);
+
 
     try {
       const response = await fetch("/api/recommendation", {
@@ -204,17 +206,17 @@ export default function App() {
         body: JSON.stringify(profile)
       });
       
-      console.log("[handleSubmitProfile] Response status:", response.status);
+
       
       if (!response.ok) {
         throw new Error(`Server returned ${response.status}: Failed to load recommendation.`);
       }
 
       const data = await response.json();
-      console.log("[handleSubmitProfile] Response data:", data);
+
 
       if (!data || !Array.isArray(data.recommendedCourses)) {
-        console.warn("[handleSubmitProfile] Malformed response - missing recommendedCourses:", data);
+
         setMatchError("Nakatanggap ang server ng kakaibang sagot. Subukang muli, o gamitin ang fallback na rekomendasyon.");
         return;
       }
@@ -223,8 +225,6 @@ export default function App() {
       
       // Auto pre-populate Chatbot perspective with context
       const regionText = PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion;
-      const initialChatPrompt = `Mabuhay! Nakita ko ang iyong profiling: Ikaw ay isang ${age}-taong gulang na natapos ang ${education}. Labis mong gustong dumaan sa mga kurso patungkol sa [${customInterests.join(", ")}]. Handa kaming tulungan ka! Alin sa aming inirekomendang mga TESDA courses ang pinakagusto mong simulan? O may katanungan ka ba ukol sa scholarships?`;
-      
       setChatMessages(prev => [
         ...prev,
         {
@@ -236,17 +236,17 @@ export default function App() {
       ]);
 
     } catch (err: any) {
-      console.error("[handleSubmitProfile] Error:", err);
+
       setMatchError("Hindi namin ma-konekta sa aming AI server ngayon. Huwag mag-alala! Maaari mo pa ring manual na tignan ang mga kurso sa 'Sektor at Kurso' tab sa itaas.");
     } finally {
-      console.log("[handleSubmitProfile] Finished. isMatching=false");
+
       setIsMatching(false);
     }
   };
 
   // Job matching handler
   const handleSubmitJobMatching = async () => {
-    console.log("[handleSubmitJobMatching] Clicked!");
+
     setIsJobMatching(true);
     setJobMatchError(null);
     setJobMatchResult(null);
@@ -273,7 +273,7 @@ export default function App() {
       }
 
       const data = await response.json();
-      console.log("[handleSubmitJobMatching] Response:", data);
+
       
       if (!data || !Array.isArray(data.recommendedJobs)) {
         throw new Error("Invalid response format from server");
@@ -282,7 +282,7 @@ export default function App() {
       setJobMatchResult(data);
       
     } catch (err: any) {
-      console.error("[handleSubmitJobMatching] Error:", err);
+
       setJobMatchError("Hindi namin ma-konekta sa aming AI server. Subukang muli o manu-manong tignan ang mga sektor sa itaas.");
     } finally {
       setIsJobMatching(false);
@@ -352,7 +352,7 @@ export default function App() {
         }
       ]);
     } catch (err) {
-      console.error(err);
+
       setChatMessages(prev => [
         ...prev,
         {
@@ -397,18 +397,18 @@ export default function App() {
   const filteredSectors = getFilteredSectors();
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800" id="main-root-container">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 overflow-x-hidden" id="main-root-container">
       {/* Navbar section */}
       <Navbar 
         currentTab={currentTab} 
         setCurrentTab={setCurrentTab} 
         lang={lang} 
         setLang={setLang}
-        hasProfile={!!matchResult}
+
       />
 
       {/* Main Content Area */}
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12" id="app-main">
+      <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10 overflow-x-hidden pb-24 md:pb-0" id="app-main">
         {currentTab === "landing" ? (
           <LandingPage lang={lang} setCurrentTab={setCurrentTab} />
         ) : (
@@ -463,504 +463,53 @@ export default function App() {
         {/* ======================================= */}
         {currentTab === "match" && (
           <div id="tab-matching-content" className="space-y-8 animate-fade-in">
-            {/* Step 1 Form & Profile Creation */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              
-              {/* Questionnaire Form Side */}
-              <div id="matching-questionnaire-card" ref={matchingCardRef} className="lg:col-span-6 bg-white rounded-3xl border border-slate-200 p-8 md:p-10 shadow-lg card-hover">
-                <div className="flex items-center gap-3 pb-5 mb-8 border-b border-slate-100">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 shadow-sm">
-                    <User className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h2 className="font-display font-bold text-xl text-slate-900">
-                      {lang === "fil" ? "Mabilisang Profile Assessment" : "Quick Profile Assessment"}
-                    </h2>
-                    <p className="text-sm text-slate-500 mt-1">
-                      {lang === "fil" ? "Gamitin ang AI upang hanapin ang akmang trabaho" : "Let AI evaluate your custom preferences"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-8">
-                  {/* Age Input */}
-                  <div>
-                    <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
-                      {lang === "fil" ? "Ilang Taon Ka Na? (Bukas para sa edad 15-24+)" : "Your Age (Targeting 15-24)"}
-                    </label>
-                    <div className="flex items-center gap-4">
-                      <input 
-                        id="input-profile-age-slider"
-                        type="range" 
-                        min="15" 
-                        max="35" 
-                        value={age}
-                        onChange={(e) => setAge(parseInt(e.target.value))}
-                        className="w-full h-3 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                      />
-                      <span className="flex-shrink-0 inline-block bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 font-bold px-4 py-2 rounded-xl text-base border border-blue-200 shadow-sm">
-                        {age} {lang === "fil" ? "taong gulang" : "years old"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Completed Education Level */}
-                  <div>
-                    <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
-                      {lang === "fil" ? "Ano ang huling antas ng pinag-aralan mo?" : "What is your highest educational attainment?"}
-                    </label>
-                    <select
-                      id="select-profile-edu"
-                      value={education}
-                      onChange={(e) => setEducation(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all"
-                    >
-                      <option value="Elementary Graduate">Grade 6 / Elementary Graduate (Completer)</option>
-                      <option value="Elementary Undergrad">Elementary Undergraduate</option>
-                      <option value="Junior High School Graduate">Junior High School Graduate (Grade 10 Completer)</option>
-                      <option value="Junior High Undergrad">Junior High Undergraduate (Completer / Drop-out)</option>
-                      <option value="Senior High School Graduate">Senior High School Graduate (Grade 12 Completer)</option>
-                      <option value="ALS Graduate">ALS (Alternative Learning System) Graduate</option>
-                      <option value="Vocational College Undergraduate">College Level Undergrad / Drop-out</option>
-                    </select>
-                  </div>
-
-                  {/* Region selection */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
-                        {lang === "fil" ? "Rehiyon (Region)" : "Desired Region"}
-                      </label>
-                      <select
-                        id="select-profile-region"
-                        value={selectedRegion}
-                        onChange={(e) => handleRegionChange(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all"
-                      >
-                        {PHILIPPINES_REGIONS.map((region) => (
-                          <option key={region.code} value={region.code}>
-                            {region.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
-                        {lang === "fil" ? "Probinsya / City Hub" : "Province / City Hub"}
-                      </label>
-                      <select
-                        id="select-profile-province"
-                        value={selectedProvince}
-                        onChange={(e) => setSelectedProvince(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-base focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all"
-                      >
-                        {selectedProvincesList.map((prov) => (
-                          <option key={prov} value={prov}>
-                            {prov}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Interests Selection */}
-                  <div>
-                    <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
-                      Step 4: {lang === "fil" ? "Pilahan ng Iyong mga Interes (Pumili ng higit sa isa):" : "Select Your Main Interests:"}
-                    </label>
-                    <div className="flex flex-wrap gap-3 mb-4">
-                      {QUICK_INTERESTS.map((int) => (
-                        <button
-                          key={int.label}
-                          type="button"
-                          id={`interest-quick-${int.label.replace(/\s+/g, "-")}`}
-                          onClick={() => toggleInterestTag(int.label)}
-                          className={`rounded-full px-4 py-2 text-sm font-medium border transition-all ${
-                            customInterests.includes(int.label)
-                              ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-md shadow-blue-200 scale-105"
-                              : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm"
-                          }`}
-                        >
-                          {int.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Manual interest add */}
-                    <form onSubmit={handleAddCustomInterest} className="flex gap-3">
-                      <input
-                        id="input-custom-interest"
-                        type="text"
-                        placeholder={lang === "fil" ? "Magsulat ng iba pang interes (e.g., cellphones)" : "Type other custom interests..."}
-                        value={interestInput}
-                        onChange={(e) => setInterestInput(e.target.value)}
-                        className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
-                      />
-                      <button
-                        id="btn-add-custom-interest"
-                        type="submit"
-                        className="rounded-xl bg-gradient-to-r from-slate-800 to-slate-700 text-white px-5 py-3 text-sm font-bold hover:from-slate-700 hover:to-slate-600 shadow-md hover:shadow-lg transition-all"
-                      >
-                        {lang === "fil" ? "I-add" : "Add"}
-                      </button>
-                    </form>
-                  </div>
-
-                  {/* Practical Skills Selection */}
-                  <div>
-                    <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
-                      Step 5: {lang === "fil" ? "Anong mga praktikal na bagay ang marunong ka na?" : "What practical skills do you already have?"}
-                    </label>
-                    <div className="flex flex-wrap gap-3 mb-4">
-                      {QUICK_SKILLS.map((skill) => (
-                        <button
-                          key={skill.label}
-                          type="button"
-                          id={`skill-quick-${skill.label.replace(/\s+/g, "-")}`}
-                          onClick={() => toggleSkillTag(skill.label)}
-                          className={`rounded-full px-4 py-2 text-sm font-medium border transition-all ${
-                            customSkills.includes(skill.label)
-                              ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-indigo-600 shadow-md shadow-indigo-200 scale-105"
-                              : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm"
-                          }`}
-                        >
-                          {skill.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Manual skill add */}
-                    <form onSubmit={handleAddCustomSkill} className="flex gap-3">
-                      <input
-                        id="input-custom-skill"
-                        type="text"
-                        placeholder={lang === "fil" ? "Magsulat ng iba pang galing o hilig" : "Type other skill..."}
-                        value={skillInput}
-                        onChange={(e) => setSkillInput(e.target.value)}
-                        className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
-                      />
-                      <button
-                        id="btn-add-custom-skill"
-                        type="submit"
-                        className="rounded-xl bg-gradient-to-r from-slate-800 to-slate-700 text-white px-5 py-3 text-sm font-bold hover:from-slate-700 hover:to-slate-600 shadow-md hover:shadow-lg transition-all"
-                      >
-                        {lang === "fil" ? "I-add" : "Add"}
-                      </button>
-                    </form>
-                  </div>
-
-                  {/* Career Goal Textarea */}
-                  <div>
-                    <label className="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
-                      {lang === "fil" ? "Ano ang pangarap o plano mong maging trabaho?" : "Any specific job or lifetime plan?"}
-                    </label>
-                    <textarea
-                      id="textarea-profile-goal"
-                      rows={3}
-                      value={careerGoal}
-                      onChange={(e) => setCareerGoal(e.target.value)}
-                      placeholder={lang === "fil" ? "E.g., Gusto ko pong makatrabaho sa mga malalaking barko o maging sikat na chef sa amin" : "Example: I want to build a career in computer repair and help my family financially."}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-medium transition-all resize-none"
-                    />
-                  </div>
-
-                  {/* Submit Button */}
-                  <button
-                    id="btn-submit-matching-form"
-                    type="button"
-                    onClick={handleSubmitProfile}
-                    disabled={isMatching || (customInterests.length === 0 && !careerGoal)}
-                    className={`w-full rounded-2xl py-5 text-base font-bold shadow-xl transition-all flex items-center justify-center gap-3 ${
-                      isMatching
-                        ? "bg-amber-50 text-amber-700 cursor-wait border-2 border-amber-300"
-                        : customInterests.length === 0 && !careerGoal
-                        ? "bg-slate-50 text-slate-400 cursor-not-allowed border-2 border-dashed border-slate-300"
-                        : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 hover:shadow-2xl hover:-translate-y-1 active:translate-y-0"
-                    }`}
-                  >
-                    {isMatching ? (
-                      <>
-                        <span className="animate-spin inline-block h-6 w-6 border-[3px] border-amber-500 border-t-transparent rounded-full" />
-                        <span className="font-extrabold">{lang === "fil" ? "Sinusuri ng AI ang iyong profile..." : "AI is analyzing your profile..."}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-5 w-5" />
-                        <span>
-                          {lang === "fil" 
-                            ? "I-Match Akong Libreng TESDA Courses!" 
-                            : "Match My Profile Instantly!"
-                          }
-                        </span>
-                      </>
-                    )}
-                  </button>
-
-                  {(customInterests.length === 0 && !careerGoal) && (
-                    <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 flex items-start gap-3">
-                      <span className="text-amber-500 text-xl leading-none mt-0.5">&#9888;</span>
-                      <p className="text-sm text-amber-800 font-semibold leading-relaxed">
-                        {lang === "fil" 
-                          ? "Pumili ng kahit isang interes sa itaas o magsulat sa career goal para ma-unlock ang Matching."
-                          : "Select at least one interest above or type a career goal to unlock Matching."
-                        }
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Informational Guidance on how it works */}
-              <div id="matching-intro-info-card" className="lg:col-span-6 space-y-8">
-                
-                {/* Visual Banner */}
-                <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 text-white border border-slate-700 shadow-2xl relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl" />
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl" />
-                  
-                  <h3 className="font-display font-black text-xl text-blue-400 flex items-center gap-3 relative">
-                    <div className="p-2 rounded-xl bg-yellow-400/20">
-                      <Award className="h-6 w-6 text-yellow-400" />
-                    </div>
-                    Bakit maganda mag-aral sa TESDA?
-                  </h3>
-                  <ul className="mt-6 space-y-4 text-sm text-slate-300 leading-relaxed relative">
-                    <li className="flex items-start gap-3">
-                      <span className="flex h-7 w-7 text-sm text-blue-400 font-bold items-center justify-center rounded-full bg-blue-500/20 shrink-0 mt-0.5">✓</span>
-                      <span><strong className="text-white">100% Libreng Matrikula:</strong> Walang bayad ang pagsasanay sa pampublikong TESDA schools.</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="flex h-7 w-7 text-sm text-blue-400 font-bold items-center justify-center rounded-full bg-blue-500/20 shrink-0 mt-0.5">✓</span>
-                      <span><strong className="text-white">May Daily Allowance:</strong> Karamihan ng may scholarship ay tumatanggap ng <strong className="text-yellow-400">₱160 kada araw</strong> para sa pamasahe at pagkain.</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="flex h-7 w-7 text-sm text-blue-400 font-bold items-center justify-center rounded-full bg-blue-500/20 shrink-0 mt-0.5">✓</span>
-                      <span><strong className="text-white">National Certificate (NC):</strong> Ang lisensyang ibinibigay ng TESDA ay napakalakas na credential para makapasok sa mga kumpanya rito o sa ibang bansa!</span>
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Regional Hotjobs Highlight */}
-                <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-lg">
-                  <h3 className="font-display font-bold text-base text-slate-800 mb-4 flex items-center gap-2">
-                    <div className="p-2 rounded-xl bg-indigo-50">
-                      <Briefcase className="h-5 w-5 text-indigo-600" />
-                    </div>
-                    Sektor na May Mataas na Demand sa {PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion}:
-                  </h3>
-                  <p className="text-sm text-slate-500 mb-6 leading-relaxed">
-                    Ang TESDA programs ay iniaakma sa pangangailangan ng inyong lokal na merkado. Narito ang mga naghahanap ng mas maraming skilled labor sa iyong piniling rehiyon:
-                  </p>
-                  
-                  <div className="space-y-4" id="regional-high-sectors">
-                    {SECTORS_DATA.filter(s => 
-                      PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.topSectors.includes(s.id)
-                    ).map((sector, idx) => (
-                      <div 
-                        key={sector.id} 
-                        onClick={() => {
-                          setSelectedSector(sector);
-                          setCurrentTab("explorer");
-                        }}
-                        className="flex items-center justify-between p-4 rounded-2xl border border-slate-100 hover:border-blue-300 bg-slate-50/50 hover:bg-blue-50/50 transition-all cursor-pointer group card-hover"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="p-2.5 rounded-xl bg-white shadow-md border border-slate-100 group-hover:scale-110 transition-transform">
-                            {getSectorIcon(sector.iconName)}
-                          </div>
-                          <div>
-                            <span className="block text-sm font-bold text-slate-900">{sector.name}</span>
-                            <span className="block text-xs text-slate-500 mt-1">May {sector.courses.length} na akreditadong mga kurso</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1 text-sm text-blue-600 font-bold group-hover:translate-x-1 transition-transform">
-                          <span>Suriin</span>
-                          <ChevronRight className="h-4 w-4" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 rounded-2xl bg-blue-50/50 p-4 border border-blue-100 flex items-start gap-3">
-                    <div className="p-1.5 rounded-lg bg-blue-100 mt-0.5">
-                      <Info className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <p className="text-sm text-slate-600 leading-relaxed">
-                      <strong className="text-slate-900">Paano sumailalim?</strong> I-accomplish lamang ang form sa kaliwa upang matukoy ng aming AI counselor kung alin sa mga sector ang pinaka-akma sa iyong hilig at tapos na baitang.
-                    </p>
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-
-            {/* Results Mapping View */}
-            {matchError && (
-              <div id="matching-error" className="p-6 rounded-2xl border border-red-200 flex items-start gap-4 bg-red-50 text-red-700 max-w-2xl mx-auto shadow-lg">
-                <div className="p-2 rounded-xl bg-red-100">
-                  <AlertCircle className="h-6 w-6 shrink-0" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-base">May kaunting aberya</h4>
-                  <p className="text-sm text-red-600 mt-2 leading-relaxed">{matchError}</p>
-                </div>
-              </div>
-            )}
-
-            {matchResult && Array.isArray(matchResult.recommendedCourses) && (
-              <div id="matching-results-section" className="space-y-8 pt-8 border-t border-slate-200">
-                <div className="text-center max-w-2xl mx-auto">
-                  <span className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 font-extrabold text-xs px-4 py-2 rounded-full border border-emerald-200 uppercase tracking-wider mb-4">
-                    <CheckCircle2 className="h-4 w-4" /> Match Found Successfully
-                  </span>
-                  <h2 className="font-display font-extrabold text-2xl text-slate-900 sm:text-3xl">
-                    Iyong AI Course Compatibility Report
-                  </h2>
-                  <p className="text-sm text-slate-500 mt-3 leading-relaxed">
-                    Narito ang sadyang dinisenyo na analysis pagkatapos tignan ang iyong edad, lokasyon, at galing.
-                  </p>
-                </div>
-
-                {/* AI Summary card */}
-                <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border border-blue-200 rounded-3xl p-8 shadow-lg max-w-3xl mx-auto">
-                  <h4 className="font-display font-extrabold text-base text-slate-900 mb-4 flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-blue-100">
-                      <Sparkles className="h-5 w-5 text-blue-600" />
-                    </div>
-                    AI Counseling Insights:
-                  </h4>
-                  <p className="text-base text-slate-700 leading-relaxed font-medium italic">
-                    "{matchResult.matchedSummary || "Walang summary available."}"
-                  </p>
-                </div>
-
-                {/* Courses Match List */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="matching-recommendation-grid">
-                  {matchResult.recommendedCourses.map((recCourse, idx) => (
-                    <div 
-                      key={idx} 
-                      className="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden hover:shadow-2xl transition-all flex flex-col h-full card-hover group"
-                    >
-                      {/* Percent badge heading */}
-                      <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-5 border-b border-slate-100 flex justify-between items-center">
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                          Recommended Match #{idx + 1}
-                        </span>
-                        <span className="flex items-center gap-1 font-mono text-sm font-bold px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-800 border border-emerald-200">
-                          {recCourse.matchScore}% Match
-                        </span>
-                      </div>
-
-                      <div className="p-6 flex-1 flex flex-col justify-between">
-                        <div>
-                          <span className="inline-block text-xs font-extrabold font-mono text-blue-600 bg-gradient-to-r from-blue-50 to-blue-100 px-3 py-1.5 rounded-lg border border-blue-100">
-                            Code: {recCourse.courseCode}
-                          </span>
-                          <h3 className="font-display font-bold text-lg text-slate-900 mt-4 leading-tight">
-                            {recCourse.courseName}
-                          </h3>
-                          
-                          <p className="text-sm text-slate-600 mt-4 leading-relaxed bg-gradient-to-r from-slate-50 to-slate-100 p-4 rounded-2xl border border-slate-100">
-                            <strong className="text-slate-900">Bakit para sa iyo:</strong> "{recCourse.reasonForYouth}"
-                          </p>
-                        </div>
-
-                        <div className="mt-8 pt-5 border-t border-slate-100 space-y-4">
-                          <div className="flex items-start gap-3">
-                            <div className="p-2 rounded-xl bg-indigo-50 mt-0.5">
-                              <Briefcase className="h-5 w-5 text-indigo-600" />
-                            </div>
-                            <div>
-                              <span className="block text-xs uppercase tracking-wider text-slate-400 font-semibold">Pag-asensong Trabaho</span>
-                              <span className="block text-sm font-extrabold text-indigo-700 mt-1">{recCourse.immediateJobTitle}</span>
-                            </div>
-                          </div>
-
-                          <div className="flex gap-3 pt-3">
-                            <button
-                              id={`btn-match-chat-course-${recCourse.courseCode}`}
-                              onClick={() => askChatAboutCourse(recCourse.courseCode, recCourse.courseName)}
-                              className="flex-1 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-sm py-3 text-center flex items-center justify-center gap-2 shadow-lg shadow-blue-200 hover:shadow-xl hover:-translate-y-0.5 transition-all"
-                            >
-                              <MessageSquare className="h-4 w-4" />
-                              <span>Itanong sa Chat</span>
-                            </button>
-                            <button
-                              id={`btn-match-explore-course-${recCourse.courseCode}`}
-                              onClick={() => {
-                                // Find relevant sector to show details
-                                const sector = SECTORS_DATA.find(sec => 
-                                  sec.courses.some(c => c.code === recCourse.courseCode) || 
-                                  matchResult.targetSectors?.includes(sec.id)
-                                );
-                                if (sector) {
-                                  setSelectedSector(sector);
-                                }
-                                setCurrentTab("explorer");
-                              }}
-                              className="rounded-2xl border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-sm px-5 hover:-translate-y-0.5 transition-all"
-                            >
-                              Detalyado
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Enrollment Tips & Next Steps */}
-                <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 text-white border border-slate-700 shadow-2xl mt-10 relative overflow-hidden" id="matching-result-enrollment-card">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
-                  
-                  <div className="relative flex flex-col md:flex-row gap-8 items-start justify-between">
-                    <div className="max-w-2xl">
-                      <h3 className="font-display font-black text-xl text-emerald-400 flex items-center gap-3">
-                        <div className="p-2 rounded-xl bg-emerald-500/20">
-                          <CheckCircle2 className="h-6 w-6" />
-                        </div>
-                        Mahalagang Hakbang ukol sa Scholarship & Allowance:
-                      </h3>
-                      <p className="text-sm text-slate-300 mt-4 leading-relaxed">
-                        {matchResult.faqTip || "Pumunta sa pinakamalapit na TESDA Regional/Provincial Office upang mag-apply ng libreng scholarship."}
-                      </p>
-                      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div className="bg-white/10 rounded-2xl p-5 border border-white/20 space-y-2 hover:bg-white/15 transition-all">
-                          <span className="block text-xs text-slate-400 font-bold uppercase tracking-wider">Required Document #1</span>
-                          <span className="block text-sm font-bold text-white">PSA Birth Certificate</span>
-                          <span className="block text-xs text-slate-400">Patunay na ikaw ay Pilipino at sapat sa edad.</span>
-                        </div>
-                        <div className="bg-white/10 rounded-2xl p-5 border border-white/20 space-y-2 hover:bg-white/15 transition-all">
-                          <span className="block text-xs text-slate-400 font-bold uppercase tracking-wider">Required Document #2</span>
-                          <span className="block text-sm font-bold text-white">Diploma o ALS Certificate</span>
-                          <span className="block text-xs text-slate-400">Kung wala pa, barangay indigency ay tinatanggap.</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-4 shrink-0 w-full md:w-auto">
-                      <button 
-                        id="btn-goto-chat-counselor"
-                        onClick={() => setCurrentTab("chat")}
-                        className="rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-slate-950 font-bold text-sm py-4 px-6 flex items-center justify-center gap-3 transition-all shadow-lg shadow-emerald-900/50 hover:shadow-xl hover:-translate-y-1"
-                      >
-                        <span>Kausapin ang AI Counselor</span>
-                        <ArrowRight className="h-5 w-5" />
-                      </button>
-                      <button 
-                        id="btn-goto-faq"
-                        onClick={() => setCurrentTab("faq")}
-                        className="rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm py-4 px-6 text-center hover:-translate-y-1 transition-all"
-                      >
-                        Tignan ang Buong FAQ Guide
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            )}
+            <AssessmentWizard
+              age={age}
+              setAge={setAge}
+              education={education}
+              setEducation={setEducation}
+              selectedRegion={selectedRegion}
+              setSelectedRegion={setSelectedRegion}
+              selectedProvince={selectedProvince}
+              setSelectedProvince={setSelectedProvince}
+              selectedProvincesList={selectedProvincesList}
+              customInterests={customInterests}
+              setCustomInterests={setCustomInterests}
+              customSkills={customSkills}
+              setCustomSkills={setCustomSkills}
+              careerGoal={careerGoal}
+              setCareerGoal={setCareerGoal}
+              interestInput={interestInput}
+              setInterestInput={setInterestInput}
+              skillInput={skillInput}
+              setSkillInput={setSkillInput}
+              handleAddCustomInterest={handleAddCustomInterest}
+              handleAddCustomSkill={handleAddCustomSkill}
+              toggleInterestTag={toggleInterestTag}
+              toggleSkillTag={toggleSkillTag}
+              handleRegionChange={handleRegionChange}
+              handleSubmitProfile={handleSubmitProfile}
+              isMatching={isMatching}
+              matchResult={matchResult}
+              matchError={matchError}
+              lang={lang}
+              QUICK_INTERESTS={QUICK_INTERESTS}
+              QUICK_SKILLS={QUICK_SKILLS}
+              PHILIPPINES_REGIONS={PHILIPPINES_REGIONS}
+              onChatAboutCourse={askChatAboutCourse}
+              onExploreCourse={(courseCode, targetSectors) => {
+                const sector = SECTORS_DATA.find(sec => 
+                  sec.courses.some(c => c.code === courseCode) || 
+                  targetSectors?.includes(sec.id)
+                );
+                if (sector) {
+                  setSelectedSector(sector);
+                }
+                setCurrentTab("explorer");
+              }}
+              onGoToChat={() => setCurrentTab("chat")}
+              onGoToFaq={() => setCurrentTab("faq")}
+            />
           </div>
         )}
 
@@ -1069,13 +618,13 @@ export default function App() {
                 {/* Section Jobs mapped */}
                 <div>
                   <h3 className="font-display font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
-                    <Briefcase className="h-4.5 w-4.5 text-blue-600" />
+                    <Briefcase className="h-4 w-4 text-blue-600" />
                     Paghahanap ng Trabaho at Kita (Employment Demand Index)
                   </h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="explorer-jobs-list">
                     {selectedSector.jobs.map((job, idx) => (
-                      <div key={idx} className="bg-slate-55 bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between">
+                      <div key={idx} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between">
                         <div>
                           <div className="flex items-start justify-between gap-2">
                             <h4 className="font-display font-bold text-xs text-slate-900 leading-tight">
@@ -1108,7 +657,7 @@ export default function App() {
                 {/* Courses detail tabs */}
                 <div id="explorer-courses-list" className="space-y-4">
                   <h3 className="font-display font-bold text-sm text-slate-800 flex items-center gap-2">
-                    <GraduationCap className="h-4.5 w-4.5 text-blue-600" />
+                    <GraduationCap className="h-4 w-4 text-blue-600" />
                     Mga Accredited TESDA Program at Micro-Credentials
                   </h3>
 
@@ -1211,28 +760,28 @@ export default function App() {
                 onClick={() => handleSendChatMessage("May allowance po ba habang nag-aaral sa TESDA?")}
                 className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
-                💸 May daily allowance po ba?
+                <DollarSign className="h-4 w-4 inline" /> May daily allowance po ba?
               </button>
               <button
                 id="preset-q-als"
                 onClick={() => handleSendChatMessage("Pwede po ba akong mag-TESDA kahit ALS Graduate lang ako?")}
                 className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
-                🎓 Pwede ba ang ALS graduate?
+                <GraduationCap className="h-4 w-4 inline" /> Pwede ba ang ALS graduate?
               </button>
               <button
                 id="preset-q-docs"
                 onClick={() => handleSendChatMessage("Ano-ano po bang dokumento ang kailangan ko ihanda kapag mag-e-enroll?")}
                 className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
-                📂 Dokumentong kailangan?
+                <FileText className="h-4 w-4 inline" /> Dokumentong kailangan?
               </button>
               <button
                 id="preset-q-nc"
                 onClick={() => handleSendChatMessage("Ano po ba ang makukuha kong certificate pagkatapos ng training?")}
                 className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
-                🏆 Ano ang National Certificate (NC)?
+                <Award className="h-4 w-4 inline" /> Ano ang National Certificate (NC)?
               </button>
             </div>
 
@@ -1348,10 +897,10 @@ export default function App() {
               {TESDA_FAQ.map((faq, idx) => (
                 <div key={idx} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-2">
                   <h3 className="font-display font-extrabold text-sm sm:text-base text-slate-900 flex items-start gap-2.5 leading-snug">
-                    <span className="text-blue-650 bg-blue-50 shrink-0 text-xs px-2 py-0.5 rounded-md text-blue-700">T{idx + 1}</span>
+                    <span className="bg-blue-50 shrink-0 text-xs px-2 py-0.5 rounded-md text-blue-700">T{idx + 1}</span>
                     <span>{faq.question}</span>
                   </h3>
-                  <div className="pl-9 text-xs sm:text-sm text-slate-650 leading-relaxed text-slate-650 mt-2 font-medium">
+                  <div className="pl-9 text-xs sm:text-sm text-slate-600 leading-relaxed mt-2 font-medium">
                     {faq.answer}
                   </div>
                 </div>
@@ -1361,7 +910,7 @@ export default function App() {
             {/* Offline-apply reference block */}
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm mt-8 space-y-4">
               <h3 className="font-display font-bold text-sm text-slate-900 flex items-center gap-2">
-                <MapPin className="h-4.5 w-4.5 text-blue-600" />
+                    <MapPin className="h-4 w-4 text-blue-600" />
                 Handa ka na bang bumisita?
               </h3>
               <p className="text-xs text-slate-600 leading-normal">
@@ -1424,7 +973,7 @@ export default function App() {
                 >
                   {isJobMatching ? (
                     <>
-                      <span className="animate-spin inline-block h-5 w-5 border-3 border-emerald-500 border-t-transparent rounded-full" />
+                      <span className="animate-spin inline-block h-5 w-5 border-2 border-emerald-500 border-t-transparent rounded-full" />
                       <span className="font-extrabold">{lang === "fil" ? "Sinusuri ng AI ang mga trabaho..." : "AI is analyzing jobs..."}</span>
                     </>
                   ) : (
@@ -1442,7 +991,7 @@ export default function App() {
 
                 {(customInterests.length === 0 && !careerGoal) && (
                   <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2">
-                    <span className="text-amber-500 text-lg leading-none">&#9888;</span>
+                    <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
                     <p className="text-xs text-amber-800 font-semibold">
                       {lang === "fil" 
                         ? "Pumili ng kahit isang interes sa 'AI Matcher' tab o magsulat sa career goal para ma-unlock ang Job Matching."
@@ -1618,6 +1167,7 @@ export default function App() {
           </div>
         </div>
       </footer>
+      <BottomNav currentTab={currentTab} setCurrentTab={setCurrentTab} lang={lang} />
     </div>
   );
 }
