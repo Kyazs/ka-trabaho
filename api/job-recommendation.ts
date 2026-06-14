@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import {
-  client,
+  getClient,
   isDummyKey,
   getTesdaGroundingContext,
   extractJsonFromText,
@@ -86,7 +86,7 @@ ${groundContext}`;
 
 Return ONLY valid JSON, no other text.`;
 
-    const response = await client.chat.completions.create({
+    const response = await getClient().chat.completions.create({
       model: "accounts/fireworks/models/kimi-k2p7-code",
       messages: [
         { role: "system", content: systemPrompt },
