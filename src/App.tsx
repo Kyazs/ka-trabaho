@@ -697,39 +697,22 @@ export default function App() {
               </div>
             </div>
 
-            {/* Mobile horizontal chip list */}
-            <div className="flex overflow-x-auto gap-2 pb-2 lg:hidden">
-              {filteredSectors.map((sector) => (
-                <button
-                  key={sector.id}
-                  onClick={() => setSelectedSector(sector)}
-                  className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
-                    selectedSector.id === sector.id
-                      ? "bg-[#0F3D91] text-white shadow-sm"
-                      : "bg-white border border-[#e5e8ef] text-[#1A1A2E]"
-                  }`}
-                >
-                  {sector.name}
-                </button>
-              ))}
-            </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               
-              {/* Sector Selection Grid Left */}
-              <div id="explorer-left-sectors" className="hidden lg:block lg:col-span-4 space-y-3">
+              {/* Sector Selection Panel */}
+              <div id="explorer-left-sectors" className="lg:col-span-4 space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7280] pl-1 mb-2">
                   {lang === "fil" ? "Pumili ng Sektor na Gusto:" : "Choose a Vocational Sector:"}
                 </h3>
                 
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:block lg:space-y-2">
                   {filteredSectors.map((sector) => (
                     <button
                       key={sector.id}
                       type="button"
                       id={`btn-explorer-sector-${sector.id}`}
                       onClick={() => setSelectedSector(sector)}
-                      className={`w-full text-left rounded-xl p-4 border transition-all flex items-start gap-3.5 ${
+                      className={`w-full text-left rounded-xl p-4 border transition-all flex items-start gap-3.5 min-h-[64px] ${
                         selectedSector.id === sector.id
                           ? "bg-[#0F3D91] text-white border-[#0F3D91] shadow-md shadow-[#E8F0FE]"
                           : "bg-white text-[#1A1A2E] border-[#e5e8ef] hover:bg-[#E8F0FE]"
@@ -740,7 +723,7 @@ export default function App() {
                       }`}>
                         {getSectorIcon(sector.iconName)}
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <span className="block font-display font-bold text-sm tracking-tight leading-none">
                           {sector.name}
                         </span>
@@ -754,7 +737,7 @@ export default function App() {
                   ))}
 
                   {filteredSectors.length === 0 && (
-                    <div className="text-center p-8 bg-[#F8F9FC] rounded-xl border border-dashed border-[#e5e8ef]">
+                    <div className="text-center p-8 bg-[#F8F9FC] rounded-xl border border-dashed border-[#e5e8ef] col-span-full">
                       <BadgeHelp className="h-8 w-8 text-[#6B7280] mx-auto mb-2" />
                       <p className="text-xs text-[#6B7280] font-bold">Walang tumugmang sektor</p>
                       <button 
