@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import DOMPurify from 'dompurify';
 import { 
   Sparkles, 
@@ -53,7 +54,14 @@ const getSectorIcon = (iconName: string) => {
 };
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<string>("landing");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const VALID_TABS = ["landing", "match", "explorer", "jobs", "chat", "faq"];
+  const rawTab = location.pathname === "/" ? "landing" : location.pathname.slice(1);
+  const currentTab = VALID_TABS.includes(rawTab) ? rawTab : "landing";
+  if (!VALID_TABS.includes(rawTab) && location.pathname !== "/") {
+    navigate("/", { replace: true });
+  }
   const [lang, setLang] = useState<"fil" | "en">("fil");
   
   // Form profile states
@@ -132,7 +140,7 @@ export default function App() {
 
   const startAiMatching = () => {
     if (currentTab !== "match") {
-      setCurrentTab("match");
+      navigate("/match");
     }
     setTimeout(() => {
       matchingCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -552,16 +560,15 @@ export default function App() {
 
   // Helper trigger to ask chatbot directly about any course code
   const askChatAboutCourse = (courseCode: string, courseName: string) => {
-    setCurrentTab("chat");
+    navigate("/chat");
     const promptText = lang === "fil"
       ? `Interesado po ako mag-enroll sa ${courseName} (Code: ${courseCode}). Ano po ba ang eksaktong Requirements at paano mag-apply ng scholarship?`
       : `I'm interested in enrolling in ${courseName} (Code: ${courseCode}). What are the exact requirements and how do I apply for a scholarship?`;
     handleSendChatMessage(promptText);
   };
 
-  // Helper trigger to ask chatbot directly about any job
   const askChatAboutJob = (jobTitle: string, requiredCourses: any[]) => {
-    setCurrentTab("chat");
+    navigate("/chat");
     const courseNames = requiredCourses.map((c: any) => c.name).join(", ");
     const promptText = lang === "fil"
       ? `Interesado po ako sa trabahong ${jobTitle}. Ano po ba ang mga kailangang TESDA courses para makapag-apply? Naririnig ko na kailangan ng ${courseNames}. Pwede po bang magbigay ng detalye?`
@@ -609,17 +616,14 @@ export default function App() {
     <div className="min-h-screen bg-[#F8F9FC] font-sans text-[#1A1A2E] overflow-x-hidden" id="main-root-container">
       {/* Navbar section */}
       <Navbar 
-        currentTab={currentTab} 
-        setCurrentTab={setCurrentTab} 
         lang={lang} 
         setLang={setLang}
-
       />
 
       {/* Main Content Area */}
       <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10 overflow-x-hidden pb-24 md:pb-0" id="app-main">
         {currentTab === "landing" ? (
-          <LandingPage lang={lang} setCurrentTab={setCurrentTab} />
+          <LandingPage lang={lang} />
         ) : (
           <>
         
@@ -673,10 +677,10 @@ export default function App() {
                 if (sector) {
                   setSelectedSector(sector);
                 }
-                setCurrentTab("explorer");
+                navigate("/explorer");
               }}
-              onGoToChat={() => setCurrentTab("chat")}
-              onGoToFaq={() => setCurrentTab("faq")}
+              onGoToChat={() => navigate("/chat")}
+              onGoToFaq={() => navigate("/faq")}
             />
           </div>
         )}
@@ -773,7 +777,7 @@ export default function App() {
                       <h2 className="font-display font-black text-xl text-[#1A1A2E]">
                         {selectedSector.name}
                       </h2>
-                      <span className="inline-block bg-[#E8F0FE] text-[#0F3D91] font-bold text-[10px] px-2.5 py-0.5 rounded-full mt-1 uppercase border border-[#d4e3ff]">
+                      <span className="inline-block bg-[#E8F0FE] text-[#0F3D91] font-bold text-[11px] px-2.5 py-0.5 rounded-full mt-1 uppercase border border-[#d4e3ff]">
                         Accredited Sector Program
                       </span>
                     </div>
@@ -798,7 +802,7 @@ export default function App() {
                             <h4 className="font-display font-bold text-xs text-[#1A1A2E] leading-tight">
                               {job.title}
                             </h4>
-                            <span className={`flex-shrink-0 text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${
+                            <span className={`flex-shrink-0 text-[11px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${
                               job.demandLevel === "Very High" 
                                 ? "bg-red-50 text-red-700 border-red-200" 
                                 : job.demandLevel === "High"
@@ -814,7 +818,7 @@ export default function App() {
                         </div>
 
                         <div className="mt-4 pt-3 border-t border-[#e5e8ef] flex justify-between items-center bg-[#F8F9FC] p-2.5 rounded-lg">
-                           <span className="text-[10px] text-[#6B7280] block font-bold uppercase tracking-wider">{lang === "fil" ? "Tantiya sa Sahod" : "Salary Estimate"}</span>
+                           <span className="text-[11px] text-[#6B7280] block font-bold uppercase tracking-wider">{lang === "fil" ? "Tantiya sa Sahod" : "Salary Estimate"}</span>
                           <span className="font-mono text-xs font-bold text-[#1A1A2E]">{job.averageSalary}</span>
                         </div>
                       </div>
@@ -841,7 +845,7 @@ export default function App() {
                             <span className="font-mono text-xs font-bold px-2 rounded-md bg-[#E8F0FE] text-[#0F3D91] border border-[#d4e3ff] shrink-0">
                               {course.code}
                             </span>
-                            <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full shrink-0 ${
+                            <span className={`text-[11px] font-extrabold px-2.5 py-0.5 rounded-full shrink-0 ${
                               course.level === "Micro-credential" 
                                 ? "bg-[#f3f0ff] text-[#5b21b6] border border-[#ddd6fe]"
                                 : "bg-[#E8F0FE] text-[#0F3D91] border border-[#d4e3ff]"
@@ -858,7 +862,7 @@ export default function App() {
                           <button
                             id={`btn-explorer-engage-chat-${course.code}`}
                             onClick={() => askChatAboutCourse(course.code, course.name)}
-                            className="text-xs font-bold text-[#0F3D91] hover:text-[#0F3D91] hover:bg-[#E8F0FE] rounded-lg px-3 py-1.5 border border-[#d4e3ff] flex items-center gap-1.5 self-start sm:self-auto"
+                            className="text-xs font-bold text-[#0F3D91] hover:text-[#0F3D91] hover:bg-[#E8F0FE] rounded-lg px-3 py-1.5 border border-[#d4e3ff] flex items-center gap-1.5 self-start sm:self-auto touch-manipulation"
                           >
                             <MessageSquare className="h-3.5 w-3.5" />
                             <span>{lang === "fil" ? "Itanong kung paano sumali" : "Ask how to join"}</span>
@@ -876,14 +880,14 @@ export default function App() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-[#e5e8ef]">
                           <div>
-                            <span className="block text-[10px] uppercase font-bold text-[#6B7280] mb-1">{lang === "fil" ? "Prerequisite (Sino ang pwede?)" : "Prerequisite (Who can enroll?)"}</span>
+                             <span className="block text-[11px] uppercase font-bold text-[#6B7280] mb-1">{lang === "fil" ? "Prerequisite (Sino ang pwede?)" : "Prerequisite (Who can enroll?)"}</span>
                             <span className="block text-xs font-bold text-[#1A1A2E]">{course.entryReq}</span>
                           </div>
                           <div>
-                            <span className="block text-[10px] uppercase font-bold text-[#6B7280] mb-1">{lang === "fil" ? "Matututunang Kakayahan (Skills)" : "Skills You'll Learn"}</span>
+                             <span className="block text-[11px] uppercase font-bold text-[#6B7280] mb-1">{lang === "fil" ? "Matututunang Kakayahan (Skills)" : "Skills You'll Learn"}</span>
                             <div className="flex flex-wrap gap-1.5 mt-1.5">
                               {course.skillsAcquired.map((skill, idx) => (
-                                <span key={idx} className="bg-[#F8F9FC] text-[#6B7280] text-[10px] font-medium px-2 py-0.5 rounded border border-[#e5e8ef]">
+                                <span key={idx} className="bg-[#F8F9FC] text-[#6B7280] text-[11px] font-medium px-2 py-0.5 rounded border border-[#e5e8ef]">
                                   {skill}
                                 </span>
                               ))}
@@ -913,35 +917,35 @@ export default function App() {
               <button
                 id="preset-q-allowance"
                 onClick={() => handleSendChatMessage("May allowance po ba habang nag-aaral sa TESDA?")}
-                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-5 py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
+                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
               >
                 <DollarSign className="h-4 w-4 inline" /> {lang === "fil" ? "May daily allowance po ba?" : "Is there a daily allowance?"}
               </button>
               <button
                 id="preset-q-als"
                 onClick={() => handleSendChatMessage("Pwede po ba akong mag-TESDA kahit ALS Graduate lang ako?")}
-                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-5 py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
+                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
               >
                 <GraduationCap className="h-4 w-4 inline" /> {lang === "fil" ? "Pwede ba ang ALS graduate?" : "Is ALS graduate accepted?"}
               </button>
               <button
                 id="preset-q-docs"
                 onClick={() => handleSendChatMessage("Ano-ano po bang dokumento ang kailangan ko ihanda kapag mag-e-enroll?")}
-                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-5 py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
+                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
               >
                 <FileText className="h-4 w-4 inline" /> {lang === "fil" ? "Dokumentong kailangan?" : "Required documents?"}
               </button>
               <button
                 id="preset-q-nc"
                 onClick={() => handleSendChatMessage("Ano po ba ang makukuha kong certificate pagkatapos ng training?")}
-                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-5 py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
+                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
               >
                 <Award className="h-4 w-4 inline" /> {lang === "fil" ? "Ano ang National Certificate (NC)?" : "What is a National Certificate (NC)?"}
               </button>
             </div>
 
             {/* Chat Messages Log Frame */}
-            <div className="bg-white rounded-3xl border border-[#e5e8ef] shadow-[0_4px_32px_rgba(15,61,145,0.07)] overflow-hidden flex flex-col h-[60vh] sm:h-[600px]">
+            <div className="bg-white rounded-3xl border border-[#e5e8ef] shadow-[0_4px_32px_rgba(15,61,145,0.07)] overflow-hidden flex flex-col h-[60vh] min-h-[300px] sm:h-[600px]">
               
               {/* Profile Bar indicator */}
               <div className="bg-[#0F3D91] text-white px-4 sm:px-6 py-4 flex items-center justify-between border-b border-[#0F3D91]/20">
@@ -960,7 +964,7 @@ export default function App() {
                 <div className="flex items-center gap-3">
                   {/* Rate Limit Badge */}
                   {rateLimits.chat.remaining < 5 && (
-                    <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                    <div className={`flex sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${
                       rateLimits.chat.remaining > 2 
                         ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
                         : rateLimits.chat.remaining > 0 
@@ -970,8 +974,9 @@ export default function App() {
                       <span>{rateLimits.chat.remaining}/5 left</span>
                     </div>
                   )}
-                  <div className="text-xs text-white/60 text-right hidden sm:block">
-                    <span>{lang === "fil" ? "Rehiyon:" : "Region:"} {PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion}</span>
+                  <div className="text-xs text-white/60 text-right">
+                    <span className="sm:hidden">{PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name?.split(' - ')[0] || selectedRegion}</span>
+                    <span className="hidden sm:inline">{lang === "fil" ? "Rehiyon:" : "Region:"} {PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion}</span>
                   </div>
                 </div>
               </div>
@@ -991,7 +996,7 @@ export default function App() {
                       }`}
                     >
                       <div className="font-medium break-words">{msg.text}</div>
-                      <div className={`text-[10px] mt-2 ${msg.role === "user" ? "text-white/70" : "text-[#6B7280]"}`}>
+                      <div className={`text-[11px] mt-2 ${msg.role === "user" ? "text-white/70" : "text-[#6B7280]"}`}>
                         {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
@@ -1044,14 +1049,14 @@ export default function App() {
                       maxLength={500}
                     />
                     {/* Character Counter */}
-                    <div className="absolute right-2 bottom-1 text-[10px] text-[#6B7280]">
+                    <div className="absolute right-2 bottom-1 text-[11px] text-[#6B7280]">
                       {chatInput.length}/500
                     </div>
                   </div>
                   <button
                     type="submit"
                     disabled={isSendingMessage || !chatInput.trim() || chatInput.length > 500}
-                    className="rounded-xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white px-4 sm:px-5 py-2.5 sm:py-3 font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-[#E8F0FE] hover:shadow-lg flex items-center gap-2"
+                    className="rounded-xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white px-4 sm:px-5 py-2.5 sm:py-3 font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-[#E8F0FE] hover:shadow-lg flex items-center gap-2 touch-manipulation"
                   >
                     <Send className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span className="hidden sm:inline">Send</span>
@@ -1095,7 +1100,7 @@ export default function App() {
                     <span className="bg-[#E8F0FE] shrink-0 text-xs px-2 py-0.5 rounded-md text-[#0F3D91] border border-[#d4e3ff]">{lang === "fil" ? `T${idx + 1}` : `Q${idx + 1}`}</span>
                     <span>{faq.question}</span>
                   </h3>
-                  <div className="pl-9 text-xs sm:text-sm text-[#6B7280] leading-relaxed mt-2 font-medium">
+                  <div className="pl-5 sm:pl-9 text-xs sm:text-sm text-[#6B7280] leading-relaxed mt-2 font-medium">
                     {faq.answer}
                   </div>
                 </div>
@@ -1160,7 +1165,7 @@ export default function App() {
                   toggleSkillTag={toggleSkillTag}
                   QUICK_INTERESTS={QUICK_INTERESTS}
                   QUICK_SKILLS={QUICK_SKILLS}
-                  onGoToFullAssessment={() => setCurrentTab("match")}
+                  onGoToFullAssessment={() => navigate("/match")}
                 />
 
                 <button
@@ -1168,7 +1173,7 @@ export default function App() {
                   type="button"
                   onClick={handleSubmitJobMatching}
                   disabled={isJobMatching || !isJobProfileReady}
-                  className={`w-full rounded-xl py-4 text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 ${
+                  className={`w-full rounded-xl py-4 text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 touch-manipulation ${
                     isJobMatching
                       ? "bg-[#fffbe6] text-[#92710a] cursor-wait border-2 border-[#FCD116]"
                       : !isJobProfileReady
@@ -1282,8 +1287,8 @@ export default function App() {
                               </span>
                               <div className="mt-3 space-y-3">
                                 {job.requiredCourses.map((course: any, cidx: number) => (
-                                  <div key={cidx} className="flex items-center justify-between bg-[#F8F9FC] rounded-2xl p-3 border border-[#e5e8ef] group-hover:border-[#d4e3ff] transition-all">
-                                    <div className="flex items-center gap-3">
+                                  <div key={cidx} className="flex flex-wrap items-center justify-between gap-2 bg-[#F8F9FC] rounded-2xl p-3 border border-[#e5e8ef] group-hover:border-[#d4e3ff] transition-all">
+                                     <div className="flex items-center gap-3 min-w-0">
                                       <div className="p-2 rounded-xl bg-[#E8F0FE] text-[#0F3D91]">
                                         <GraduationCap className="h-5 w-5" />
                                       </div>
@@ -1296,9 +1301,9 @@ export default function App() {
                                       onClick={() => {
                                         const sector = SECTORS_DATA.find((s: any) => s.id === course.sectorId);
                                         if (sector) setSelectedSector(sector);
-                                        setCurrentTab("explorer");
+                                        navigate("/explorer");
                                       }}
-                                      className="text-sm text-[#0F3D91] font-bold hover:text-[#0F3D91] px-3 py-2 rounded-xl hover:bg-[#E8F0FE] transition-all border border-[#d4e3ff]"
+                                      className="text-sm text-[#0F3D91] font-bold hover:text-[#0F3D91] px-3 py-2 rounded-xl hover:bg-[#E8F0FE] transition-all border border-[#d4e3ff] touch-manipulation"
                                     >
                                       {lang === "fil" ? "Detalye" : "Details"}
                                     </button>
@@ -1310,7 +1315,7 @@ export default function App() {
 
                           <button
                             onClick={() => askChatAboutJob(job.jobTitle, job.requiredCourses)}
-                            className="w-full rounded-2xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-bold text-sm py-3 text-center flex items-center justify-center gap-2 shadow-md shadow-[#E8F0FE] hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                            className="w-full rounded-2xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-bold text-sm py-3 text-center flex items-center justify-center gap-2 shadow-md shadow-[#E8F0FE] hover:shadow-lg hover:-translate-y-0.5 transition-all touch-manipulation"
                           >
                             <MessageSquare className="h-4 w-4" />
                             <span>{lang === "fil" ? "Kausapin ang Counselor" : "Chat with Counselor"}</span>
@@ -1323,7 +1328,7 @@ export default function App() {
 
                 {/* FAQ Tip */}
                 {jobMatchResult.faqTip && (
-                  <div className="bg-[#0F3D91] rounded-3xl p-8 text-white border border-[#0F3D91]/20 shadow-[0_4px_32px_rgba(15,61,145,0.15)] relative overflow-hidden">
+                  <div className="bg-[#0F3D91] rounded-3xl p-5 md:p-8 text-white border border-[#0F3D91]/20 shadow-[0_4px_32px_rgba(15,61,145,0.15)] relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-40 h-40 bg-[#FCD116]/10 rounded-full blur-3xl" />
                     <div className="relative flex items-start gap-4">
                       <div className="p-3 rounded-xl bg-white/10">
@@ -1363,7 +1368,7 @@ export default function App() {
           </div>
         </div>
       </footer>
-      <BottomNav currentTab={currentTab} setCurrentTab={setCurrentTab} lang={lang} />
+      <BottomNav lang={lang} />
     </div>
   );
 }

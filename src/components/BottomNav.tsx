@@ -1,4 +1,5 @@
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Home,
   Sparkles,
@@ -8,20 +9,21 @@ import {
 } from "lucide-react";
 
 interface BottomNavProps {
-  currentTab: string;
-  setCurrentTab: (tab: string) => void;
   lang: "fil" | "en";
 }
 
 const tabs = [
-  { id: "landing", icon: Home, label: "Home", labelFil: "Simula" },
-  { id: "match", icon: Sparkles, label: "AI Match", labelFil: "AI Match" },
-  { id: "explorer", icon: BookOpen, label: "Courses", labelFil: "Kurso" },
-  { id: "jobs", icon: Briefcase, label: "Jobs", labelFil: "Trabaho" },
-  { id: "chat", icon: MessageSquare, label: "Chat", labelFil: "Chat" },
+  { id: "landing", path: "/", icon: Home, label: "Home", labelFil: "Simula" },
+  { id: "match", path: "/match", icon: Sparkles, label: "AI Match", labelFil: "AI Match" },
+  { id: "explorer", path: "/explorer", icon: BookOpen, label: "Courses", labelFil: "Kurso" },
+  { id: "jobs", path: "/jobs", icon: Briefcase, label: "Jobs", labelFil: "Trabaho" },
+  { id: "chat", path: "/chat", icon: MessageSquare, label: "Chat", labelFil: "Chat" },
 ];
 
-export default function BottomNav({ currentTab, setCurrentTab, lang }: BottomNavProps) {
+export default function BottomNav({ lang }: BottomNavProps) {
+  const location = useLocation();
+  const currentTab = location.pathname === "/" ? "landing" : location.pathname.slice(1);
+
   return (
     <nav
       id="bottom-nav"
@@ -33,10 +35,9 @@ export default function BottomNav({ currentTab, setCurrentTab, lang }: BottomNav
           const Icon = tab.icon;
           const isActive = currentTab === tab.id;
           return (
-            <button
+            <Link
               key={tab.id}
-              type="button"
-              onClick={() => setCurrentTab(tab.id)}
+              to={tab.path}
               className={`flex flex-col items-center justify-center gap-0.5 w-full h-full transition-all touch-manipulation active-tap ${
                 isActive ? "text-[#0F3D91]" : "text-[#6B7280]"
               }`}
@@ -53,10 +54,10 @@ export default function BottomNav({ currentTab, setCurrentTab, lang }: BottomNav
                   strokeWidth={isActive ? 2.5 : 2}
                 />
               </div>
-              <span className="text-[10px] font-semibold leading-none">
+              <span className="text-[11px] font-semibold leading-none">
                 {lang === "fil" ? tab.labelFil : tab.label}
               </span>
-            </button>
+            </Link>
           );
         })}
       </div>

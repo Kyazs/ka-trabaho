@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   Sparkles,
   Cpu,
@@ -18,7 +19,6 @@ import {
 
 interface LandingPageProps {
   lang: "fil" | "en";
-  setCurrentTab: (tab: string) => void;
 }
 
 const copy = {
@@ -168,7 +168,7 @@ const TONE_STYLES: Record<string, { bg: string; text: string; border: string }> 
   purple: { bg: "bg-[#f3f0ff]", text: "text-[#5b21b6]", border: "border-[#ddd6fe]" },
 };
 
-export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
+export default function LandingPage({ lang }: LandingPageProps) {
   const text = (obj: { fil: string; en: string }) => obj[lang];
 
   return (
@@ -209,19 +209,19 @@ export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 md:gap-4">
-              <button
-                onClick={() => setCurrentTab("match")}
+              <Link
+                to="/match"
                 className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-display font-bold text-base px-6 md:px-7 py-3.5 md:py-4 rounded-[10px] transition-all hover:-translate-y-0.5 active:scale-95 touch-manipulation"
               >
                 <Sparkles className="h-5 w-5" aria-hidden="true" />
                 {text(copy.ctaPrimary)}
-              </button>
-              <button
-                onClick={() => setCurrentTab("explorer")}
+              </Link>
+              <Link
+                to="/explorer"
                 className="w-full sm:w-auto flex items-center justify-center gap-2 bg-transparent text-[#0F3D91] font-display font-semibold text-[15px] px-5 md:px-6 py-3.5 md:py-4 rounded-[10px] border-[1.5px] border-[#d4e3ff] hover:bg-[#E8F0FE] transition-all touch-manipulation"
               >
                 {text(copy.ctaSecondary)}
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -268,10 +268,10 @@ export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
                   <Cpu className="h-4 w-4" aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <strong className="block font-display font-bold text-sm text-[#0F3D91] truncate">
+                  <strong className="block font-display font-bold text-sm text-[#0F3D91] truncate" title="Computer Systems Servicing NC II">
                     Computer Systems Servicing NC II
                   </strong>
-                  <span className="block text-xs text-[#6B7280] truncate">
+                  <span className="block text-xs text-[#6B7280] truncate" title={text(copy.qCardMatchLocation)}>
                     {text(copy.qCardMatchLocation)}
                   </span>
                 </div>
@@ -332,7 +332,7 @@ export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
                   key={idx}
                   className="relative bg-white border border-[#e5e8ef] rounded-2xl p-5 md:p-6 overflow-hidden"
                 >
-                  <span className="absolute -top-2.5 right-3 font-display text-[72px] font-black text-[#E8F0FE] leading-none z-0 select-none">
+                  <span className="absolute -top-2.5 right-3 font-display text-[48px] md:text-[72px] font-black text-[#E8F0FE] leading-none z-0 select-none">
                     {idx + 1}
                   </span>
                   <div
@@ -452,13 +452,13 @@ export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
           <p className="text-base md:text-[17px] text-[#6B7280] max-w-lg mx-auto mb-6 md:mb-8">
             {text(copy.ctaSub)}
           </p>
-          <button
-            onClick={() => setCurrentTab("match")}
+          <Link
+            to="/match"
             className="inline-flex items-center justify-center gap-2 bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-display font-bold text-base md:text-[17px] px-7 md:px-9 py-3.5 md:py-4 rounded-xl transition-all hover:-translate-y-0.5 active:scale-95 touch-manipulation"
           >
             <Sparkles className="h-5 w-5" aria-hidden="true" />
             {text(copy.ctaButton)}
-          </button>
+          </Link>
         </section>
       </div>
 

@@ -253,17 +253,17 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                 <label className="block text-sm font-bold uppercase tracking-wider text-[#6B7280] mb-3">
                   {lang === "fil" ? "Ilang Taon Ka Na? (Para sa edad 15-24)" : "Your Age (15-24)"}
                 </label>
-                <div className="flex items-center gap-4">
-                  <input 
-                    id="input-profile-age-slider"
-                    type="range" 
-                    min="15" 
-                    max="24" 
-                    value={age}
-                    onChange={(e) => setAge(Math.min(24, Math.max(15, parseInt(e.target.value) || 18)))}
-                    className="w-full h-3 bg-[#E8F0FE] rounded-lg appearance-none cursor-pointer accent-[#0F3D91]"
-                  />
-                  <span className="flex-shrink-0 inline-block bg-[#E8F0FE] text-[#0F3D91] font-bold px-4 py-2 rounded-xl text-base border border-[#d4e3ff]">
+                 <div className="flex flex-col sm:flex-row items-center gap-4">
+                   <input 
+                     id="input-profile-age-slider"
+                     type="range" 
+                     min="15" 
+                     max="24" 
+                     value={age}
+                     onChange={(e) => setAge(Math.min(24, Math.max(15, parseInt(e.target.value) || 18)))}
+                     className="w-full h-3 bg-[#E8F0FE] rounded-lg appearance-none cursor-pointer accent-[#0F3D91]"
+                   />
+                   <span className="flex-shrink-0 inline-block bg-[#E8F0FE] text-[#0F3D91] font-bold px-4 py-2 rounded-xl text-base border border-[#d4e3ff]">
                     {age} {lang === "fil" ? "taong gulang" : "years old"}
                   </span>
                 </div>
@@ -287,7 +287,8 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                   <option value="Senior High School Graduate">Senior High School Graduate (Grade 12 Completer)</option>
                   <option value="ALS Graduate">ALS (Alternative Learning System) Graduate</option>
                   <option value="Vocational College Undergraduate">College Level Undergrad / Drop-out</option>
-                </select>
+                  <option value="College Graduate">College Graduate</option>
+                 </select>
               </div>
 
               {/* Region selection */}
@@ -825,7 +826,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
             </div>
 
             {/* Enrollment Tips & Next Steps */}
-            <div className="bg-[#0F3D91] rounded-3xl p-8 text-white border border-[#0F3D91]/20 shadow-[0_4px_32px_rgba(15,61,145,0.15)] mt-10 relative overflow-hidden" id="matching-result-enrollment-card">
+            <div className="bg-[#0F3D91] rounded-3xl p-5 md:p-8 text-white border border-[#0F3D91]/20 shadow-[0_4px_32px_rgba(15,61,145,0.15)] mt-10 relative overflow-hidden" id="matching-result-enrollment-card">
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#FCD116]/10 rounded-full blur-3xl" />
               
               <div className="relative flex flex-col md:flex-row gap-8 items-start justify-between">
@@ -921,7 +922,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
           <button
             onClick={prevStep}
             disabled={isFirstStep}
-            className={`flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-all ${
+            className={`flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-all touch-manipulation ${
               isFirstStep
                 ? 'bg-[#F8F9FC] text-[#e5e8ef] cursor-not-allowed'
                 : 'bg-[#E8F0FE] text-[#0F3D91] hover:bg-[#d4e3ff] shadow-sm hover:shadow-md'
@@ -938,7 +939,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
           {!isReview && (
             <button
               onClick={nextStep}
-              className={`flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-all ${
+              className={`flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-all touch-manipulation ${
                 isNextValid
                   ? 'bg-[#0F3D91] text-white hover:bg-[#1a52c4] shadow-lg hover:shadow-xl hover:-translate-y-0.5'
                   : 'bg-[#F8F9FC] text-[#6B7280] cursor-not-allowed opacity-50'

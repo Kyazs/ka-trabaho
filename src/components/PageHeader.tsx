@@ -90,7 +90,7 @@ export default function PageHeader({
           <button
             type="button"
             onClick={action.onClick}
-            className={`hidden md:flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-all touch-manipulation ${ACTION_BG[accent]} ${ACTION_TEXT[accent]} ${ACTION_HOVER_BG[accent]}`}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-all touch-manipulation ${ACTION_BG[accent]} ${ACTION_TEXT[accent]} ${ACTION_HOVER_BG[accent]}`}
           >
             {action.icon && <action.icon className="h-4 w-4" aria-hidden="true" />}
             {action.label}
