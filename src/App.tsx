@@ -5,8 +5,6 @@ import {
   MapPin, 
   GraduationCap, 
   Search, 
-  ChevronRight, 
-  ArrowRight, 
   MessageSquare, 
   HelpCircle, 
   Send, 
@@ -24,9 +22,11 @@ import {
   HeartPulse,
   Info,
   FileText,
-  AlertTriangle
+  AlertTriangle,
+  type LucideIcon
 } from "lucide-react";
 import Navbar from "./components/Navbar";
+import PageHeader from "./components/PageHeader";
 import BottomNav from "./components/BottomNav";
 import LandingPage from "./components/LandingPage";
 import AssessmentWizard from "./components/AssessmentWizard";
@@ -160,6 +160,62 @@ export default function App() {
     { label: "Speaking with customers", category: "tourism" },
     { label: "Heavy physical tasks", category: "construction" }
   ];
+
+  const PAGE_HEADER_CONTENT: Record<
+    "match" | "explorer" | "chat" | "jobs" | "faq",
+    {
+      title: { fil: string; en: string };
+      subtitle: { fil: string; en: string };
+      icon: LucideIcon;
+      accent: "blue" | "amber" | "emerald";
+    }
+  > = {
+    match: {
+      title: { fil: "AI Pagtutugma ng Kurso", en: "AI Course Matcher" },
+      subtitle: {
+        fil: "Sagutin ang ilang tanong para makita ang pinaka-angkop na TESDA course para sa iyo.",
+        en: "Answer a few questions to find your best-fit TESDA course.",
+      },
+      icon: Sparkles,
+      accent: "blue",
+    },
+    explorer: {
+      title: { fil: "Sektor at Kurso", en: "Course & Job Explorer" },
+      subtitle: {
+        fil: "Tingnan ang mga accredited na programa at demand sa trabaho sa iyong lugar.",
+        en: "Browse accredited programs and see local job demand.",
+      },
+      icon: Search,
+      accent: "amber",
+    },
+    chat: {
+      title: { fil: "Kausapin si Ka-TrabaHO", en: "Chat with Ka-TrabaHO" },
+      subtitle: {
+        fil: "Magtanong tungkol sa TESDA, scholarship, at requirements.",
+        en: "Ask anything about TESDA, scholarships, and requirements.",
+      },
+      icon: MessageSquare,
+      accent: "emerald",
+    },
+    jobs: {
+      title: { fil: "Hanapin ang Trabaho", en: "Job Market" },
+      subtitle: {
+        fil: "Alamin ang mga high-demand na trabahong akma sa iyong profile.",
+        en: "Find high-demand roles matched to your profile.",
+      },
+      icon: Briefcase,
+      accent: "amber",
+    },
+    faq: {
+      title: { fil: "Mga Karaniwang Katanungan", en: "Frequently Asked Questions" },
+      subtitle: {
+        fil: "Mga mabilisang sagot tungkol sa TESDA programs.",
+        en: "Quick answers about TESDA programs.",
+      },
+      icon: HelpCircle,
+      accent: "blue",
+    },
+  };
 
   const toggleInterestTag = (interest: string) => {
     if (customInterests.includes(interest)) {
@@ -520,6 +576,27 @@ export default function App() {
 
   const filteredSectors = getFilteredSectors();
 
+  const renderPageHeader = (tab: keyof typeof PAGE_HEADER_CONTENT) => {
+    const config = PAGE_HEADER_CONTENT[tab];
+    return (
+      <PageHeader
+        title={config.title[lang]}
+        subtitle={config.subtitle[lang]}
+        icon={config.icon}
+        accent={config.accent}
+        action={
+          tab === "match"
+            ? {
+                label: lang === "fil" ? "Magsimula" : "Start",
+                onClick: startAiMatching,
+                icon: Sparkles,
+              }
+            : undefined
+        }
+      />
+    );
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 overflow-x-hidden" id="main-root-container">
       {/* Navbar section */}
@@ -538,55 +615,13 @@ export default function App() {
         ) : (
           <>
         
-        {/* Banner Informational Header */}
-        <div id="welcome-alert-banner" className="mb-10 rounded-3xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-8 shadow-2xl text-white sm:p-10 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/20 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
-          
-          <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
-            <div className="max-w-3xl">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold uppercase tracking-wider backdrop-blur-md border border-white/20">
-                <Sparkles className="h-4 w-4 animate-pulse-soft" /> Special AI Guidance for OSYs & Youth (Ages 15-24)
-              </span>
-              <h1 className="mt-6 font-display text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl leading-tight">
-                {lang === "fil" 
-                  ? "I-Match ang Iyong Galing sa Libreng Kurso ng TESDA!" 
-                  : "Match Your Talents to High-Demand Free TESDA Courses!"
-                }
-              </h1>
-              <p className="mt-4 text-base text-blue-100 sm:text-lg leading-relaxed max-w-2xl">
-                {lang === "fil"
-                  ? "Huwag hayaang maging balakid ang kahirapan o kawalan ng diploma sa ngayon. Sa tulong ng ating AI Counselor, maghanap ng de-kalidad na kurso na may kaakibat na trabaho sa inyong rehiyon—at may kaukulang daily allowance!"
-                  : "Find vocational routes mapped directly to local vacancies and salaries. Completely free under government scholarships with daily stipends."
-                }
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-4 shrink-0">
-              <button 
-                id="banner-profile-start"
-                onClick={startAiMatching}
-                className="rounded-2xl bg-white px-6 py-4 text-base font-bold text-blue-700 shadow-xl hover:bg-blue-50 hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center gap-2"
-              >
-                <Sparkles className="h-5 w-5" />
-                {lang === "fil" ? "Simulan ang AI Matching" : "Start AI Assessment"}
-              </button>
-              <button 
-                id="banner-chat-assistant"
-                onClick={() => setCurrentTab("chat")}
-                className="rounded-2xl bg-white/15 border border-white/30 px-6 py-4 text-base font-bold text-white hover:bg-white/25 hover:-translate-y-1 transition-all flex items-center gap-2 backdrop-blur-sm"
-              >
-                <MessageSquare className="h-5 w-5" />
-                {lang === "fil" ? "Kausapin si Ka-TrabaHO" : "Talk to Counselor"}
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* ======================================= */}
         {/* TAB 1: AI JOB & COURSE MATCHER */}
         {/* ======================================= */}
         {currentTab === "match" && (
           <div id="tab-matching-content" className="space-y-8 animate-fade-in">
+            {renderPageHeader("match")}
             <AssessmentWizard
               age={age}
               setAge={setAge}
@@ -643,7 +678,7 @@ export default function App() {
         {/* ======================================= */}
         {currentTab === "explorer" && (
           <div id="tab-explorer-content" className="space-y-8 animate-fade-in">
-            
+            {renderPageHeader("explorer")}
             {/* Search Input Filter */}
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm max-w-xl">
               <label className="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2" htmlFor="input-explorer-search">
@@ -881,20 +916,7 @@ export default function App() {
         {/* ======================================= */}
         {currentTab === "chat" && (
           <div id="tab-chat-content" className="space-y-8 animate-fade-in max-w-5xl mx-auto">
-            
-            {/* Header chat instruction */}
-            <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-lg text-center">
-              <span className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-800 font-bold text-sm px-4 py-2 rounded-full mb-4 border border-emerald-200">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Live AI Companion Assistance
-              </span>
-              <h2 className="font-display font-black text-2xl text-slate-900">
-                Kausapin si Ka-TrabaHO
-              </h2>
-              <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed mt-3">
-                Kumpanero mo sa pagpili at pag-apply sa TESDA. Huwag mahiyang magtanong gamit ang sariling wika o Taglish ukol sa matrikula, matitirhan, o allowance.
-              </p>
-            </div>
-
+            {renderPageHeader("chat")}
             {/* Quick pre-seeded questions */}
             <div className="flex flex-wrap gap-3 justify-center" id="frequent-questions-row">
               <button
@@ -1074,19 +1096,7 @@ export default function App() {
         {/* ======================================= */}
         {currentTab === "faq" && (
           <div id="tab-faq-content" className="space-y-6 animate-fade-in max-w-5xl mx-auto">
-            
-            <div className="text-center max-w-md mx-auto mb-8">
-              <span className="p-2 rounded-xl bg-indigo-50 text-indigo-700 inline-block mb-3">
-                <HelpCircle className="h-6 w-6" />
-              </span>
-              <h2 className="font-display font-black text-xl text-slate-900">
-                Mga Karaniwang Katanungan (FAQ)
-              </h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Kabilang dito ang mga detalyadong sagot tungkol sa TESDA scholarships, bayarin, at paano makapagsimula agad.
-              </p>
-            </div>
-
+            {renderPageHeader("faq")}
             <div className="space-y-4" id="faq-accordions-container">
               {TESDA_FAQ.map((faq, idx) => (
                 <div key={idx} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-2">
@@ -1127,22 +1137,9 @@ export default function App() {
         {/* ======================================= */}
         {currentTab === "jobs" && (
           <div id="tab-jobs-content" className="space-y-8 animate-fade-in">
+            {renderPageHeader("jobs")}
             {/* Job Matching Form */}
             <div className="max-w-2xl mx-auto bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
-              <div className="flex items-center gap-2.5 pb-4 mb-6 border-b border-slate-100">
-                <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
-                  <Briefcase className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="font-display font-bold text-lg text-slate-900">
-                    {lang === "fil" ? "Hanapin ang Angkop na Trabaho" : "Find Matching Jobs"}
-                  </h2>
-                  <p className="text-xs text-slate-500">
-                    {lang === "fil" ? "Gamitin ang AI para malaman ang mga trabahong akma sa iyong profile" : "Let AI find jobs that match your skills and interests"}
-                  </p>
-                </div>
-              </div>
-
               <div className="space-y-4">
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                   <p className="text-sm text-slate-700">
