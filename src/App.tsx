@@ -30,24 +30,24 @@ import PageHeader from "./components/PageHeader";
 import BottomNav from "./components/BottomNav";
 import LandingPage from "./components/LandingPage";
 import AssessmentWizard from "./components/AssessmentWizard";
-import { PHILIPPINES_REGIONS, SECTORS_DATA, TESDA_FAQ, Sector, TesdaCourse, JobRole, RegionInfo } from "./data/tesdaData";
+import { PHILIPPINES_REGIONS, SECTORS_DATA, TESDA_FAQ, Sector } from "./data/tesdaData";
 import { UserProfile, MatchingResult, ChatMessage } from "./types";
 
 // Dynamic mapper for Sector icons
 const getSectorIcon = (iconName: string) => {
   switch (iconName) {
     case "Laptop":
-      return <Laptop className="h-6 w-6 text-blue-600" />;
+      return <Laptop className="h-6 w-6 text-[#0F3D91]" />;
     case "Utensils":
-      return <Utensils className="h-6 w-6 text-emerald-600" />;
+      return <Utensils className="h-6 w-6 text-[#16a34a]" />;
     case "Hammer":
-      return <Hammer className="h-6 w-6 text-amber-600" />;
+      return <Hammer className="h-6 w-6 text-[#FCD116]" />;
     case "Sprout":
-      return <Sprout className="h-6 w-6 text-green-600" />;
+      return <Sprout className="h-6 w-6 text-[#16a34a]" />;
     case "HeartPulse":
-      return <HeartPulse className="h-6 w-6 text-rose-600" />;
+      return <HeartPulse className="h-6 w-6 text-[#0F3D91]" />;
     default:
-      return <GraduationCap className="h-6 w-6 text-blue-600" />;
+      return <GraduationCap className="h-6 w-6 text-[#0F3D91]" />;
   }
 };
 
@@ -598,7 +598,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 overflow-x-hidden" id="main-root-container">
+    <div className="min-h-screen bg-[#F8F9FC] font-sans text-[#1A1A2E] overflow-x-hidden" id="main-root-container">
       {/* Navbar section */}
       <Navbar 
         currentTab={currentTab} 
@@ -680,19 +680,19 @@ export default function App() {
           <div id="tab-explorer-content" className="space-y-8 animate-fade-in">
             {renderPageHeader("explorer")}
             {/* Search Input Filter */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm max-w-xl">
-              <label className="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2" htmlFor="input-explorer-search">
+            <div className="bg-white rounded-2xl border border-[#e5e8ef] p-5 shadow-[0_4px_32px_rgba(15,61,145,0.07)] max-w-xl">
+              <label className="block text-xs font-bold uppercase text-[#6B7280] tracking-wider mb-2" htmlFor="input-explorer-search">
                 {lang === "fil" ? "Mabilisang Paghahanap sa Sektor o Kurso" : "Search Vocational Database"}
               </label>
               <div className="relative">
-                <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-[#6B7280]" />
                 <input
                   id="input-explorer-search"
                   type="text"
                   placeholder={lang === "fil" ? "I-type e.g., computer, barista, welding, NC II..." : "Type keywords like welding, cookery..."}
                   value={explorerQuery}
                   onChange={(e) => setExplorerQuery(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-3 text-sm focus:bg-white focus:border-blue-500 font-medium"
+                  className="w-full rounded-xl border border-[#e5e8ef] bg-white pl-10 pr-4 py-3 text-sm focus:bg-white focus:border-[#0F3D91] focus:ring-3 focus:ring-[#E8F0FE] font-medium transition-all"
                 />
               </div>
             </div>
@@ -705,8 +705,8 @@ export default function App() {
                   onClick={() => setSelectedSector(sector)}
                   className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
                     selectedSector.id === sector.id
-                      ? "bg-blue-600 text-white shadow-sm"
-                      : "bg-white border border-slate-200 text-slate-600"
+                      ? "bg-[#0F3D91] text-white shadow-sm"
+                      : "bg-white border border-[#e5e8ef] text-[#1A1A2E]"
                   }`}
                 >
                   {sector.name}
@@ -718,7 +718,7 @@ export default function App() {
               
               {/* Sector Selection Grid Left */}
               <div id="explorer-left-sectors" className="hidden lg:block lg:col-span-4 space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 pl-1 mb-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7280] pl-1 mb-2">
                   {lang === "fil" ? "Pumili ng Sektor na Gusto:" : "Choose a Vocational Sector:"}
                 </h3>
                 
@@ -731,12 +731,12 @@ export default function App() {
                       onClick={() => setSelectedSector(sector)}
                       className={`w-full text-left rounded-xl p-4 border transition-all flex items-start gap-3.5 ${
                         selectedSector.id === sector.id
-                          ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-100"
-                          : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                          ? "bg-[#0F3D91] text-white border-[#0F3D91] shadow-md shadow-[#E8F0FE]"
+                          : "bg-white text-[#1A1A2E] border-[#e5e8ef] hover:bg-[#E8F0FE]"
                       }`}
                     >
                       <div className={`p-2.5 rounded-lg shrink-0 ${
-                        selectedSector.id === sector.id ? "bg-white/10 text-white" : "bg-slate-100 text-slate-600"
+                        selectedSector.id === sector.id ? "bg-white/10 text-white" : "bg-[#E8F0FE] text-[#0F3D91]"
                       }`}>
                         {getSectorIcon(sector.iconName)}
                       </div>
@@ -745,7 +745,7 @@ export default function App() {
                           {sector.name}
                         </span>
                         <span className={`block text-[11px] mt-1.5 leading-normal ${
-                          selectedSector.id === sector.id ? "text-blue-100" : "text-slate-500"
+                          selectedSector.id === sector.id ? "text-white/80" : "text-[#6B7280]"
                         }`}>
                           {sector.courses.length} na accredited courses
                         </span>
@@ -754,13 +754,13 @@ export default function App() {
                   ))}
 
                   {filteredSectors.length === 0 && (
-                    <div className="text-center p-8 bg-slate-100/50 rounded-xl border border-dashed border-slate-200">
-                      <BadgeHelp className="h-8 w-8 text-slate-400 mx-auto mb-2" />
-                      <p className="text-xs text-slate-500 font-bold">Walang tumugmang sektor</p>
+                    <div className="text-center p-8 bg-[#F8F9FC] rounded-xl border border-dashed border-[#e5e8ef]">
+                      <BadgeHelp className="h-8 w-8 text-[#6B7280] mx-auto mb-2" />
+                      <p className="text-xs text-[#6B7280] font-bold">Walang tumugmang sektor</p>
                       <button 
                         id="btn-clear-search"
                         onClick={() => setExplorerQuery("")}
-                        className="mt-2 text-xs font-bold text-blue-600 decoration-dotted underline"
+                        className="mt-2 text-xs font-bold text-[#0F3D91] decoration-dotted underline"
                       >
                         I-clear ang filter
                       </button>
@@ -773,38 +773,38 @@ export default function App() {
               <div id="explorer-right-details" className="lg:col-span-8 space-y-6">
                 
                 {/* Sector Description Box */}
-                <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div className="bg-white rounded-2xl border border-[#e5e8ef] p-6 shadow-[0_4px_32px_rgba(15,61,145,0.07)]">
                   <div className="flex items-center gap-3.5 mb-3.5">
-                    <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                    <div className="p-3 bg-[#E8F0FE] text-[#0F3D91] rounded-xl">
                       {getSectorIcon(selectedSector.iconName)}
                     </div>
                     <div>
-                      <h2 className="font-display font-black text-xl text-slate-900">
+                      <h2 className="font-display font-black text-xl text-[#1A1A2E]">
                         {selectedSector.name}
                       </h2>
-                      <span className="inline-block bg-blue-50 text-blue-700 font-bold text-[10px] px-2.5 py-0.5 rounded-full mt-1 uppercase">
+                      <span className="inline-block bg-[#E8F0FE] text-[#0F3D91] font-bold text-[10px] px-2.5 py-0.5 rounded-full mt-1 uppercase border border-[#d4e3ff]">
                         Accredited Sector Program
                       </span>
                     </div>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#6B7280] leading-relaxed">
                     {selectedSector.description}
                   </p>
                 </div>
 
                 {/* Section Jobs mapped */}
                 <div>
-                  <h3 className="font-display font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
-                    <Briefcase className="h-4 w-4 text-blue-600" />
+                  <h3 className="font-display font-bold text-sm text-[#1A1A2E] mb-3 flex items-center gap-2">
+                    <Briefcase className="h-4 w-4 text-[#0F3D91]" />
                     Paghahanap ng Trabaho at Kita (Employment Demand Index)
                   </h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="explorer-jobs-list">
                     {selectedSector.jobs.map((job, idx) => (
-                      <div key={idx} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between">
+                      <div key={idx} className="bg-white border border-[#e5e8ef] rounded-2xl p-4 shadow-[0_4px_32px_rgba(15,61,145,0.07)] flex flex-col justify-between">
                         <div>
                           <div className="flex items-start justify-between gap-2">
-                            <h4 className="font-display font-bold text-xs text-slate-900 leading-tight">
+                            <h4 className="font-display font-bold text-xs text-[#1A1A2E] leading-tight">
                               {job.title}
                             </h4>
                             <span className={`flex-shrink-0 text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${
@@ -812,19 +812,19 @@ export default function App() {
                                 ? "bg-red-50 text-red-700 border-red-200" 
                                 : job.demandLevel === "High"
                                 ? "bg-amber-50 text-amber-700 border-amber-200"
-                                : "bg-indigo-50 text-indigo-700 border-indigo-200"
+                                : "bg-[#E8F0FE] text-[#0F3D91] border-[#d4e3ff]"
                             }`}>
                               {job.demandLevel} Demand
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                          <p className="text-[11px] text-[#6B7280] mt-2 leading-relaxed">
                             {job.description}
                           </p>
                         </div>
 
-                        <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center bg-slate-50/50 p-2.5 rounded-lg">
-                          <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Salary Estimate</span>
-                          <span className="font-mono text-xs font-bold text-slate-900">{job.averageSalary}</span>
+                        <div className="mt-4 pt-3 border-t border-[#e5e8ef] flex justify-between items-center bg-[#F8F9FC] p-2.5 rounded-lg">
+                          <span className="text-[10px] text-[#6B7280] block font-bold uppercase tracking-wider">Salary Estimate</span>
+                          <span className="font-mono text-xs font-bold text-[#1A1A2E]">{job.averageSalary}</span>
                         </div>
                       </div>
                     ))}
@@ -833,8 +833,8 @@ export default function App() {
 
                 {/* Courses detail tabs */}
                 <div id="explorer-courses-list" className="space-y-4">
-                  <h3 className="font-display font-bold text-sm text-slate-800 flex items-center gap-2">
-                    <GraduationCap className="h-4 w-4 text-blue-600" />
+                  <h3 className="font-display font-bold text-sm text-[#1A1A2E] flex items-center gap-2">
+                    <GraduationCap className="h-4 w-4 text-[#0F3D91]" />
                     Mga Accredited TESDA Program at Micro-Credentials
                   </h3>
 
@@ -843,23 +843,23 @@ export default function App() {
                       <div 
                         key={course.code} 
                         id={`course-card-${course.code}`}
-                        className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-all space-y-4"
+                        className="bg-white rounded-2xl border border-[#e5e8ef] p-5 shadow-[0_4px_32px_rgba(15,61,145,0.07)] hover:border-[#d4e3ff] transition-all space-y-4"
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                           <div className="flex items-center gap-2.5 flex-wrap">
-                            <span className="font-mono text-xs font-bold px-2 rounded-md bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+                            <span className="font-mono text-xs font-bold px-2 rounded-md bg-[#E8F0FE] text-[#0F3D91] border border-[#d4e3ff] shrink-0">
                               {course.code}
                             </span>
                             <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full shrink-0 ${
                               course.level === "Micro-credential" 
-                                ? "bg-purple-100 text-purple-800 border border-purple-200"
-                                : "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                                ? "bg-[#f3f0ff] text-[#5b21b6] border border-[#ddd6fe]"
+                                : "bg-[#E8F0FE] text-[#0F3D91] border border-[#d4e3ff]"
                             }`}>
                               {course.level}
                             </span>
-                            <span className="text-slate-300">|</span>
-                            <span className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-                              <Clock className="h-3.5 w-3.5 text-slate-400" />
+                            <span className="text-[#e5e8ef]">|</span>
+                            <span className="flex items-center gap-1.5 text-xs text-[#6B7280] font-medium">
+                              <Clock className="h-3.5 w-3.5 text-[#6B7280]" />
                               {course.duration}
                             </span>
                           </div>
@@ -867,7 +867,7 @@ export default function App() {
                           <button
                             id={`btn-explorer-engage-chat-${course.code}`}
                             onClick={() => askChatAboutCourse(course.code, course.name)}
-                            className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50/50 rounded-lg px-3 py-1.5 border border-blue-200 flex items-center gap-1.5 self-start sm:self-auto"
+                            className="text-xs font-bold text-[#0F3D91] hover:text-[#0F3D91] hover:bg-[#E8F0FE] rounded-lg px-3 py-1.5 border border-[#d4e3ff] flex items-center gap-1.5 self-start sm:self-auto"
                           >
                             <MessageSquare className="h-3.5 w-3.5" />
                             <span>Itanong kung paano sumali</span>
@@ -875,24 +875,24 @@ export default function App() {
                         </div>
 
                         <div>
-                          <h4 className="font-display font-bold text-sm sm:text-base text-slate-900">
+                          <h4 className="font-display font-bold text-sm sm:text-base text-[#1A1A2E]">
                             {course.name}
                           </h4>
-                          <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                          <p className="text-xs text-[#6B7280] mt-2 leading-relaxed">
                             {course.description}
                           </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-slate-100">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-[#e5e8ef]">
                           <div>
-                            <span className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Prerequisite (Sino ang pwede?)</span>
-                            <span className="block text-xs font-bold text-slate-700">{course.entryReq}</span>
+                            <span className="block text-[10px] uppercase font-bold text-[#6B7280] mb-1">Prerequisite (Sino ang pwede?)</span>
+                            <span className="block text-xs font-bold text-[#1A1A2E]">{course.entryReq}</span>
                           </div>
                           <div>
-                            <span className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Matututunang Kakayahan (Skills)</span>
+                            <span className="block text-[10px] uppercase font-bold text-[#6B7280] mb-1">Matututunang Kakayahan (Skills)</span>
                             <div className="flex flex-wrap gap-1.5 mt-1.5">
                               {course.skillsAcquired.map((skill, idx) => (
-                                <span key={idx} className="bg-slate-50 text-slate-600 text-[10px] font-medium px-2 py-0.5 rounded border border-slate-200">
+                                <span key={idx} className="bg-[#F8F9FC] text-[#6B7280] text-[10px] font-medium px-2 py-0.5 rounded border border-[#e5e8ef]">
                                   {skill}
                                 </span>
                               ))}
@@ -922,46 +922,46 @@ export default function App() {
               <button
                 id="preset-q-allowance"
                 onClick={() => handleSendChatMessage("May allowance po ba habang nag-aaral sa TESDA?")}
-                className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
+                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-5 py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
                 <DollarSign className="h-4 w-4 inline" /> May daily allowance po ba?
               </button>
               <button
                 id="preset-q-als"
                 onClick={() => handleSendChatMessage("Pwede po ba akong mag-TESDA kahit ALS Graduate lang ako?")}
-                className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
+                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-5 py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
                 <GraduationCap className="h-4 w-4 inline" /> Pwede ba ang ALS graduate?
               </button>
               <button
                 id="preset-q-docs"
                 onClick={() => handleSendChatMessage("Ano-ano po bang dokumento ang kailangan ko ihanda kapag mag-e-enroll?")}
-                className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
+                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-5 py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
                 <FileText className="h-4 w-4 inline" /> Dokumentong kailangan?
               </button>
               <button
                 id="preset-q-nc"
                 onClick={() => handleSendChatMessage("Ano po ba ang makukuha kong certificate pagkatapos ng training?")}
-                className="rounded-full bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 text-sm px-5 py-2.5 border border-blue-200 font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
+                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-5 py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5"
               >
                 <Award className="h-4 w-4 inline" /> Ano ang National Certificate (NC)?
               </button>
             </div>
 
             {/* Chat Messages Log Frame */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col h-[60vh] sm:h-[600px]">
+            <div className="bg-white rounded-3xl border border-[#e5e8ef] shadow-[0_4px_32px_rgba(15,61,145,0.07)] overflow-hidden flex flex-col h-[60vh] sm:h-[600px]">
               
               {/* Profile Bar indicator */}
-              <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-4 sm:px-6 py-4 flex items-center justify-between border-b border-slate-700">
+              <div className="bg-[#0F3D91] text-white px-4 sm:px-6 py-4 flex items-center justify-between border-b border-[#0F3D91]/20">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 font-black text-sm text-white shadow-lg">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FCD116] font-black text-sm text-[#1A1A2E] shadow-lg">
                     KT
                   </div>
                   <div>
                     <span className="block text-sm font-bold leading-tight">Ka-TrabaHO AI Companion</span>
-                    <span className="block text-xs text-emerald-400 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Handang tumulong ngayon
+                    <span className="block text-xs text-white/80 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" /> Handang tumulong ngayon
                     </span>
                   </div>
                 </div>
@@ -979,14 +979,14 @@ export default function App() {
                       <span>{rateLimits.chat.remaining}/5 left</span>
                     </div>
                   )}
-                  <div className="text-xs text-slate-400 text-right hidden sm:block">
+                  <div className="text-xs text-white/60 text-right hidden sm:block">
                     <span>Rehiyon: {PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion}</span>
                   </div>
                 </div>
               </div>
 
               {/* Message log */}
-              <div id="chat-messages-scrollarea" className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 bg-gradient-to-b from-slate-50/50 to-white">
+              <div id="chat-messages-scrollarea" className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 bg-[#F8F9FC]">
                 {chatMessages.map((msg) => (
                   <div
                     key={msg.id}
@@ -995,12 +995,12 @@ export default function App() {
                     <div
                       className={`rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm leading-relaxed max-w-[80%] sm:max-w-[75%] shadow-md ${
                         msg.role === "user"
-                          ? "bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-tr-none"
-                          : "bg-white text-slate-800 border border-slate-200 rounded-tl-none whitespace-pre-line"
+                          ? "bg-[#0F3D91] text-white rounded-tr-none"
+                          : "bg-white text-[#1A1A2E] border border-[#e5e8ef] rounded-tl-none whitespace-pre-line"
                       }`}
                     >
                       <div className="font-medium break-words">{msg.text}</div>
-                      <div className={`text-[10px] mt-2 ${msg.role === "user" ? "text-blue-200" : "text-slate-400"}`}>
+                      <div className={`text-[10px] mt-2 ${msg.role === "user" ? "text-white/70" : "text-[#6B7280]"}`}>
                         {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
@@ -1008,14 +1008,14 @@ export default function App() {
                 ))}
                 {isSendingMessage && (
                   <div className="flex justify-start">
-                    <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-none px-4 sm:px-5 py-3 sm:py-4 shadow-md">
+                    <div className="bg-white border border-[#e5e8ef] rounded-2xl rounded-tl-none px-4 sm:px-5 py-3 sm:py-4 shadow-md">
                       <div className="flex items-center gap-2">
                         <div className="flex gap-1.5">
-                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#0F3D91] animate-bounce" style={{ animationDelay: '0ms' }} />
+                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#0F3D91] animate-bounce" style={{ animationDelay: '150ms' }} />
+                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#0F3D91] animate-bounce" style={{ animationDelay: '300ms' }} />
                         </div>
-                        <span className="text-sm text-slate-500">Nagsusulat si Ka-TrabaHO...</span>
+                        <span className="text-sm text-[#6B7280]">Nagsusulat si Ka-TrabaHO...</span>
                       </div>
                     </div>
                   </div>
@@ -1024,7 +1024,7 @@ export default function App() {
               </div>
 
               {/* Chat Input Area */}
-              <div className="border-t border-slate-200 bg-white p-3 sm:p-4">
+              <div className="border-t border-[#e5e8ef] bg-white p-3 sm:p-4">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -1045,22 +1045,22 @@ export default function App() {
                         }
                       }}
                       placeholder={lang === "fil" ? "Magtanong tungkol sa TESDA..." : "Ask about TESDA..."}
-                      className={`w-full rounded-xl border px-3 sm:px-4 py-2.5 sm:py-3 text-sm focus:bg-white focus:ring-2 transition-all ${
+                      className={`w-full rounded-xl border px-3 sm:px-4 py-2.5 sm:py-3 text-sm focus:bg-white focus:ring-3 transition-all ${
                         chatInputError 
                           ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-100' 
-                          : 'border-slate-200 bg-slate-50 focus:border-blue-500 focus:ring-blue-100'
+                          : 'border-[#e5e8ef] bg-white focus:border-[#0F3D91] focus:ring-[#E8F0FE]'
                       }`}
                       maxLength={500}
                     />
                     {/* Character Counter */}
-                    <div className="absolute right-2 bottom-1 text-[10px] text-slate-400">
+                    <div className="absolute right-2 bottom-1 text-[10px] text-[#6B7280]">
                       {chatInput.length}/500
                     </div>
                   </div>
                   <button
                     type="submit"
                     disabled={isSendingMessage || !chatInput.trim() || chatInput.length > 500}
-                    className="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 sm:px-5 py-2.5 sm:py-3 font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-200 hover:shadow-xl flex items-center gap-2"
+                    className="rounded-xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white px-4 sm:px-5 py-2.5 sm:py-3 font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-[#E8F0FE] hover:shadow-lg flex items-center gap-2"
                   >
                     <Send className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span className="hidden sm:inline">Send</span>
@@ -1099,12 +1099,12 @@ export default function App() {
             {renderPageHeader("faq")}
             <div className="space-y-4" id="faq-accordions-container">
               {TESDA_FAQ.map((faq, idx) => (
-                <div key={idx} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-2">
-                  <h3 className="font-display font-extrabold text-sm sm:text-base text-slate-900 flex items-start gap-2.5 leading-snug">
-                    <span className="bg-blue-50 shrink-0 text-xs px-2 py-0.5 rounded-md text-blue-700">T{idx + 1}</span>
+                <div key={idx} className="bg-white rounded-2xl border border-[#e5e8ef] p-5 shadow-[0_4px_32px_rgba(15,61,145,0.07)] space-y-2">
+                  <h3 className="font-display font-extrabold text-sm sm:text-base text-[#1A1A2E] flex items-start gap-2.5 leading-snug">
+                    <span className="bg-[#E8F0FE] shrink-0 text-xs px-2 py-0.5 rounded-md text-[#0F3D91] border border-[#d4e3ff]">T{idx + 1}</span>
                     <span>{faq.question}</span>
                   </h3>
-                  <div className="pl-9 text-xs sm:text-sm text-slate-600 leading-relaxed mt-2 font-medium">
+                  <div className="pl-9 text-xs sm:text-sm text-[#6B7280] leading-relaxed mt-2 font-medium">
                     {faq.answer}
                   </div>
                 </div>
@@ -1112,18 +1112,18 @@ export default function App() {
             </div>
 
             {/* Offline-apply reference block */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm mt-8 space-y-4">
-              <h3 className="font-display font-bold text-sm text-slate-900 flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-blue-600" />
+            <div className="bg-white rounded-2xl border border-[#e5e8ef] p-6 shadow-[0_4px_32px_rgba(15,61,145,0.07)] mt-8 space-y-4">
+              <h3 className="font-display font-bold text-sm text-[#1A1A2E] flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-[#0F3D91]" />
                 Handa ka na bang bumisita?
               </h3>
-              <p className="text-xs text-slate-600 leading-normal">
+              <p className="text-xs text-[#6B7280] leading-normal">
                 Maaari mong hanapin ang pinakamalapit na TESDA Regional o Provincial Office sa inyong komunidad. Magdala lamang ng panulat, iyong PSA birth certificate, at school credentials or ALS completer duplicate certificate. Sila ay bukas mula <strong>Lunes hanggang Biyernes (8:00 AM - 5:00 PM)</strong>.
               </p>
               
-              <div className="rounded-xl bg-blue-50/50 p-4 border border-blue-100 flex items-start gap-3">
-                <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-                <p className="text-xs text-blue-800 leading-relaxed">
+              <div className="rounded-xl bg-[#E8F0FE] p-4 border border-[#d4e3ff] flex items-start gap-3">
+                <Info className="h-5 w-5 text-[#0F3D91] shrink-0 mt-0.5" />
+                <p className="text-xs text-[#0F3D91] leading-relaxed">
                   <strong>Iskolarship Alert:</strong> Palaging itanong ang programang <strong>UAQTE</strong> o <strong>STPES (Special Training for Employment Program)</strong> dahil ang mga ito ay may kaakibat na kumpletong libreng gamit at daily allowances!
                 </p>
               </div>
@@ -1139,10 +1139,10 @@ export default function App() {
           <div id="tab-jobs-content" className="space-y-8 animate-fade-in">
             {renderPageHeader("jobs")}
             {/* Job Matching Form */}
-            <div className="max-w-2xl mx-auto bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+            <div className="max-w-2xl mx-auto bg-white rounded-2xl border border-[#e5e8ef] p-6 md:p-8 shadow-[0_4px_32px_rgba(15,61,145,0.07)]">
               <div className="space-y-4">
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                  <p className="text-sm text-slate-700">
+                <div className="bg-[#F8F9FC] rounded-xl p-4 border border-[#e5e8ef]">
+                  <p className="text-sm text-[#1A1A2E]">
                     <strong>Current Profile:</strong> {age} years old, {education}, {selectedRegion}
                     {customInterests.length > 0 && ` | Interests: ${customInterests.join(", ")}`}
                     {careerGoal && ` | Goal: ${careerGoal}`}
@@ -1156,15 +1156,15 @@ export default function App() {
                   disabled={isJobMatching || (customInterests.length === 0 && !careerGoal)}
                   className={`w-full rounded-xl py-4 text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 ${
                     isJobMatching
-                      ? "bg-amber-100 text-amber-700 cursor-wait border-2 border-amber-300"
+                      ? "bg-[#fffbe6] text-[#92710a] cursor-wait border-2 border-[#FCD116]"
                       : customInterests.length === 0 && !careerGoal
-                      ? "bg-slate-100 text-slate-400 cursor-not-allowed border-2 border-dashed border-slate-300"
-                      : "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 hover:shadow-xl hover:scale-[1.01]"
+                      ? "bg-[#F8F9FC] text-[#6B7280] cursor-not-allowed border-2 border-dashed border-[#e5e8ef]"
+                      : "bg-[#0F3D91] hover:bg-[#1a52c4] text-white hover:shadow-xl hover:scale-[1.01]"
                   }`}
                 >
                   {isJobMatching ? (
                     <>
-                      <span className="animate-spin inline-block h-5 w-5 border-2 border-emerald-500 border-t-transparent rounded-full" />
+                      <span className="animate-spin inline-block h-5 w-5 border-2 border-[#FCD116] border-t-transparent rounded-full" />
                       <span className="font-extrabold">{lang === "fil" ? "Sinusuri ng AI ang mga trabaho..." : "AI is analyzing jobs..."}</span>
                     </>
                   ) : (
@@ -1211,13 +1211,13 @@ export default function App() {
             {jobMatchResult && Array.isArray(jobMatchResult.recommendedJobs) && (
               <div id="job-results-section" className="space-y-8 max-w-5xl mx-auto">
                 <div className="text-center">
-                    <span className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 font-extrabold text-xs px-4 py-2 rounded-full border border-emerald-200 uppercase tracking-wider mb-4">
+                    <span className="inline-flex items-center gap-2 bg-[#f0fdf4] text-[#166534] font-extrabold text-xs px-4 py-2 rounded-full border border-[#bbf7d0] uppercase tracking-wider mb-4">
                     <CheckCircle2 className="h-4 w-4" /> Nakakita ng Tugma!
                   </span>
-                <h2 className="font-display font-extrabold text-2xl text-slate-900 sm:text-3xl">
+                <h2 className="font-display font-extrabold text-2xl text-[#1A1A2E] sm:text-3xl">
                 Ang Iyong AI Report sa Pagtutugma ng Kurso
               </h2>
-                  <p className="text-sm text-slate-500 mt-3 max-w-2xl mx-auto leading-relaxed">
+                  <p className="text-sm text-[#6B7280] mt-3 max-w-2xl mx-auto leading-relaxed">
                     {jobMatchResult.matchedSummary}
                   </p>
                 </div>
@@ -1226,65 +1226,65 @@ export default function App() {
                   {jobMatchResult.recommendedJobs.map((job: any, idx: number) => (
                     <div 
                       key={idx} 
-                      className="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden hover:shadow-2xl transition-all flex flex-col h-full card-hover group"
+                      className="bg-white rounded-2xl border border-[#e5e8ef] shadow-[0_4px_32px_rgba(15,61,145,0.07)] overflow-hidden hover:shadow-lg transition-all flex flex-col h-full card-hover group"
                     >
-                      <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 px-6 py-5 border-b border-slate-100 flex justify-between items-center">
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <div className="bg-[#F8F9FC] px-6 py-5 border-b border-[#e5e8ef] flex justify-between items-center">
+                        <span className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">
                           Job Match #{idx + 1}
                         </span>
-                        <span className="flex items-center gap-1 font-mono text-sm font-bold px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-800 border border-emerald-200">
+                        <span className="flex items-center gap-1 font-mono text-sm font-bold px-3 py-1.5 rounded-full bg-[#0F3D91] text-white">
                           {job.matchScore}% Match
                         </span>
                       </div>
 
                       <div className="p-6 flex-1 flex flex-col justify-between">
                         <div>
-                          <h3 className="font-display font-bold text-lg text-slate-900 leading-tight">
+                          <h3 className="font-display font-bold text-lg text-[#1A1A2E] leading-tight">
                             {job.jobTitle}
                           </h3>
                           
                           <div className="flex items-center gap-3 mt-3">
                             <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${
                               job.demandLevel === "Very High" 
-                                ? "bg-gradient-to-r from-red-100 to-red-50 text-red-700 border border-red-200" 
+                                ? "bg-red-50 text-red-700 border border-red-200" 
                                 : job.demandLevel === "High"
-                                ? "bg-gradient-to-r from-orange-100 to-orange-50 text-orange-700 border border-orange-200"
-                                : "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-200"
+                                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                : "bg-[#E8F0FE] text-[#0F3D91] border border-[#d4e3ff]"
                             }`}>
                               {job.demandLevel} Demand
                             </span>
-                            <span className="text-xs text-slate-500 font-mono font-semibold">
+                            <span className="text-xs text-[#6B7280] font-mono font-semibold">
                               {job.averageSalary}
                             </span>
                           </div>
 
-                          <p className="text-sm text-slate-600 mt-4 leading-relaxed bg-gradient-to-r from-slate-50 to-slate-100 p-4 rounded-2xl border border-slate-100">
-                            <strong className="text-slate-900">Bakit para sa iyo:</strong> &ldquo;{job.reasonForYouth}&rdquo;
+                          <p className="text-sm text-[#6B7280] mt-4 leading-relaxed bg-[#F8F9FC] p-4 rounded-2xl border border-[#e5e8ef]">
+                            <strong className="text-[#1A1A2E]">Bakit para sa iyo:</strong> &ldquo;{job.reasonForYouth}&rdquo;
                           </p>
 
                           {job.description && (
-                <p className="text-sm text-slate-500 mt-3 leading-relaxed">
+                <p className="text-sm text-[#6B7280] mt-3 leading-relaxed">
                 Narito ang sadyang dinisenyo na pagsusuri pagkatapos tingnan ang iyong edad, lokasyon, at kakayahan.
               </p>
                           )}
                         </div>
 
-                        <div className="mt-8 pt-5 border-t border-slate-100 space-y-4">
+                        <div className="mt-8 pt-5 border-t border-[#e5e8ef] space-y-4">
                           {job.requiredCourses && job.requiredCourses.length > 0 && (
                             <div>
-                              <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">
+                              <span className="text-xs font-bold uppercase text-[#6B7280] tracking-wider">
                                 Kailangang TESDA Courses:
                               </span>
                               <div className="mt-3 space-y-3">
                                 {job.requiredCourses.map((course: any, cidx: number) => (
-                                  <div key={cidx} className="flex items-center justify-between bg-gradient-to-r from-slate-50 to-slate-100 rounded-2xl p-3 border border-slate-100 group-hover:border-blue-200 transition-all">
+                                  <div key={cidx} className="flex items-center justify-between bg-[#F8F9FC] rounded-2xl p-3 border border-[#e5e8ef] group-hover:border-[#d4e3ff] transition-all">
                                     <div className="flex items-center gap-3">
-                                      <div className="p-2 rounded-xl bg-blue-50">
-                                        <GraduationCap className="h-5 w-5 text-blue-600" />
+                                      <div className="p-2 rounded-xl bg-[#E8F0FE] text-[#0F3D91]">
+                                        <GraduationCap className="h-5 w-5" />
                                       </div>
                                       <div>
-                                        <span className="text-sm font-bold text-slate-800">{course.name}</span>
-                                        <span className="text-xs text-slate-500 block">{course.code} | {course.duration}</span>
+                                        <span className="text-sm font-bold text-[#1A1A2E]">{course.name}</span>
+                                        <span className="text-xs text-[#6B7280] block">{course.code} | {course.duration}</span>
                                       </div>
                                     </div>
                                     <button
@@ -1293,7 +1293,7 @@ export default function App() {
                                         if (sector) setSelectedSector(sector);
                                         setCurrentTab("explorer");
                                       }}
-                                      className="text-sm text-blue-600 font-bold hover:text-blue-800 px-3 py-2 rounded-xl hover:bg-blue-50 transition-all"
+                                      className="text-sm text-[#0F3D91] font-bold hover:text-[#0F3D91] px-3 py-2 rounded-xl hover:bg-[#E8F0FE] transition-all border border-[#d4e3ff]"
                                     >
                                       Detalye
                                     </button>
@@ -1305,7 +1305,7 @@ export default function App() {
 
                           <button
                             onClick={() => askChatAboutJob(job.jobTitle, job.requiredCourses)}
-                            className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-sm py-3 text-center flex items-center justify-center gap-2 shadow-lg shadow-blue-200 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                            className="w-full rounded-2xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-bold text-sm py-3 text-center flex items-center justify-center gap-2 shadow-md shadow-[#E8F0FE] hover:shadow-lg hover:-translate-y-0.5 transition-all"
                           >
                             <MessageSquare className="h-4 w-4" />
                             <span>Kausapin ang Counselor</span>
@@ -1318,15 +1318,15 @@ export default function App() {
 
                 {/* FAQ Tip */}
                 {jobMatchResult.faqTip && (
-                  <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 text-white border border-slate-700 shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl" />
+                  <div className="bg-[#0F3D91] rounded-3xl p-8 text-white border border-[#0F3D91]/20 shadow-[0_4px_32px_rgba(15,61,145,0.15)] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-[#FCD116]/10 rounded-full blur-3xl" />
                     <div className="relative flex items-start gap-4">
-                      <div className="p-3 rounded-xl bg-emerald-500/20">
-                        <Info className="h-6 w-6 text-emerald-400" />
+                      <div className="p-3 rounded-xl bg-white/10">
+                        <Info className="h-6 w-6 text-[#FCD116]" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-lg text-emerald-400 mb-2">Susunod na Hakbang</h3>
-                        <p className="text-sm text-slate-300 leading-relaxed">{jobMatchResult.faqTip}</p>
+                        <h3 className="font-bold text-lg text-[#FCD116] mb-2">Susunod na Hakbang</h3>
+                        <p className="text-sm text-white/70 leading-relaxed">{jobMatchResult.faqTip}</p>
                       </div>
                     </div>
                   </div>
@@ -1341,20 +1341,20 @@ export default function App() {
       </main>
 
       {/* Footer Branding Area */}
-      <footer id="app-footer" className="mt-20 border-t border-slate-200 bg-gradient-to-b from-white to-slate-50 py-12 text-center">
+      <footer id="app-footer" className="mt-20 border-t border-[#e5e8ef] bg-[#F8F9FC] py-12 text-center">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg shadow-blue-200">
+            <div className="p-3 rounded-2xl bg-[#0F3D91] shadow-md shadow-[#E8F0FE]">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
-            <span className="font-display text-xl font-extrabold text-slate-900">
-              Ka-Traba<span className="text-blue-600">HO</span>
+            <span className="font-display text-xl font-extrabold text-[#1A1A2E]">
+              Ka-Traba<span className="text-[#FCD116]">HO</span>
             </span>
           </div>
-          <p className="font-bold text-slate-700 text-base">Ka-TrabaHO Career Guidance System</p>
-          <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">Hindi opisyal ngunit magalang na sumusuporta sa mga kabataang Pilipino na kumuha ng libreng TESDA vocational training.</p>
-          <div className="pt-4 border-t border-slate-200 mt-6">
-            <p className="text-xs text-slate-400">Platform built using AI support and local job insights.</p>
+          <p className="font-bold text-[#1A1A2E] text-base">Ka-TrabaHO Career Guidance System</p>
+          <p className="text-sm text-[#6B7280] max-w-lg mx-auto leading-relaxed">Hindi opisyal ngunit magalang na sumusuporta sa mga kabataang Pilipino na kumuha ng libreng TESDA vocational training.</p>
+          <div className="pt-4 border-t border-[#e5e8ef] mt-6">
+            <p className="text-xs text-[#6B7280]">Platform built using AI support and local job insights.</p>
           </div>
         </div>
       </footer>
