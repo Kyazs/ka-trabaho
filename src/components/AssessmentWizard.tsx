@@ -67,8 +67,8 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
   const stepLabels = {
     basic: lang === 'fil' ? 'Profile' : 'Profile',
     interests: lang === 'fil' ? 'Interes' : 'Interests',
-    skills: lang === 'fil' ? 'Galing' : 'Skills',
-    goal: lang === 'fil' ? 'Plano' : 'Goal',
+    skills: lang === 'fil' ? 'Kakayahan' : 'Skills',
+    goal: lang === 'fil' ? 'Layunin' : 'Goal',
     review: lang === 'fil' ? 'Suriin' : 'Review',
     processing: lang === 'fil' ? 'Sinusuri' : 'Processing',
     results: lang === 'fil' ? 'Resulta' : 'Results'
@@ -251,16 +251,16 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
               {/* Age Input */}
               <div>
                 <label className="block text-sm font-bold uppercase tracking-wider text-[#6B7280] mb-3">
-                  {lang === "fil" ? "Ilang Taon Ka Na? (Para sa edad 15-24+)" : "Your Age (Targeting 15-24)"}
+                  {lang === "fil" ? "Ilang Taon Ka Na? (Para sa edad 15-24)" : "Your Age (15-24)"}
                 </label>
                 <div className="flex items-center gap-4">
                   <input 
                     id="input-profile-age-slider"
                     type="range" 
                     min="15" 
-                    max="35" 
+                    max="24" 
                     value={age}
-                    onChange={(e) => setAge(parseInt(e.target.value))}
+                    onChange={(e) => setAge(Math.min(24, Math.max(15, parseInt(e.target.value) || 18)))}
                     className="w-full h-3 bg-[#E8F0FE] rounded-lg appearance-none cursor-pointer accent-[#0F3D91]"
                   />
                   <span className="flex-shrink-0 inline-block bg-[#E8F0FE] text-[#0F3D91] font-bold px-4 py-2 rounded-xl text-base border border-[#d4e3ff]">
@@ -294,7 +294,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-sm font-bold uppercase tracking-wider text-[#6B7280] mb-3">
-                    {lang === "fil" ? "Rehiyon (Region)" : "Desired Region"}
+                    {lang === "fil" ? "Gustong Rehiyon (Region)" : "Desired Region"}
                   </label>
                   <select
                     id="select-profile-region"
@@ -532,7 +532,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
 
             <div>
               <label className="block text-sm font-bold uppercase tracking-wider text-[#6B7280] mb-3">
-                {lang === "fil" ? "Ano ang pangarap o plano mong maging trabaho?" : "Any specific job or lifetime plan?"}
+                  {lang === "fil" ? "Anong trabaho ang pangarap mo, o ano ang plano mong karera?" : "Any specific job or lifetime plan?"}
               </label>
               <textarea
                 id="textarea-profile-goal"
@@ -718,7 +718,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
               <AlertCircle className="h-6 w-6 shrink-0" />
             </div>
             <div>
-              <h4 className="font-bold text-base">May kaunting aberya</h4>
+              <h4 className="font-bold text-base">{lang === 'fil' ? 'May kaunting aberya' : 'A slight issue occurred'}</h4>
               <p className="text-sm text-red-600 mt-2 leading-relaxed">{matchError}</p>
             </div>
           </div>
@@ -728,13 +728,13 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
           <div id="matching-results-section" className="space-y-8">
             <div className="text-center max-w-2xl mx-auto">
               <span className="inline-flex items-center gap-2 bg-[#f0fdf4] text-[#166534] font-extrabold text-xs px-4 py-2 rounded-full border border-[#bbf7d0] uppercase tracking-wider mb-4">
-                <CheckCircle2 className="h-4 w-4" /> Nakakita ng Tugma!
+                <CheckCircle2 className="h-4 w-4" /> {lang === 'fil' ? 'Nakakita ng Tugma!' : 'Found a Match!'}
               </span>
               <h2 className="font-display font-extrabold text-2xl text-[#1A1A2E] sm:text-3xl">
-                Ang Iyong AI Report sa Pagtutugma ng Kurso
+                {lang === 'fil' ? 'Ang Iyong AI Report sa Pagtutugma ng Kurso' : 'Your AI Course Match Report'}
               </h2>
               <p className="text-sm text-[#6B7280] mt-3 leading-relaxed">
-                Narito ang sadyang dinisenyo na pagsusuri pagkatapos tingnan ang iyong edad, lokasyon, at kakayahan.
+                {lang === 'fil' ? 'Narito ang sadyang dinisenyo na pagsusuri pagkatapos tingnan ang iyong edad, lokasyon, at kakayahan.' : 'Here is your personalized analysis based on your age, location, and skills.'}
               </p>
             </div>
 
@@ -744,10 +744,10 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                 <div className="p-2 rounded-xl bg-[#0F3D91] text-white">
                   <Sparkles className="h-5 w-5" />
                 </div>
-                AI Counseling Insights:
+                {lang === 'fil' ? 'AI Counseling Insights:' : 'AI Counseling Insights:'}
               </h4>
               <p className="text-base text-[#1A1A2E] leading-relaxed font-medium italic">
-                "{matchResult.matchedSummary || "Walang summary available."}"
+                "{matchResult.matchedSummary || (lang === 'fil' ? 'Walang summary available.' : 'No summary available.')}"
               </p>
             </div>
 
@@ -761,24 +761,24 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                   {/* Percent badge heading */}
                   <div className="bg-[#F8F9FC] px-6 py-5 border-b border-[#e5e8ef] flex justify-between items-center">
                     <span className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">
-                      Recommended Match #{idx + 1}
+                      {lang === 'fil' ? 'Inirerekomendang Tugma' : 'Recommended Match'} #{idx + 1}
                     </span>
                     <span className="flex items-center gap-1 font-mono text-sm font-bold px-3 py-1.5 rounded-full bg-[#0F3D91] text-white">
-                      {recCourse.matchScore}% Match
+                      {recCourse.matchScore}% {lang === 'fil' ? 'Tugma' : 'Match'}
                     </span>
                   </div>
 
                   <div className="p-6 flex-1 flex flex-col justify-between">
                     <div>
                       <span className="inline-block text-xs font-extrabold font-mono text-[#0F3D91] bg-[#E8F0FE] px-3 py-1.5 rounded-lg border border-[#d4e3ff]">
-                        Code: {recCourse.courseCode}
+                        {lang === 'fil' ? 'Kodigo' : 'Code'}: {recCourse.courseCode}
                       </span>
                       <h3 className="font-display font-bold text-lg text-[#1A1A2E] mt-4 leading-tight">
                         {recCourse.courseName}
                       </h3>
                       
                       <p className="text-sm text-[#6B7280] mt-4 leading-relaxed bg-[#F8F9FC] p-4 rounded-2xl border border-[#e5e8ef]">
-                        <strong className="text-[#1A1A2E]">Bakit para sa iyo:</strong> "{recCourse.reasonForYouth}"
+                        <strong className="text-[#1A1A2E]">{lang === 'fil' ? 'Bakit para sa iyo:' : 'Why it\'s for you:'}</strong> "{recCourse.reasonForYouth}"
                       </p>
                     </div>
 
@@ -788,7 +788,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                           <Briefcase className="h-5 w-5" />
                         </div>
                         <div>
-                          <span className="block text-xs uppercase tracking-wider text-[#6B7280] font-semibold">Oportunidad sa Trabaho</span>
+                          <span className="block text-xs uppercase tracking-wider text-[#6B7280] font-semibold">{lang === 'fil' ? 'Oportunidad sa Trabaho' : 'Job Opportunity'}</span>
                           <span className="block text-sm font-extrabold text-[#0F3D91] mt-1">{recCourse.immediateJobTitle}</span>
                         </div>
                       </div>
@@ -804,7 +804,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                           className="flex-1 rounded-2xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-bold text-sm py-3 text-center flex items-center justify-center gap-2 shadow-md shadow-[#E8F0FE] hover:shadow-lg hover:-translate-y-0.5 transition-all"
                         >
                           <MessageSquare className="h-4 w-4" />
-                          <span>Itanong sa Chat</span>
+                          <span>{lang === 'fil' ? 'Itanong sa Chat' : 'Ask in Chat'}</span>
                         </button>
                         <button
                           id={`btn-match-explore-course-${recCourse.courseCode}`}
@@ -815,7 +815,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                           }}
                           className="rounded-2xl border border-[#d4e3ff] text-[#0F3D91] hover:bg-[#E8F0FE] font-bold text-sm px-5 hover:-translate-y-0.5 transition-all"
                         >
-                          Detalye
+                          {lang === 'fil' ? 'Detalye' : 'Details'}
                         </button>
                       </div>
                     </div>
@@ -834,21 +834,21 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                     <div className="p-2 rounded-xl bg-white/10">
                       <CheckCircle2 className="h-6 w-6" />
                     </div>
-                    Mahalagang Hakbang ukol sa Iskolarsyip at Allowance:
+                    {lang === 'fil' ? 'Mahalagang Hakbang ukol sa Iskolarsyip at Allowance:' : 'Important Steps for Scholarship & Allowance:'}
                   </h3>
                   <p className="text-sm text-white/70 mt-4 leading-relaxed">
-                    {matchResult.faqTip || "Pumunta sa pinakamalapit na TESDA Regional/Provincial Office upang mag-apply ng libreng scholarship."}
+                    {matchResult.faqTip || (lang === 'fil' ? 'Pumunta sa pinakamalapit na TESDA Regional/Provincial Office upang mag-apply ng libreng scholarship.' : 'Go to the nearest TESDA Regional/Provincial Office to apply for a free scholarship.')}
                   </p>
                   <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="bg-white/10 rounded-2xl p-5 border border-white/20 space-y-2 hover:bg-white/15 transition-all">
-                      <span className="block text-xs text-white/60 font-bold uppercase tracking-wider">Kailangang Dokumento #1</span>
+                      <span className="block text-xs text-white/60 font-bold uppercase tracking-wider">{lang === 'fil' ? 'Kailangang Dokumento #1' : 'Required Document #1'}</span>
                       <span className="block text-sm font-bold text-white">PSA Birth Certificate</span>
-                      <span className="block text-xs text-white/60">Patunay na ikaw ay Pilipino at sapat sa edad.</span>
+                      <span className="block text-xs text-white/60">{lang === 'fil' ? 'Patunay na ikaw ay Pilipino at sapat sa edad.' : 'Proof of Filipino citizenship and age eligibility.'}</span>
                     </div>
                     <div className="bg-white/10 rounded-2xl p-5 border border-white/20 space-y-2 hover:bg-white/15 transition-all">
-                      <span className="block text-xs text-white/60 font-bold uppercase tracking-wider">Kailangang Dokumento #2</span>
-                      <span className="block text-sm font-bold text-white">Diploma o ALS Certificate</span>
-                      <span className="block text-xs text-white/60">Kung wala pa, sertipiko ng kahirapan mula sa barangay ay tinatanggap.</span>
+                      <span className="block text-xs text-white/60 font-bold uppercase tracking-wider">{lang === 'fil' ? 'Kailangang Dokumento #2' : 'Required Document #2'}</span>
+                      <span className="block text-sm font-bold text-white">{lang === 'fil' ? 'Diploma o ALS Certificate' : 'Diploma or ALS Certificate'}</span>
+                      <span className="block text-xs text-white/60">{lang === 'fil' ? 'Kung wala pa, sertipiko ng kahirapan mula sa barangay ay tinatanggap.' : 'If unavailable, a barangay certificate of indigency is accepted.'}</span>
                     </div>
                   </div>
                 </div>
@@ -862,7 +862,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                     }}
                     className="rounded-2xl bg-[#FCD116] hover:bg-[#c9a700] text-[#1A1A2E] font-bold text-sm py-4 px-6 flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
                   >
-                    <span>Kausapin ang AI Tagapayo</span>
+                    <span>{lang === 'fil' ? 'Kausapin ang AI Tagapayo' : 'Chat with AI Counselor'}</span>
                     <ArrowRight className="h-5 w-5" />
                   </button>
                   <button 
@@ -874,7 +874,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                     }}
                     className="rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm py-4 px-6 text-center hover:-translate-y-1 transition-all"
                   >
-                    Tingnan ang Buong Gabay sa FAQ
+                    {lang === 'fil' ? 'Tingnan ang Buong Gabay sa FAQ' : 'View Full FAQ Guide'}
                   </button>
                 </div>
               </div>

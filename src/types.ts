@@ -32,6 +32,25 @@ export interface ChatMessage {
 
 export type WizardStep = 'basic' | 'interests' | 'skills' | 'goal' | 'review' | 'processing' | 'results';
 
+export interface ProfileMiniFormProps {
+  lang: "fil" | "en";
+  customInterests: string[];
+  customSkills: string[];
+  careerGoal: string;
+  setCareerGoal: (goal: string) => void;
+  interestInput: string;
+  setInterestInput: (input: string) => void;
+  skillInput: string;
+  setSkillInput: (input: string) => void;
+  handleAddCustomInterest: (e: React.FormEvent) => void;
+  handleAddCustomSkill: (e: React.FormEvent) => void;
+  toggleInterestTag: (interest: string) => void;
+  toggleSkillTag: (skill: string) => void;
+  QUICK_INTERESTS: { label: string; category: string }[];
+  QUICK_SKILLS: { label: string; category: string }[];
+  onGoToFullAssessment?: () => void;
+}
+
 export interface AssessmentWizardProps {
   age: number;
   setAge: (age: number) => void;

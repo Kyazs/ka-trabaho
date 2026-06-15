@@ -114,7 +114,7 @@ const copy = {
       icon: MessageSquare,
       title: { fil: "AI Counselor Chatbot", en: "AI Counselor Chatbot" },
       desc: {
-        fil: "May tanong ka tungkol sa enrollment, requirements, o scholarship? Ang AI chatbot ay lagi kang kasagot, 24/7, sa Filipino.",
+        fil: "May tanong ka tungkol sa enrollment, requirements, o scholarship? Ang AI chatbot ay laging sasagot sa iyo, 24/7, sa Filipino.",
         en: "Have questions about enrollment, requirements, or scholarships? The AI chatbot answers you 24/7 in Filipino.",
       },
       tone: "purple",

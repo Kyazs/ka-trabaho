@@ -383,3 +383,26 @@ export const TESDA_FAQ: FaqItem[] = [
     answer: "Karaniwang kailangan: 1) Birth Certificate (PSA), 2) High School Report Card o Diploma / ALS Certificate, 3) 1x1 o 2x2 ID Pictures, 4) Barangay Clearance, at 5) Certificate of Indigency (para sa scholarship)."
   }
 ];
+
+export const TESDA_FAQ_EN: FaqItem[] = [
+  {
+    question: "How much does it cost to study at TESDA?",
+    answer: "Tuition is completely free at public TESDA training centers under the UAQTE (Universal Access to Quality Tertiary Education Act). Many scholarship programs also provide free supplies and a daily allowance (₱160 per day)!"
+  },
+  {
+    question: "Who can enroll in TESDA?",
+    answer: "TESDA is open to everyone, especially Out-of-School Youth (OSY), high school or elementary graduates, the unemployed, or anyone wanting to learn new skills. Some courses accept even elementary graduates!"
+  },
+  {
+    question: "What is ALS (Alternative Learning System), and is it accepted?",
+    answer: "Yes! If you completed and passed ALS, it is fully recognized by TESDA as equivalent to a High School diploma. You are eligible for all courses!"
+  },
+  {
+    question: "How can I get a job after completing a course?",
+    answer: "After training, you will take a Competency Assessment to earn your National Certificate (NC I or NC II) as proof of your skills. This is a big help with employers, and TESDA schools have job placement partnerships with local companies."
+  },
+  {
+    question: "What documents do I need to prepare?",
+    answer: "Typically required: 1) Birth Certificate (PSA), 2) High School Report Card or Diploma / ALS Certificate, 3) 1x1 or 2x2 ID Pictures, 4) Barangay Clearance, and 5) Certificate of Indigency (for scholarship)."
+  }
+];
