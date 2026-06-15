@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 03-assessment-flow-optimization
 status: planned
-last_updated: "2026-06-15T12:29:42Z"
+last_updated: "2026-06-15T12:53:49Z"
 progress:
   total_phases: 3
   completed_phases: 2
@@ -17,7 +17,7 @@ progress:
 
 **Project:** TESDA Skills-to-Jobs Matcher
 **Last Updated:** 2026-06-15
-**Last activity:** 2026-06-15 - Completed quick task 260615-sgr: Apply the ka-trabaho landing page theme (deep-blue/gold palette, card styling, trust cues, and visual rhythm) to the remaining components/pages: match, explorer, chat, jobs, faq.
+**Last activity:** 2026-06-15 - Completed quick task 260615-t0u: Fix mobile overflow on course explorer sector filter ('Pumili ng Sektor na Gusto:') and improve the mobile design for the sector list.
 **Current Phase:** 02-landing-page-infographic
 **Status:** In Progress
 
@@ -74,6 +74,7 @@ None.
 |---|-------------|------|--------|-----------|
 | 260615-ryj | Copy the katrabaho_landing_page_desktop.html design and replace LandingPage.tsx; apply this UI/UX direction to other pages as appropriate. | 2026-06-15 | edab499 | [260615-ryj-copy-the-katrabaho-landing-page-desktop-](./quick/260615-ryj-copy-the-katrabaho-landing-page-desktop-/) |
 | 260615-sgr | Apply the ka-trabaho landing page theme (deep-blue/gold palette, card styling, trust cues, and visual rhythm) to the remaining components/pages: match, explorer, chat, jobs, faq. | 2026-06-15 | c269c98 | [260615-sgr-apply-the-ka-trabaho-landing-page-theme-](./quick/260615-sgr-apply-the-ka-trabaho-landing-page-theme-/) |
+| 260615-t0u | Fix mobile overflow on course explorer sector filter ('Pumili ng Sektor na Gusto:') and improve the mobile design for the sector list. | 2026-06-15 | 971d133 | [260615-t0u-fix-mobile-overflow-on-course-explorer-s](./quick/260615-t0u-fix-mobile-overflow-on-course-explorer-s/) |
 
 ## Next Phase
 
