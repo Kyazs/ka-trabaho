@@ -7,6 +7,21 @@
   --font-mono: "JetBrains Mono", monospace;
 }
 
+/* ka-trabaho design tokens */
+:root {
+  --kt-blue: #0F3D91;
+  --kt-blue-mid: #1a52c4;
+  --kt-blue-light: #E8F0FE;
+  --kt-blue-soft: #d4e3ff;
+  --kt-gold: #FCD116;
+  --kt-gold-dark: #c9a700;
+  --kt-near-black: #1A1A2E;
+  --kt-slate: #6B7280;
+  --kt-border: #e5e8ef;
+  --kt-bg: #F8F9FC;
+  --kt-white: #ffffff;
+}
+
 /* Custom scrollbars for a clean visual experience */
 ::-webkit-scrollbar {
   width: 6px;
@@ -58,6 +73,15 @@ button, a, input, select, textarea {
 }
 .animate-pulse-soft {
   animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Blink cursor animation for hero question card */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.animate-blink {
+  animation: blink 0.9s infinite;
 }
 
 /* Slide in animation */
@@ -155,6 +179,7 @@ button, a, input, select, textarea {
 .accent-emerald::before { background-color: var(--color-emerald-500); }
 .accent-amber::before { background-color: var(--color-amber-500); }
 .accent-purple::before { background-color: var(--color-purple-500); }
+.accent-indigo::before { background-color: var(--color-indigo-500); }
 .accent-slate::before { background-color: var(--color-slate-500); }
 
 /* Hero background blobs */
