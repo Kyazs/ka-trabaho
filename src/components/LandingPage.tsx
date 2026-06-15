@@ -1,17 +1,19 @@
 import React from "react";
 import {
-  Target,
-  Rocket,
-  BookOpen,
-  Clock,
-  DollarSign,
-  Award,
   Sparkles,
+  Cpu,
+  ShieldCheck,
+  Coins,
+  GraduationCap,
+  MapPin,
+  UserCircle,
+  Brain,
+  Calendar,
+  Award,
+  Briefcase,
   MessageSquare,
   Search,
-  Shield,
-  Lock,
-  Smartphone,
+  Zap,
 } from "lucide-react";
 
 interface LandingPageProps {
@@ -19,234 +21,457 @@ interface LandingPageProps {
   setCurrentTab: (tab: string) => void;
 }
 
-const SECTION_HEADER = ({ title }: { title: string }) => (
-  <div className="flex items-center gap-3 mb-4">
-    <h2 className="font-display font-bold text-xl text-slate-900">{title}</h2>
-    <div className="flex-1 h-px bg-slate-200" />
-  </div>
-);
+const copy = {
+  heroEyebrow: { fil: "Para sa mga Out-of-School Youth", en: "For Out-of-School Youth" },
+  heroTitleLine1: { fil: "Ang tamang", en: "The right" },
+  heroTitleHighlight: { fil: "trabaho", en: "job" },
+  heroTitleLine2: { fil: "para sa", en: "for" },
+  heroTitleAccent: { fil: "iyo", en: "you" },
+  heroTitleLine3: { fil: "ay nasa TESDA.", en: "is at TESDA." },
+  heroSub: {
+    fil: "Hindi kailangan ng diploma para magsimula. Sabihin mo ang iyong interes — hahanapin ng AI ang tamang kurso at trabaho para sa 'yo, libre.",
+    en: "No diploma needed to start. Tell us your interests — AI will find the right course and job for you, for free.",
+  },
+  ctaPrimary: { fil: "Simulan ang Assessment", en: "Start Assessment" },
+  ctaSecondary: { fil: "Tingnan ang mga Kurso", en: "Browse Courses" },
+  qCardLabel: { fil: "AI Assessment — Aktibo", en: "AI Assessment — Active" },
+  qCardQuestion: { fil: "Ano ang gusto mong gawin sa buhay?", en: "What do you want to do in life?" },
+  qCardHint: { fil: "Piliin ang lahat ng angkop sa iyo:", en: "Select all that apply to you:" },
+  qCardTopMatch: { fil: "Top match para sa iyo", en: "Top match for you" },
+  qCardMatchLocation: { fil: "Dagupan, Pangasinan · 15-30 araw · Libre", en: "Dagupan, Pangasinan · 15-30 days · Free" },
+  qCardMatchBadge: { fil: "97% Match", en: "97% Match" },
+  chips: [
+    { fil: "Mag-abroad", en: "Work abroad" },
+    { fil: "Magtayo ng negosyo", en: "Start a business" },
+    { fil: "Magtrabaho agad", en: "Work immediately" },
+    { fil: "Mag-aral pa", en: "Study more" },
+    { fil: "Tulungan ang pamilya", en: "Help family" },
+    { fil: "Mag-earn online", en: "Earn online" },
+  ],
+  trustItems: [
+    { fil: "Opisyal na programa ng TESDA", en: "Official TESDA program", icon: ShieldCheck, tone: "blue" },
+    { fil: "₱160/araw na allowance", en: "₱160/day allowance", icon: Coins, tone: "gold" },
+    { fil: "300+ kurso, zero tuition", en: "300+ courses, zero tuition", icon: GraduationCap, tone: "green" },
+    { fil: "Nakabatay sa demand ng inyong lugar", en: "Based on your local demand", icon: MapPin, tone: "blue" },
+  ],
+  howEyebrow: { fil: "Paano Gumagana", en: "How It Works" },
+  howTitle: { fil: "Apat na hakbang patungo sa trabaho", en: "Four steps toward a job" },
+  howSub: {
+    fil: "Dinisenyo para sa mga estudyante, high school grad, at ALS completer na gustong magsimula agad.",
+    en: "Designed for students, high school grads, and ALS completers who want to start right away.",
+  },
+  howSteps: [
+    {
+      icon: UserCircle,
+      title: { fil: "Ibahagi ang iyong kwento", en: "Share your story" },
+      desc: { fil: "Sabihin ang iyong interes, kasanayan, at layunin sa buhay. Walang dapat ipahiya.", en: "Share your interests, skills, and life goals. No shame in starting." },
+      tone: "blue",
+    },
+    {
+      icon: Brain,
+      title: { fil: "Hanapin ng AI ang tamang kurso", en: "AI finds the right course" },
+      desc: { fil: "Sinusuri ng AI ang 300+ TESDA courses at lokal na job demand para sa iyong lugar.", en: "AI scans 300+ TESDA courses and local job demand for your area." },
+      tone: "blue",
+    },
+    {
+      icon: Calendar,
+      title: { fil: "Mag-enroll, libre", en: "Enroll for free" },
+      desc: { fil: "Gabay sa pagpunta sa pinakamalapit na TESDA center. Walang bayad, may allowance pa.", en: "Guidance to the nearest TESDA center. No fees, plus an allowance." },
+      tone: "blue",
+    },
+    {
+      icon: Award,
+      title: { fil: "Makakuha ng sertipiko at trabaho", en: "Get certified and hired" },
+      desc: { fil: "NC II certificate ang iyong tiket sa trabaho — lokal o abroad — sa loob ng 6 na buwan.", en: "Your NC II certificate is your ticket to a job — local or abroad — within 6 months." },
+      tone: "green",
+    },
+  ],
+  featuresEyebrow: { fil: "Mga Feature", en: "Features" },
+  featuresTitle: { fil: "Lahat ng kailangan mo, nasa iisang lugar", en: "Everything you need in one place" },
+  features: [
+    {
+      icon: Sparkles,
+      title: { fil: "AI Skills Assessment", en: "AI Skills Assessment" },
+      desc: {
+        fil: "Hindi ka basta binabagsak ng listahan ng kurso. Tinatanong ka muna tungkol sa iyong interes, sitwasyon, at layunin — tapos mag-aanalisa ang AI ng tamang ruta para sa iyo batay sa tunay na trabaho sa inyong probinsya.",
+        en: "You are not just given a list of courses. We first ask about your interests, situation, and goals — then AI analyzes the best route for you based on real jobs in your province.",
+      },
+      tag: { fil: "Nakabatay sa lokal na job data", en: "Based on local job data" },
+      tagIcon: MapPin,
+      tone: "blue",
+      big: true,
+    },
+    {
+      icon: Briefcase,
+      title: { fil: "Job Recommendation", en: "Job Recommendation" },
+      desc: {
+        fil: "Makita kung anong trabaho ang magbubukas pagkatapos ng bawat kurso — kasama ang average na sahod at demand sa inyong lugar.",
+        en: "See what jobs open up after each course — including average salary and demand in your area.",
+      },
+      tone: "gold",
+    },
+    {
+      icon: MessageSquare,
+      title: { fil: "AI Counselor Chatbot", en: "AI Counselor Chatbot" },
+      desc: {
+        fil: "May tanong ka tungkol sa enrollment, requirements, o scholarship? Ang AI chatbot ay lagi kang kasagot, 24/7, sa Filipino.",
+        en: "Have questions about enrollment, requirements, or scholarships? The AI chatbot answers you 24/7 in Filipino.",
+      },
+      tone: "purple",
+    },
+    {
+      icon: Coins,
+      title: { fil: "Scholarship & Allowance Guide", en: "Scholarship & Allowance Guide" },
+      desc: {
+        fil: "Alamin ang lahat ng available na subsidyo — TWSP, STEP, at iba pa — at kung paano mag-apply, hakbang-hakbang.",
+        en: "Learn about all available subsidies — TWSP, STEP, and more — and how to apply step by step.",
+      },
+      tone: "green",
+    },
+    {
+      icon: Search,
+      title: { fil: "Course Explorer", en: "Course Explorer" },
+      desc: {
+        fil: "I-browse ang buong listahan ng TESDA courses. I-filter ayon sa sektor, lokasyon, o haba ng training.",
+        en: "Browse the full TESDA course list. Filter by sector, location, or training length.",
+      },
+      tone: "blue",
+    },
+  ],
+  statsEyebrow: { fil: "Mga Numero", en: "The Numbers" },
+  statsTitle: { fil: "Napatunayan na ng TESDA", en: "Proven by TESDA" },
+  statsSub: {
+    fil: "Ang mga datos na ito ang dahilan kung bakit TESDA ang pinaka-abot-kayang landas sa trabaho para sa mga kabataan.",
+    en: "These figures are why TESDA is the most accessible path to work for young people.",
+  },
+  stats: [
+    { num: "300", suffix: "+", label: { fil: "Mga kurso sa 5 sektor", en: "Courses across 5 sectors" } },
+    { num: "₱160", suffix: "", label: { fil: "Daily allowance sa training", en: "Daily training allowance" } },
+    { num: "95", suffix: "%", label: { fil: "Job placement rate", en: "Job placement rate" } },
+    { num: "15", suffix: "–30", label: { fil: "Araw lang ang training", en: "Days of training" } },
+  ],
+  ctaBadge: { fil: "Libre. Walang sign-up required.", en: "Free. No sign-up required." },
+  ctaTitle: { fil: "Handa ka na bang magsimula?", en: "Ready to start?" },
+  ctaSub: {
+    fil: "Ilang tanong lang. Hindi kailangan ng diploma, trabaho, o kahit anong bayad para makita ang iyong tamang landas.",
+    en: "Just a few questions. No diploma, job, or payment needed to see your right path.",
+  },
+  ctaButton: { fil: "Gawin ang Assessment — Libre", en: "Take the Assessment — Free" },
+  footerMeta: { fil: "Ginawa para sa mga kabataang Pilipino · SK Guiwan · 2025", en: "Made for Filipino youth · SK Guiwan · 2025" },
+  footerData: { fil: "Sinusuportahan ng TESDA data", en: "Supported by TESDA data" },
+};
+
+const TONE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+  blue: { bg: "bg-[#E8F0FE]", text: "text-[#0F3D91]", border: "border-[#d4e3ff]" },
+  gold: { bg: "bg-[#fffbe6]", text: "text-[#92710a]", border: "border-[#FCD116]" },
+  green: { bg: "bg-[#f0fdf4]", text: "text-[#166534]", border: "border-[#bbf7d0]" },
+  purple: { bg: "bg-[#f3f0ff]", text: "text-[#5b21b6]", border: "border-[#ddd6fe]" },
+};
 
 export default function LandingPage({ lang, setCurrentTab }: LandingPageProps) {
+  const text = (obj: { fil: string; en: string }) => obj[lang];
+
   return (
-    <div className="animate-fade-in">
-      {/* ========== HERO SECTION ========== */}
-      <section className="relative text-center py-10 px-4 overflow-hidden">
-        {/* Background blobs */}
-        <div className="hero-blob hero-blob-1" />
-        <div className="hero-blob hero-blob-2" />
-        <div className="hero-blob hero-blob-3" />
+    <div className="bg-[#F8F9FC] text-[#1A1A2E] font-sans">
+      {/* Hidden accessibility heading for the page mockup */}
+      <h2 className="sr-only">
+        {lang === "fil"
+          ? "ka-trabaHO landing page — desktop view na nagpapakita ng hero, how it works, features, stats, at CTA sections"
+          : "ka-trabaHO landing page — desktop view showing hero, how it works, features, stats, and CTA sections"}
+      </h2>
 
-        <span className="relative inline-flex items-center gap-2 rounded-full bg-blue-50 text-blue-700 px-4 py-2 text-xs font-bold uppercase tracking-wider border border-blue-100">
-          <Target className="h-4 w-4" />
-          {lang === "fil" ? "Ang Iyong Landas sa Tagumpay" : "Your Path to Success"}
-        </span>
+      {/* ========== HERO ========== */}
+      <section className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 lg:py-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Hero left */}
+          <div className="text-center md:text-left">
+            <div className="inline-flex items-center gap-2 bg-[#E8F0FE] text-[#0F3D91] text-xs font-bold uppercase tracking-[0.08em] px-3.5 py-1.5 rounded-full border border-[#d4e3ff] mb-5 md:mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#0F3D91] animate-pulse-soft" />
+              {text(copy.heroEyebrow)}
+            </div>
 
-        <h1 className="relative mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.1]">
-          {lang === "fil" ? "Mula sa Wala, Hanggang Tagumpay" : "From Zero to Hero"}
-        </h1>
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-[52px] font-black leading-[1.08] tracking-[-1.5px] text-[#1A1A2E] mb-5 md:mb-6">
+              {text(copy.heroTitleLine1)}
+              <br />
+              <span className="relative inline-block">
+                {text(copy.heroTitleHighlight)}
+                <span className="absolute left-0 -bottom-1 w-full h-1 bg-[#FCD116] rounded-full" />
+              </span>{" "}
+              {text(copy.heroTitleLine2)}
+              <br />
+              {text(copy.heroTitleLine2) === "para sa" ? "sa " : ""}
+              <span className="text-[#0F3D91]">{text(copy.heroTitleAccent)}</span>{" "}
+              {text(copy.heroTitleLine3)}
+            </h1>
 
-        <p className="relative mt-4 text-lg text-slate-500 max-w-sm mx-auto leading-relaxed">
-          {lang === "fil"
-            ? "Tingnan kung paano magbabago ng TESDA ang iyong galing sa trabaho — hakbang-hakbang."
-            : "See exactly how TESDA can transform your skills into a career — step by step."}
-        </p>
+            <p className="text-base md:text-[17px] text-[#6B7280] leading-[1.7] mb-6 md:mb-8 max-w-md mx-auto md:mx-0">
+              {text(copy.heroSub)}
+            </p>
 
-        <button
-          onClick={() => setCurrentTab("match")}
-          className="relative mt-8 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 text-base font-bold text-white shadow-xl shadow-blue-500/30 hover:from-blue-700 hover:to-indigo-700 hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-2 mx-auto max-w-xs touch-manipulation"
-        >
-          <Rocket className="h-5 w-5" />
-          {lang === "fil" ? "Simulan ang Iyong Paglalakbay" : "Begin Your Journey"}
-        </button>
+            <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 md:gap-4">
+              <button
+                onClick={() => setCurrentTab("match")}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-display font-bold text-base px-6 md:px-7 py-3.5 md:py-4 rounded-[10px] transition-all hover:-translate-y-0.5 active:scale-95 touch-manipulation"
+              >
+                <Sparkles className="h-5 w-5" aria-hidden="true" />
+                {text(copy.ctaPrimary)}
+              </button>
+              <button
+                onClick={() => setCurrentTab("explorer")}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-transparent text-[#0F3D91] font-display font-semibold text-[15px] px-5 md:px-6 py-3.5 md:py-4 rounded-[10px] border-[1.5px] border-[#d4e3ff] hover:bg-[#E8F0FE] transition-all touch-manipulation"
+              >
+                {text(copy.ctaSecondary)}
+              </button>
+            </div>
+          </div>
+
+          {/* Hero right — question card */}
+          <div className="relative">
+            <div className="bg-white border border-[#e5e8ef] rounded-[20px] p-5 md:p-7 shadow-[0_4px_32px_rgba(15,61,145,0.07)]">
+              <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-[#6B7280] mb-4 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#22c55e]" />
+                {text(copy.qCardLabel)}
+              </div>
+
+              <div className="font-display text-lg md:text-[20px] font-extrabold text-[#1A1A2E] mb-5 md:mb-6 leading-[1.3]">
+                {text(copy.qCardQuestion)}
+                <span className="inline-block w-0.5 h-5 bg-[#0F3D91] rounded-full align-middle ml-0.5 animate-blink" />
+              </div>
+
+              <p className="text-[13px] text-[#6B7280] mb-3">
+                {text(copy.qCardHint)}
+              </p>
+
+              <div className="flex flex-wrap gap-2 mb-5">
+                {copy.chips.map((chip, idx) => (
+                  <span
+                    key={idx}
+                    className={`font-display text-[13px] font-semibold px-3.5 py-1.5 rounded-full border cursor-default transition-colors ${
+                      idx === 1 || idx === 5
+                        ? "bg-[#fffbe6] text-[#92710a] border-[#FCD116]"
+                        : "bg-[#E8F0FE] text-[#0F3D91] border-[#d4e3ff]"
+                    }`}
+                  >
+                    {text(chip)}
+                  </span>
+                ))}
+              </div>
+
+              <hr className="border-t border-[#e5e8ef] my-4" />
+
+              <p className="text-xs font-semibold text-[#6B7280] mb-2.5 uppercase tracking-[0.06em]">
+                {text(copy.qCardTopMatch)}
+              </p>
+
+              <div className="flex items-center gap-2.5 p-3 bg-[#E8F0FE] rounded-[10px]">
+                <div className="w-9 h-9 rounded-lg bg-[#0F3D91] flex items-center justify-center text-white shrink-0">
+                  <Cpu className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <strong className="block font-display font-bold text-sm text-[#0F3D91] truncate">
+                    Computer Systems Servicing NC II
+                  </strong>
+                  <span className="block text-xs text-[#6B7280] truncate">
+                    {text(copy.qCardMatchLocation)}
+                  </span>
+                </div>
+                <div className="shrink-0 bg-[#0F3D91] text-white font-display text-[11px] font-bold px-2.5 py-1 rounded-full">
+                  {text(copy.qCardMatchBadge)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* ========== JOURNEY STEPS SECTION ========== */}
-      <section className="px-4 pb-4 animate-fade-in stagger-1" style={{ animationDelay: "0.1s" }}>
-        <div className="flex items-center gap-3 mb-4">
-          <h2 className="font-display font-bold text-xl text-slate-900">
-            {lang === "fil" ? "Ang Iyong Paglalakbay" : "Your Journey"}
-          </h2>
-          <div className="flex-1 h-px bg-slate-200" />
+      {/* ========== TRUST STRIP ========== */}
+      <div className="border-y border-[#e5e8ef] bg-white py-4 md:py-5">
+        <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-10">
+            {copy.trustItems.map((item, idx) => {
+              const Icon = item.icon;
+              const tone = TONE_STYLES[item.tone];
+              return (
+                <React.Fragment key={idx}>
+                  <div className="flex items-center gap-2 text-[13px] font-medium text-[#6B7280]">
+                    <div className={`w-7 h-7 rounded-md flex items-center justify-center ${tone.bg} ${tone.text}`}>
+                      <Icon className="h-4 w-4" aria-hidden="true" />
+                    </div>
+                    {text({ fil: item.fil, en: item.en })}
+                  </div>
+                  {idx < copy.trustItems.length - 1 && (
+                    <span className="hidden md:inline text-[#e5e8ef]">|</span>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
         </div>
+      </div>
 
-        <div className="relative">
-          {[
-            {
-              num: 1,
-              title: lang === "fil" ? "Saan Ka Ngayon?" : "Where Are You Now?",
-              desc:
-                lang === "fil"
-                  ? "Grade 10 grad? ALS completer? Huwag mag-alala — tinatanggap ng TESDA ang lahat. Ibahagi ang iyong kwento."
-                  : "Junior high grad? ALS completer? No worries — TESDA accepts all. Share your story.",
-              color: "blue",
-            },
-            {
-              num: 2,
-              title: lang === "fil" ? "Tuklasin ang Iyong Match" : "Discover Your Match",
-              desc:
-                lang === "fil"
-                  ? "Sinusuri ng AI ang 300+ kurso sa 5 sektor para hanapin ang pinaka-akma sa iyong hilig at demand sa inyong lugar."
-                  : "AI scans 300+ courses across 5 sectors to find what fits your interests and local demand.",
-              color: "blue",
-            },
-            {
-              num: 3,
-              title: lang === "fil" ? "Libreng Pagsasanay" : "Free Training",
-              desc:
-                lang === "fil"
-                  ? "Mag-enroll sa anumang TESDA center. Walang bayad. May ₱160/araw na allowance para sa pamasahe at pagkain."
-                  : "Enroll at any TESDA center. Zero tuition. Plus ₱160/day allowance for transport and food.",
-              color: "blue",
-            },
-            {
-              num: 4,
-              title: lang === "fil" ? "Maging Certified, Makakuha ng Trabaho" : "Get Certified, Get Hired",
-              desc:
-                lang === "fil"
-                  ? "Makuha ang iyong NC II certificate. Sumali sa 95% ng mga graduate na nakakakuha ng trabaho sa loob ng 6 na buwan."
-                  : "Earn your NC II certificate. Join the 95% of graduates who land jobs within 6 months.",
-              color: "emerald",
-            },
-          ].map((step, idx) => (
-            <div key={step.num} className="flex gap-4">
-              {/* Left track */}
-              <div className="flex flex-col items-center flex-shrink-0">
+      {/* ========== HOW IT WORKS + FEATURES + STATS + CTA ========== */}
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
+        {/* How it works */}
+        <section className="mb-12 md:mb-16 lg:mb-20">
+          <p className="text-xs font-bold tracking-[0.1em] uppercase text-[#0F3D91] mb-3">
+            {text(copy.howEyebrow)}
+          </p>
+          <h2 className="font-display text-3xl md:text-[36px] font-extrabold tracking-[-0.8px] text-[#1A1A2E] mb-3 leading-[1.2]">
+            {text(copy.howTitle)}
+          </h2>
+          <p className="text-base text-[#6B7280] leading-[1.7] max-w-lg">
+            {text(copy.howSub)}
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mt-8 md:mt-12">
+            {copy.howSteps.map((step, idx) => {
+              const Icon = step.icon;
+              const isGreen = step.tone === "green";
+              return (
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm text-white z-10 ${
-                    step.color === "emerald" ? "bg-emerald-500" : "bg-blue-600"
+                  key={idx}
+                  className="relative bg-white border border-[#e5e8ef] rounded-2xl p-5 md:p-6 overflow-hidden"
+                >
+                  <span className="absolute -top-2.5 right-3 font-display text-[72px] font-black text-[#E8F0FE] leading-none z-0 select-none">
+                    {idx + 1}
+                  </span>
+                  <div
+                    className={`relative z-10 w-11 h-11 rounded-[10px] flex items-center justify-center text-white mb-4 ${
+                      isGreen ? "bg-[#16a34a]" : "bg-[#0F3D91]"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                  </div>
+                  <h4 className="relative z-10 font-display font-bold text-[15px] text-[#1A1A2E] mb-2">
+                    {text(step.title)}
+                  </h4>
+                  <p className="relative z-10 text-[13px] text-[#6B7280] leading-[1.65]">
+                    {text(step.desc)}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Features */}
+        <section className="mb-12 md:mb-16 lg:mb-20">
+          <p className="text-xs font-bold tracking-[0.1em] uppercase text-[#0F3D91] mb-3">
+            {text(copy.featuresEyebrow)}
+          </p>
+          <h2 className="font-display text-3xl md:text-[36px] font-extrabold tracking-[-0.8px] text-[#1A1A2E] mb-8 md:mb-12 leading-[1.2]">
+            {text(copy.featuresTitle)}
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            {copy.features.map((feature, idx) => {
+              const Icon = feature.icon;
+              const TagIcon = feature.tagIcon;
+              const tone = TONE_STYLES[feature.tone];
+              return (
+                <div
+                  key={idx}
+                  className={`bg-white border border-[#e5e8ef] rounded-2xl p-5 md:p-7 flex flex-col md:flex-row gap-4 md:gap-5 items-start ${
+                    feature.big ? "md:col-span-2 md:items-center" : ""
                   }`}
                 >
-                  {step.num}
+                  <div
+                    className={`w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-xl md:text-2xl shrink-0 ${tone.bg} ${tone.text}`}
+                  >
+                    <Icon className="h-6 w-6 md:h-7 md:w-7" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-base text-[#1A1A2E] mb-1.5">
+                      {text(feature.title)}
+                    </h3>
+                    <p className="text-sm text-[#6B7280] leading-[1.65]">
+                      {text(feature.desc)}
+                    </p>
+                    {feature.tag && TagIcon && (
+                      <div className="inline-flex items-center gap-1.5 mt-3 bg-[#E8F0FE] text-[#0F3D91] text-[11px] font-bold px-2.5 py-1 rounded-full">
+                        <TagIcon className="h-3 w-3" aria-hidden="true" />
+                        {text(feature.tag)}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                {idx < 3 && (
-                  <div className="w-0.5 flex-grow bg-blue-200 min-h-[40px]" />
-                )}
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Stats */}
+        <section className="bg-[#0F3D91] rounded-3xl p-6 md:p-10 lg:p-12 mb-12 md:mb-16 lg:mb-20">
+          <p className="text-xs font-bold tracking-[0.1em] uppercase text-white/60 mb-3">
+            {text(copy.statsEyebrow)}
+          </p>
+          <h2 className="font-display text-3xl md:text-[36px] font-extrabold tracking-[-0.8px] text-white mb-3 leading-[1.2]">
+            {text(copy.statsTitle)}
+          </h2>
+          <p className="text-base text-white/70 leading-[1.7] max-w-lg mb-8 md:mb-10">
+            {text(copy.statsSub)}
+          </p>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0.5 bg-white/10 rounded-xl overflow-hidden">
+            {copy.stats.map((stat, idx) => (
+              <div key={idx} className="bg-white/[0.06] p-5 md:p-6 text-center">
+                <div className="font-display text-3xl md:text-[40px] font-black text-white tracking-[-1px] leading-none">
+                  {stat.num.includes("₱") ? (
+                    <>
+                      <span className="text-[#FCD116]">₱</span>
+                      {stat.num.replace("₱", "")}
+                    </>
+                  ) : stat.num === "15" ? (
+                    <>
+                      15<span className="text-[#FCD116]">–30</span>
+                    </>
+                  ) : (
+                    <>
+                      {stat.num}
+                      <span className="text-[#FCD116]">{stat.suffix}</span>
+                    </>
+                  )}
+                </div>
+                <div className="text-[13px] text-white/60 mt-1.5 font-medium">
+                  {text(stat.label)}
+                </div>
               </div>
-
-              {/* Right card */}
-              <div
-                className={`accent-card accent-${step.color} p-5 mb-3 flex-grow animate-fade-in`}
-                style={{ animationDelay: `${0.1 + idx * 0.1}s` }}
-              >
-                <h4 className="font-display font-bold text-slate-900 mb-1">
-                  {step.title}
-                </h4>
-                <p className="text-sm text-slate-500 leading-relaxed">
-                  {step.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ========== STATS GRID ========== */}
-      <section className="px-4 pb-4 animate-fade-in stagger-3" style={{ animationDelay: "0.3s" }}>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="gradient-stat-card">
-            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mx-auto mb-3">
-              <BookOpen className="h-5 w-5 text-white" />
-            </div>
-            <div className="font-display text-3xl font-extrabold text-white">
-              300+
-            </div>
-            <div className="text-sm text-blue-100 font-medium">
-              {lang === "fil" ? "Mga Kurso" : "Courses"}
-            </div>
+            ))}
           </div>
+        </section>
 
-          <div className="gradient-stat-card" style={{ background: "linear-gradient(135deg, #10b981 0%, #059669 100%)" }}>
-            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mx-auto mb-3">
-              <Clock className="h-5 w-5 text-white" />
-            </div>
-            <div className="font-display text-3xl font-extrabold text-white">
-              15-30
-            </div>
-            <div className="text-sm text-emerald-100 font-medium">
-              {lang === "fil" ? "Araw ng Pagsasanay" : "Days Training"}
-            </div>
+        {/* CTA */}
+        <section className="bg-white border border-[#e5e8ef] rounded-3xl p-6 md:p-10 lg:p-14 text-center mb-12 md:mb-16">
+          <div className="inline-flex items-center gap-1.5 bg-[#FCD116] text-[#1A1A2E] text-xs font-extrabold px-4 py-1.5 rounded-full mb-5 tracking-[0.03em]">
+            <Zap className="h-3.5 w-3.5" aria-hidden="true" />
+            {text(copy.ctaBadge)}
           </div>
-
-          <div className="gradient-stat-card" style={{ background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)" }}>
-            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mx-auto mb-3">
-              <DollarSign className="h-5 w-5 text-white" />
-            </div>
-            <div className="font-display text-3xl font-extrabold text-white">
-              ₱160
-            </div>
-            <div className="text-sm text-amber-100 font-medium">
-              {lang === "fil" ? "Allowance / Araw" : "Daily Allowance"}
-            </div>
-          </div>
-
-          <div className="gradient-stat-card" style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)" }}>
-            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mx-auto mb-3">
-              <Award className="h-5 w-5 text-white" />
-            </div>
-            <div className="font-display text-3xl font-extrabold text-white">
-              95%
-            </div>
-            <div className="text-sm text-violet-100 font-medium">
-              {lang === "fil" ? "Nakakakuha ng Trabaho" : "Job Placement"}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== QUICK ACTIONS SECTION ========== */}
-      <section className="px-4 pb-4 animate-fade-in stagger-4" style={{ animationDelay: "0.4s" }}>
-        <SECTION_HEADER title={lang === "fil" ? "Magsimula" : "Get Started"} />
-
-        <div className="space-y-3">
+          <h2 className="font-display text-3xl md:text-[36px] font-black text-[#1A1A2E] tracking-[-1px] mb-3">
+            {text(copy.ctaTitle)}
+          </h2>
+          <p className="text-base md:text-[17px] text-[#6B7280] max-w-lg mx-auto mb-6 md:mb-8">
+            {text(copy.ctaSub)}
+          </p>
           <button
             onClick={() => setCurrentTab("match")}
-            className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 py-4 text-base font-bold text-white shadow-xl shadow-blue-500/30 hover:from-blue-700 hover:to-indigo-700 hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-2 touch-manipulation min-h-[56px]"
+            className="inline-flex items-center justify-center gap-2 bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-display font-bold text-base md:text-[17px] px-7 md:px-9 py-3.5 md:py-4 rounded-xl transition-all hover:-translate-y-0.5 active:scale-95 touch-manipulation"
           >
-            <Sparkles className="h-5 w-5" />
-            {lang === "fil" ? "AI Pagtutugma ng Kurso" : "AI Course Matching"}
+            <Sparkles className="h-5 w-5" aria-hidden="true" />
+            {text(copy.ctaButton)}
           </button>
+        </section>
+      </div>
 
-          <button
-            onClick={() => setCurrentTab("chat")}
-            className="w-full rounded-2xl border-2 border-blue-200 bg-white py-4 text-base font-bold text-slate-700 hover:border-blue-300 hover:bg-blue-50/50 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-2 touch-manipulation min-h-[56px]"
-          >
-            <MessageSquare className="h-5 w-5 text-blue-600" />
-            {lang === "fil" ? "Tanungin ang AI Tagapayo" : "Ask AI Counselor"}
-          </button>
-
-          <button
-            onClick={() => setCurrentTab("explorer")}
-            className="w-full rounded-2xl border-2 border-slate-200 bg-white py-4 text-base font-bold text-slate-700 hover:border-slate-300 hover:bg-slate-50 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-2 touch-manipulation min-h-[56px]"
-          >
-            <Search className="h-5 w-5 text-slate-500" />
-            {lang === "fil" ? "Tingnan ang Lahat ng Kurso" : "Browse All Courses"}
-          </button>
+      {/* ========== FOOTER ========== */}
+      <footer className="border-t border-[#e5e8ef] py-6 md:py-8 max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+          <div className="font-display text-lg font-black text-[#0F3D91]">
+            ka-traba<span className="text-[#FCD116]">HO</span>
+          </div>
+          <div className="text-[13px] text-[#6B7280]">{text(copy.footerMeta)}</div>
+          <div className="text-[13px] text-[#6B7280]">{text(copy.footerData)}</div>
         </div>
-      </section>
-
-      {/* ========== TRUST BADGES ========== */}
-      <section className="px-4 pb-4 animate-fade-in stagger-4" style={{ animationDelay: "0.4s" }}>
-        <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-slate-500">
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded bg-blue-100 flex items-center justify-center">
-              <Shield className="h-3 w-3 text-blue-600" />
-            </div>
-            {lang === "fil" ? "Suportado ng Gobyerno" : "Gov't Backed"}
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded bg-emerald-100 flex items-center justify-center">
-              <Lock className="h-3 w-3 text-emerald-600" />
-            </div>
-            {lang === "fil" ? "Libre Forever" : "Free Forever"}
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded bg-amber-100 flex items-center justify-center">
-              <Smartphone className="h-3 w-3 text-amber-600" />
-            </div>
-            {lang === "fil" ? "Mobile Friendly" : "Mobile Friendly"}
-          </div>
-        </div>
-      </section>
+      </footer>
     </div>
   );
 }
