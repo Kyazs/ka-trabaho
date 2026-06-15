@@ -38,7 +38,7 @@ export default function BottomNav({ currentTab, setCurrentTab, lang }: BottomNav
               type="button"
               onClick={() => setCurrentTab(tab.id)}
               className={`flex flex-col items-center justify-center gap-0.5 w-full h-full transition-all touch-manipulation active-tap ${
-                isActive ? "text-blue-600" : "text-slate-400"
+                isActive ? "text-[#0F3D91]" : "text-[#6B7280]"
               }`}
               role="tab"
               aria-selected={isActive}
@@ -46,7 +46,7 @@ export default function BottomNav({ currentTab, setCurrentTab, lang }: BottomNav
             >
               <div className={`relative ${isActive ? "-mt-1" : ""}`}>
                 {isActive && (
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-blue-500 rounded-full" />
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-[#0F3D91] rounded-full" />
                 )}
                 <Icon
                   className="h-6 w-6 transition-all"

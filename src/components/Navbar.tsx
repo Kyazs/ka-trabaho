@@ -70,11 +70,11 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang }: Nav
             className="flex cursor-pointer items-center gap-2 group"
             id="nav-brand"
           >
-            <div className="flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 font-bold text-white shadow-md shadow-blue-200 group-hover:shadow-lg group-hover:scale-105 transition-all">
+            <div className="flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-xl bg-[#0F3D91] font-bold text-white shadow-md shadow-[#E8F0FE] group-hover:shadow-lg group-hover:scale-105 transition-all">
               <GraduationCap className="h-5 w-5 md:h-6 md:w-6" id="brand-icon" />
             </div>
-            <span className="font-display text-sm md:text-xl font-extrabold tracking-tight text-slate-900">
-              Ka-Traba<span className="text-blue-600">HO</span>
+            <span className="font-display text-sm md:text-xl font-extrabold tracking-tight text-[#1A1A2E]">
+              Ka-Traba<span className="text-[#FCD116]">HO</span>
             </span>
           </div>
 
@@ -88,10 +88,10 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang }: Nav
                   id={`tab-${tab.id}-btn`}
                   onClick={() => handleTabClick(tab.id)}
                   aria-current={currentTab === tab.id ? "page" : undefined}
-                  className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                    className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
                     currentTab === tab.id
-                      ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm border border-blue-100"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      ? "bg-[#E8F0FE] text-[#0F3D91] shadow-sm border border-[#d4e3ff]"
+                      : "text-[#6B7280] hover:bg-[#F8F9FC] hover:text-[#1A1A2E]"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -110,8 +110,8 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang }: Nav
                 aria-pressed={lang === "fil"}
                 className={`rounded-md px-2 py-1 text-xs font-bold transition-all ${
                   lang === "fil"
-                    ? "bg-white text-slate-800 shadow-sm border border-slate-200"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white text-[#1A1A2E] shadow-sm border border-[#e5e8ef]"
+                    : "text-[#6B7280] hover:text-[#1A1A2E]"
                 }`}
               >
                 TL
@@ -121,8 +121,8 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang }: Nav
                 aria-pressed={lang === "en"}
                 className={`rounded-md px-2 py-1 text-xs font-bold transition-all ${
                   lang === "en"
-                    ? "bg-white text-slate-800 shadow-sm border border-slate-200"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white text-[#1A1A2E] shadow-sm border border-[#e5e8ef]"
+                    : "text-[#6B7280] hover:text-[#1A1A2E]"
                 }`}
               >
                 EN
@@ -146,8 +146,8 @@ export default function Navbar({ currentTab, setCurrentTab, lang, setLang }: Nav
                     onClick={() => handleTabClick("faq")}
                     className={`w-full flex items-center gap-2 px-4 py-3 text-sm font-semibold transition-all ${
                       currentTab === "faq"
-                        ? "text-blue-700 bg-blue-50"
-                        : "text-slate-600 hover:bg-slate-50"
+                        ? "text-[#0F3D91] bg-[#E8F0FE]"
+                        : "text-[#6B7280] hover:bg-[#F8F9FC]"
                     }`}
                   >
                     <HelpCircle className="h-4 w-4" />
