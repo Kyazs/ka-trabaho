@@ -157,22 +157,20 @@ const copy = {
     en: "Just a few questions. No diploma, job, or payment needed to see your right path.",
   },
   ctaButton: { fil: "Gawin ang Assessment — Libre", en: "Take the Assessment — Free" },
-  footerMeta: { fil: "Ginawa para sa mga kabataang Pilipino · SK Guiwan · 2025", en: "Made for Filipino youth · SK Guiwan · 2025" },
-  footerData: { fil: "Sinusuportahan ng TESDA data", en: "Supported by TESDA data" },
 };
 
 const TONE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  blue: { bg: "bg-[#E8F0FE]", text: "text-[#0F3D91]", border: "border-[#d4e3ff]" },
-  gold: { bg: "bg-[#fffbe6]", text: "text-[#92710a]", border: "border-[#FCD116]" },
-  green: { bg: "bg-[#f0fdf4]", text: "text-[#166534]", border: "border-[#bbf7d0]" },
-  purple: { bg: "bg-[#f3f0ff]", text: "text-[#5b21b6]", border: "border-[#ddd6fe]" },
+  blue: { bg: "bg-kt-blue-light", text: "text-kt-blue", border: "border-kt-blue-soft" },
+  gold: { bg: "bg-kt-gold-light", text: "text-kt-gold-ink", border: "border-kt-gold" },
+  green: { bg: "bg-kt-success-light", text: "text-kt-success-ink", border: "border-kt-success-border" },
+  purple: { bg: "bg-kt-chat-purple-light", text: "text-kt-chat-purple", border: "border-kt-chat-purple-border" },
 };
 
 export default function LandingPage({ lang }: LandingPageProps) {
   const text = (obj: { fil: string; en: string }) => obj[lang];
 
   return (
-    <div className="bg-[#F8F9FC] text-[#1A1A2E] font-sans">
+    <div className="bg-kt-bg text-kt-near-black font-sans">
       {/* Hidden accessibility heading for the page mockup */}
       <h2 className="sr-only">
         {lang === "fil"
@@ -185,40 +183,39 @@ export default function LandingPage({ lang }: LandingPageProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Hero left */}
           <div className="text-center md:text-left">
-            <div className="inline-flex items-center gap-2 bg-[#E8F0FE] text-[#0F3D91] text-xs font-bold uppercase tracking-[0.08em] px-3.5 py-1.5 rounded-full border border-[#d4e3ff] mb-5 md:mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0F3D91] animate-pulse-soft" />
+            <div className="inline-flex items-center gap-2.5 text-sm font-semibold text-kt-blue mb-5 md:mb-6">
+              <span className="w-5 h-0.5 bg-kt-gold rounded-full" />
               {text(copy.heroEyebrow)}
             </div>
 
-            <h1 className="font-display text-4xl sm:text-5xl lg:text-[52px] font-black leading-[1.08] tracking-[-1.5px] text-[#1A1A2E] mb-5 md:mb-6">
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-[52px] font-black leading-[1.08] tracking-[-1.5px] text-kt-near-black mb-5 md:mb-6">
               {text(copy.heroTitleLine1)}
               <br />
               <span className="relative inline-block">
                 {text(copy.heroTitleHighlight)}
-                <span className="absolute left-0 -bottom-1 w-full h-1 bg-[#FCD116] rounded-full" />
+                <span className="absolute left-0 -bottom-1 w-full h-1 bg-kt-gold rounded-full" />
               </span>{" "}
               {text(copy.heroTitleLine2)}
               <br />
-              {text(copy.heroTitleLine2) === "para sa" ? "sa " : ""}
-              <span className="text-[#0F3D91]">{text(copy.heroTitleAccent)}</span>{" "}
+              <span className="text-kt-blue">{text(copy.heroTitleAccent)}</span>{" "}
               {text(copy.heroTitleLine3)}
             </h1>
 
-            <p className="text-base md:text-[17px] text-[#6B7280] leading-[1.7] mb-6 md:mb-8 max-w-md mx-auto md:mx-0">
+            <p className="text-base md:text-[17px] text-kt-slate leading-[1.7] mb-6 md:mb-8 max-w-md mx-auto md:mx-0">
               {text(copy.heroSub)}
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 md:gap-4">
               <Link
                 to="/match"
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-display font-bold text-base px-6 md:px-7 py-3.5 md:py-4 rounded-[10px] transition-all hover:-translate-y-0.5 active:scale-95 touch-manipulation"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-kt-blue hover:bg-kt-blue-mid text-white font-display font-bold text-base px-6 md:px-7 py-3.5 md:py-4 rounded-[10px] transition-all hover:-translate-y-0.5 active:scale-95 touch-manipulation"
               >
                 <Sparkles className="h-5 w-5" aria-hidden="true" />
                 {text(copy.ctaPrimary)}
               </Link>
               <Link
                 to="/explorer"
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-transparent text-[#0F3D91] font-display font-semibold text-[15px] px-5 md:px-6 py-3.5 md:py-4 rounded-[10px] border-[1.5px] border-[#d4e3ff] hover:bg-[#E8F0FE] transition-all touch-manipulation"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-transparent text-kt-blue font-display font-semibold text-[15px] px-5 md:px-6 py-3.5 md:py-4 rounded-[10px] border-[1.5px] border-kt-blue-soft hover:bg-kt-blue-light transition-all touch-manipulation"
               >
                 {text(copy.ctaSecondary)}
               </Link>
@@ -227,29 +224,29 @@ export default function LandingPage({ lang }: LandingPageProps) {
 
           {/* Hero right — question card */}
           <div className="relative">
-            <div className="bg-white border border-[#e5e8ef] rounded-[20px] p-5 md:p-7 shadow-[0_4px_32px_rgba(15,61,145,0.07)]">
-              <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-[#6B7280] mb-4 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#22c55e]" />
+            <div className="bg-white border border-kt-border rounded-[20px] p-5 md:p-7">
+              <div className="text-xs font-semibold text-kt-slate mb-4 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-kt-online" />
                 {text(copy.qCardLabel)}
               </div>
 
-              <div className="font-display text-lg md:text-[20px] font-extrabold text-[#1A1A2E] mb-5 md:mb-6 leading-[1.3]">
+              <div className="font-display text-lg md:text-[20px] font-extrabold text-kt-near-black mb-5 md:mb-6 leading-[1.3]">
                 {text(copy.qCardQuestion)}
-                <span className="inline-block w-0.5 h-5 bg-[#0F3D91] rounded-full align-middle ml-0.5 animate-blink" />
+                <span className="inline-block w-0.5 h-5 bg-kt-blue rounded-full align-middle ml-0.5 animate-blink" />
               </div>
 
-              <p className="text-[13px] text-[#6B7280] mb-3">
+              <p className="text-[13px] text-kt-slate mb-3">
                 {text(copy.qCardHint)}
               </p>
 
-              <div className="flex flex-wrap gap-2 mb-5">
+              <div className="flex flex-wrap gap-2 mb-5" aria-hidden="true">
                 {copy.chips.map((chip, idx) => (
                   <span
                     key={idx}
                     className={`font-display text-[13px] font-semibold px-3.5 py-1.5 rounded-full border cursor-default transition-colors ${
                       idx === 1 || idx === 5
-                        ? "bg-[#fffbe6] text-[#92710a] border-[#FCD116]"
-                        : "bg-[#E8F0FE] text-[#0F3D91] border-[#d4e3ff]"
+                        ? "bg-kt-gold-light text-kt-gold-ink border-kt-gold"
+                        : "bg-kt-blue-light text-kt-blue border-kt-blue-soft"
                     }`}
                   >
                     {text(chip)}
@@ -257,25 +254,25 @@ export default function LandingPage({ lang }: LandingPageProps) {
                 ))}
               </div>
 
-              <hr className="border-t border-[#e5e8ef] my-4" />
+              <hr className="border-t border-kt-border my-4" />
 
-              <p className="text-xs font-semibold text-[#6B7280] mb-2.5 uppercase tracking-[0.06em]">
+              <p className="text-xs font-semibold text-kt-slate mb-2.5">
                 {text(copy.qCardTopMatch)}
               </p>
 
-              <div className="flex items-center gap-2.5 p-3 bg-[#E8F0FE] rounded-[10px]">
-                <div className="w-9 h-9 rounded-lg bg-[#0F3D91] flex items-center justify-center text-white shrink-0">
+              <div className="flex items-center gap-2.5 p-3 bg-kt-blue-light rounded-[10px]">
+                <div className="w-9 h-9 rounded-lg bg-kt-blue flex items-center justify-center text-white shrink-0">
                   <Cpu className="h-4 w-4" aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <strong className="block font-display font-bold text-sm text-[#0F3D91] truncate" title="Computer Systems Servicing NC II">
+                  <strong className="block font-display font-bold text-sm text-kt-blue truncate" title="Computer Systems Servicing NC II">
                     Computer Systems Servicing NC II
                   </strong>
-                  <span className="block text-xs text-[#6B7280] truncate" title={text(copy.qCardMatchLocation)}>
+                  <span className="block text-xs text-kt-slate truncate" title={text(copy.qCardMatchLocation)}>
                     {text(copy.qCardMatchLocation)}
                   </span>
                 </div>
-                <div className="shrink-0 bg-[#0F3D91] text-white font-display text-[11px] font-bold px-2.5 py-1 rounded-full">
+                <div className="shrink-0 bg-kt-blue text-white font-display text-xs font-bold px-2.5 py-1 rounded-full">
                   {text(copy.qCardMatchBadge)}
                 </div>
               </div>
@@ -285,7 +282,7 @@ export default function LandingPage({ lang }: LandingPageProps) {
       </section>
 
       {/* ========== TRUST STRIP ========== */}
-      <div className="border-y border-[#e5e8ef] bg-white py-4 md:py-5">
+      <div className="border-y border-kt-border bg-white py-4 md:py-5">
         <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-center gap-4 md:gap-10">
             {copy.trustItems.map((item, idx) => {
@@ -293,14 +290,14 @@ export default function LandingPage({ lang }: LandingPageProps) {
               const tone = TONE_STYLES[item.tone];
               return (
                 <React.Fragment key={idx}>
-                  <div className="flex items-center gap-2 text-[13px] font-medium text-[#6B7280]">
+                  <div className="flex items-center gap-2 text-[13px] font-medium text-kt-slate">
                     <div className={`w-7 h-7 rounded-md flex items-center justify-center ${tone.bg} ${tone.text}`}>
                       <Icon className="h-4 w-4" aria-hidden="true" />
                     </div>
                     {text({ fil: item.fil, en: item.en })}
                   </div>
                   {idx < copy.trustItems.length - 1 && (
-                    <span className="hidden md:inline text-[#e5e8ef]">|</span>
+                    <span className="hidden md:inline text-kt-border">|</span>
                   )}
                 </React.Fragment>
               );
@@ -313,13 +310,10 @@ export default function LandingPage({ lang }: LandingPageProps) {
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
         {/* How it works */}
         <section className="mb-12 md:mb-16 lg:mb-20">
-          <p className="text-xs font-bold tracking-[0.1em] uppercase text-[#0F3D91] mb-3">
-            {text(copy.howEyebrow)}
-          </p>
-          <h2 className="font-display text-3xl md:text-[36px] font-extrabold tracking-[-0.8px] text-[#1A1A2E] mb-3 leading-[1.2]">
+          <h2 className="font-display text-3xl md:text-[36px] font-extrabold tracking-[-0.8px] text-kt-near-black mb-3 leading-[1.2]">
             {text(copy.howTitle)}
           </h2>
-          <p className="text-base text-[#6B7280] leading-[1.7] max-w-lg">
+          <p className="text-base text-kt-slate leading-[1.7] max-w-lg">
             {text(copy.howSub)}
           </p>
 
@@ -330,22 +324,22 @@ export default function LandingPage({ lang }: LandingPageProps) {
               return (
                 <div
                   key={idx}
-                  className="relative bg-white border border-[#e5e8ef] rounded-2xl p-5 md:p-6 overflow-hidden"
+                  className="relative bg-white border border-kt-border rounded-2xl p-5 md:p-6 overflow-hidden"
                 >
-                  <span className="absolute -top-2.5 right-3 font-display text-[48px] md:text-[72px] font-black text-[#E8F0FE] leading-none z-0 select-none">
+                  <span className="absolute -top-2.5 right-3 font-display text-[48px] md:text-[72px] font-black text-kt-blue-light leading-none z-0 select-none" aria-hidden="true">
                     {idx + 1}
                   </span>
                   <div
                     className={`relative z-10 w-11 h-11 rounded-[10px] flex items-center justify-center text-white mb-4 ${
-                      isGreen ? "bg-[#16a34a]" : "bg-[#0F3D91]"
+                      isGreen ? "bg-kt-success" : "bg-kt-blue"
                     }`}
                   >
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </div>
-                  <h4 className="relative z-10 font-display font-bold text-[15px] text-[#1A1A2E] mb-2">
+                  <h4 className="relative z-10 font-display font-bold text-[15px] text-kt-near-black mb-2">
                     {text(step.title)}
                   </h4>
-                  <p className="relative z-10 text-[13px] text-[#6B7280] leading-[1.65]">
+                  <p className="relative z-10 text-[13px] text-kt-slate leading-[1.65]">
                     {text(step.desc)}
                   </p>
                 </div>
@@ -356,10 +350,7 @@ export default function LandingPage({ lang }: LandingPageProps) {
 
         {/* Features */}
         <section className="mb-12 md:mb-16 lg:mb-20">
-          <p className="text-xs font-bold tracking-[0.1em] uppercase text-[#0F3D91] mb-3">
-            {text(copy.featuresEyebrow)}
-          </p>
-          <h2 className="font-display text-3xl md:text-[36px] font-extrabold tracking-[-0.8px] text-[#1A1A2E] mb-8 md:mb-12 leading-[1.2]">
+          <h2 className="font-display text-3xl md:text-[36px] font-extrabold tracking-[-0.8px] text-kt-near-black mb-8 md:mb-12 leading-[1.2]">
             {text(copy.featuresTitle)}
           </h2>
 
@@ -371,7 +362,7 @@ export default function LandingPage({ lang }: LandingPageProps) {
               return (
                 <div
                   key={idx}
-                  className={`bg-white border border-[#e5e8ef] rounded-2xl p-5 md:p-7 flex flex-col md:flex-row gap-4 md:gap-5 items-start ${
+                  className={`bg-white border border-kt-border rounded-2xl p-5 md:p-7 flex flex-col md:flex-row gap-4 md:gap-5 items-start ${
                     feature.big ? "md:col-span-2 md:items-center" : ""
                   }`}
                 >
@@ -381,14 +372,14 @@ export default function LandingPage({ lang }: LandingPageProps) {
                     <Icon className="h-6 w-6 md:h-7 md:w-7" aria-hidden="true" />
                   </div>
                   <div>
-                    <h3 className="font-display font-bold text-base text-[#1A1A2E] mb-1.5">
+                    <h3 className="font-display font-bold text-base text-kt-near-black mb-1.5">
                       {text(feature.title)}
                     </h3>
-                    <p className="text-sm text-[#6B7280] leading-[1.65]">
+                    <p className="text-sm text-kt-slate leading-[1.65]">
                       {text(feature.desc)}
                     </p>
                     {feature.tag && TagIcon && (
-                      <div className="inline-flex items-center gap-1.5 mt-3 bg-[#E8F0FE] text-[#0F3D91] text-[11px] font-bold px-2.5 py-1 rounded-full">
+                      <div className="inline-flex items-center gap-1.5 mt-3 bg-kt-blue-light text-kt-blue text-xs font-bold px-2.5 py-1 rounded-full">
                         <TagIcon className="h-3 w-3" aria-hidden="true" />
                         {text(feature.tag)}
                       </div>
@@ -401,10 +392,7 @@ export default function LandingPage({ lang }: LandingPageProps) {
         </section>
 
         {/* Stats */}
-        <section className="bg-[#0F3D91] rounded-3xl p-6 md:p-10 lg:p-12 mb-12 md:mb-16 lg:mb-20">
-          <p className="text-xs font-bold tracking-[0.1em] uppercase text-white/60 mb-3">
-            {text(copy.statsEyebrow)}
-          </p>
+        <section className="bg-kt-blue rounded-3xl p-6 md:p-10 lg:p-12 mb-12 md:mb-16 lg:mb-20">
           <h2 className="font-display text-3xl md:text-[36px] font-extrabold tracking-[-0.8px] text-white mb-3 leading-[1.2]">
             {text(copy.statsTitle)}
           </h2>
@@ -418,17 +406,17 @@ export default function LandingPage({ lang }: LandingPageProps) {
                 <div className="font-display text-3xl md:text-[40px] font-black text-white tracking-[-1px] leading-none">
                   {stat.num.includes("₱") ? (
                     <>
-                      <span className="text-[#FCD116]">₱</span>
+                      <span className="text-kt-gold">₱</span>
                       {stat.num.replace("₱", "")}
                     </>
                   ) : stat.num === "15" ? (
                     <>
-                      15<span className="text-[#FCD116]">–30</span>
+                      15<span className="text-kt-gold">–30</span>
                     </>
                   ) : (
                     <>
                       {stat.num}
-                      <span className="text-[#FCD116]">{stat.suffix}</span>
+                      <span className="text-kt-gold">{stat.suffix}</span>
                     </>
                   )}
                 </div>
@@ -441,20 +429,20 @@ export default function LandingPage({ lang }: LandingPageProps) {
         </section>
 
         {/* CTA */}
-        <section className="bg-white border border-[#e5e8ef] rounded-3xl p-6 md:p-10 lg:p-14 text-center mb-12 md:mb-16">
-          <div className="inline-flex items-center gap-1.5 bg-[#FCD116] text-[#1A1A2E] text-xs font-extrabold px-4 py-1.5 rounded-full mb-5 tracking-[0.03em]">
+        <section className="bg-white border border-kt-border rounded-3xl p-6 md:p-10 lg:p-14 text-center mb-12 md:mb-16">
+          <div className="inline-flex items-center gap-1.5 bg-kt-gold text-kt-near-black text-xs font-extrabold px-4 py-1.5 rounded-full mb-5 tracking-[0.03em]">
             <Zap className="h-3.5 w-3.5" aria-hidden="true" />
             {text(copy.ctaBadge)}
           </div>
-          <h2 className="font-display text-3xl md:text-[36px] font-black text-[#1A1A2E] tracking-[-1px] mb-3">
+          <h2 className="font-display text-3xl md:text-[36px] font-black text-kt-near-black tracking-[-1px] mb-3">
             {text(copy.ctaTitle)}
           </h2>
-          <p className="text-base md:text-[17px] text-[#6B7280] max-w-lg mx-auto mb-6 md:mb-8">
+          <p className="text-base md:text-[17px] text-kt-slate max-w-lg mx-auto mb-6 md:mb-8">
             {text(copy.ctaSub)}
           </p>
           <Link
             to="/match"
-            className="inline-flex items-center justify-center gap-2 bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-display font-bold text-base md:text-[17px] px-7 md:px-9 py-3.5 md:py-4 rounded-xl transition-all hover:-translate-y-0.5 active:scale-95 touch-manipulation"
+            className="inline-flex items-center justify-center gap-2 bg-kt-blue hover:bg-kt-blue-mid text-white font-display font-bold text-base md:text-[17px] px-7 md:px-9 py-3.5 md:py-4 rounded-xl transition-all hover:-translate-y-0.5 active:scale-95 touch-manipulation"
           >
             <Sparkles className="h-5 w-5" aria-hidden="true" />
             {text(copy.ctaButton)}
@@ -462,16 +450,6 @@ export default function LandingPage({ lang }: LandingPageProps) {
         </section>
       </div>
 
-      {/* ========== FOOTER ========== */}
-      <footer className="border-t border-[#e5e8ef] py-6 md:py-8 max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-          <div className="font-display text-lg font-black text-[#0F3D91]">
-            ka-traba<span className="text-[#FCD116]">HO</span>
-          </div>
-          <div className="text-[13px] text-[#6B7280]">{text(copy.footerMeta)}</div>
-          <div className="text-[13px] text-[#6B7280]">{text(copy.footerData)}</div>
-        </div>
-      </footer>
-    </div>
+</div>
   );
 }
