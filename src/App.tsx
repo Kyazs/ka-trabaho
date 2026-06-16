@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import DOMPurify from 'dompurify';
 import { 
   Sparkles, 
   MapPin, 
@@ -21,9 +20,14 @@ import {
   Utensils,
   Sprout,
   HeartPulse,
+  Car,
+  Palette,
   Info,
   FileText,
   AlertTriangle,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
   type LucideIcon
 } from "lucide-react";
 import Navbar from "./components/Navbar";
@@ -33,23 +37,46 @@ import LandingPage from "./components/LandingPage";
 import AssessmentWizard from "./components/AssessmentWizard";
 import ProfileMiniForm from "./components/ProfileMiniForm";
 import { PHILIPPINES_REGIONS, SECTORS_DATA, TESDA_FAQ, TESDA_FAQ_EN, Sector } from "./data/tesdaData";
-import { UserProfile, MatchingResult, ChatMessage } from "./types";
+import { UserProfile, MatchingResult, ChatMessage, JobMatchCourse, JobMatchResult } from "./types";
+
+const ChatBubble = React.memo(function ChatBubble({ msg }: { msg: ChatMessage }) {
+  return (
+    <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} max-w-full animate-slide-in`}>
+      <div
+        className={`rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm leading-relaxed max-w-[80%] sm:max-w-[75%] ${
+          msg.role === "user"
+            ? "bg-kt-blue text-white rounded-tr-none"
+            : "bg-white text-kt-near-black border border-kt-border rounded-tl-none whitespace-pre-line"
+        }`}
+      >
+        <div className="font-medium break-words">{msg.text}</div>
+        <div className={`text-xs mt-2 ${msg.role === "user" ? "text-white/70" : "text-kt-slate"}`}>
+          {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </div>
+      </div>
+    </div>
+  );
+});
 
 // Dynamic mapper for Sector icons
 const getSectorIcon = (iconName: string) => {
   switch (iconName) {
     case "Laptop":
-      return <Laptop className="h-6 w-6 text-[#0F3D91]" />;
+      return <Laptop className="h-6 w-6 text-kt-blue" />;
     case "Utensils":
-      return <Utensils className="h-6 w-6 text-[#16a34a]" />;
+      return <Utensils className="h-6 w-6 text-kt-success" />;
     case "Hammer":
-      return <Hammer className="h-6 w-6 text-[#FCD116]" />;
+      return <Hammer className="h-6 w-6 text-kt-gold" />;
     case "Sprout":
-      return <Sprout className="h-6 w-6 text-[#16a34a]" />;
+      return <Sprout className="h-6 w-6 text-kt-success" />;
     case "HeartPulse":
-      return <HeartPulse className="h-6 w-6 text-[#0F3D91]" />;
+      return <HeartPulse className="h-6 w-6 text-kt-blue" />;
+    case "Car":
+      return <Car className="h-6 w-6 text-kt-gold" />;
+    case "Palette":
+      return <Palette className="h-6 w-6 text-kt-chat-purple" />;
     default:
-      return <GraduationCap className="h-6 w-6 text-[#0F3D91]" />;
+      return <GraduationCap className="h-6 w-6 text-kt-blue" />;
   }
 };
 
@@ -59,48 +86,100 @@ export default function App() {
   const VALID_TABS = ["landing", "match", "explorer", "jobs", "chat", "faq"];
   const rawTab = location.pathname === "/" ? "landing" : location.pathname.slice(1);
   const currentTab = VALID_TABS.includes(rawTab) ? rawTab : "landing";
-  if (!VALID_TABS.includes(rawTab) && location.pathname !== "/") {
-    navigate("/", { replace: true });
-  }
-  const [lang, setLang] = useState<"fil" | "en">("fil");
+  useEffect(() => {
+    if (!VALID_TABS.includes(rawTab) && location.pathname !== "/") {
+      navigate("/", { replace: true });
+    }
+  }, [rawTab, location.pathname, navigate]);
+  const [lang, setLang] = useState<"fil" | "en">(() => {
+    try {
+      const saved = localStorage.getItem("kt-lang");
+      return (saved === "en" || saved === "fil") ? saved : "fil";
+    } catch { return "fil"; }
+  });
   
   // Form profile states
-  const [age, setAge] = useState<number>(18);
-  const [education, setEducation] = useState<string>("Junior High School Graduate");
-  const [selectedRegion, setSelectedRegion] = useState<string>("R9");
-  const [selectedProvince, setSelectedProvince] = useState<string>("Zamboanga City");
-  const [selectedProvincesList, setSelectedProvincesList] = useState<string[]>(PHILIPPINES_REGIONS.find(r => r.code === "R9")?.provinces || []);
+  const [age, setAge] = useState<number>(() => {
+    try { const v = localStorage.getItem("kt-age"); return v ? parseInt(v, 10) || 18 : 18; } catch { return 18; }
+  });
+  const [education, setEducation] = useState<string>(() => {
+    try { return localStorage.getItem("kt-education") || "Junior High School Graduate"; } catch { return "Junior High School Graduate"; }
+  });
+  const [selectedRegion, setSelectedRegion] = useState<string>(() => {
+    try { return localStorage.getItem("kt-region") || "NCR"; } catch { return "NCR"; }
+  });
+  const [selectedProvince, setSelectedProvince] = useState<string>(() => {
+    try { return localStorage.getItem("kt-province") || "Metro Manila - East (Quezon City, Marikina)"; } catch { return "Metro Manila - East (Quezon City, Marikina)"; }
+  });
+  const [selectedProvincesList, setSelectedProvincesList] = useState<string[]>(() => {
+    try {
+      const r = PHILIPPINES_REGIONS.find(rg => rg.code === (localStorage.getItem("kt-region") || "NCR"));
+      return r?.provinces || [];
+    } catch { return []; }
+  });
   
   // Custom Tag selections for interests
-  const [customInterests, setCustomInterests] = useState<string[]>([]);
-  const [customSkills, setCustomSkills] = useState<string[]>([]);
+  const [customInterests, setCustomInterests] = useState<string[]>(() => {
+    try { const v = localStorage.getItem("kt-interests"); return v ? JSON.parse(v) : []; } catch { return []; }
+  });
+  const [customSkills, setCustomSkills] = useState<string[]>(() => {
+    try { const v = localStorage.getItem("kt-skills"); return v ? JSON.parse(v) : []; } catch { return []; }
+  });
   const [interestInput, setInterestInput] = useState<string>("");
   const [skillInput, setSkillInput] = useState<string>("");
-  const [careerGoal, setCareerGoal] = useState<string>("");
+  const [careerGoal, setCareerGoal] = useState<string>(() => {
+    try { return localStorage.getItem("kt-careerGoal") || ""; } catch { return ""; }
+  });
 
   // Result and loading states
   const [isMatching, setIsMatching] = useState<boolean>(false);
-  const [matchResult, setMatchResult] = useState<MatchingResult | null>(null);
+  const [matchResult, setMatchResult] = useState<MatchingResult | null>(() => {
+    try { const v = localStorage.getItem("kt-matchResult"); return v ? JSON.parse(v) : null; } catch { return null; }
+  });
   const [matchError, setMatchError] = useState<string | null>(null);
   
   // Job matching states
   const [isJobMatching, setIsJobMatching] = useState<boolean>(false);
-  const [jobMatchResult, setJobMatchResult] = useState<any | null>(null);
+  const [jobMatchResult, setJobMatchResult] = useState<JobMatchResult | null>(() => {
+    try { const v = localStorage.getItem("kt-jobMatchResult"); return v ? JSON.parse(v) : null; } catch { return null; }
+  });
   const [jobMatchError, setJobMatchError] = useState<string | null>(null);
   
   // Course Explorer state
   const [selectedSector, setSelectedSector] = useState<Sector>(SECTORS_DATA[0]);
   const [explorerQuery, setExplorerQuery] = useState<string>("");
+  const [explorerShowJobs, setExplorerShowJobs] = useState<boolean>(false);
+  const [explorerShowCourses, setExplorerShowCourses] = useState<boolean>(false);
+
+  // Job tab state
+  const [jobFormCollapsed, setJobFormCollapsed] = useState<boolean>(false);
+
+  // FAQ accordion state
+  const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
 
   // Chatbot states
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: "welcome",
-      role: "model",
-      text: "Mabuhay! Ako si Ka-TrabaHO, ang iyong gabay sa mga libreng kurso at iskolarship ng TESDA. Pwede mo akong tanungin tungkol sa mga pre-requisites ng kurso, mga kailangang dokumento, o kung paano mag-apply. Handa akong tumulong sa iyo!",
-      timestamp: new Date()
-    }
-  ]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
+    try {
+      const saved = localStorage.getItem("kt-chatMessages");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((m: ChatMessage & { timestamp: string }) => ({
+            ...m,
+            timestamp: new Date(m.timestamp)
+          }));
+        }
+      }
+    } catch {}
+    return [
+      {
+        id: "welcome",
+        role: "model",
+        text: "Mabuhay! Ako si Ka-TrabaHO, ang iyong gabay sa mga libreng kurso at iskolarship ng TESDA. Pwede mo akong tanungin tungkol sa mga pre-requisites ng kurso, mga kailangang dokumento, o kung paano mag-apply. Handa akong tumulong sa iyo!",
+        timestamp: new Date()
+      }
+    ];
+  });
   const [chatInput, setChatInput] = useState<string>("");
   const [isSendingMessage, setIsSendingMessage] = useState<boolean>(false);
   
@@ -114,6 +193,11 @@ export default function App() {
   // Input validation states
   const [chatInputError, setChatInputError] = useState<string | null>(null);
   const [careerGoalError, setCareerGoalError] = useState<string | null>(null);
+  const [showPrivacyNotice, setShowPrivacyNotice] = useState<boolean>(() => {
+    try { return !localStorage.getItem("kt-privacyAccepted"); } catch { return true; }
+  });
+  const [confirmClearData, setConfirmClearData] = useState<boolean>(false);
+  const [expandedJobCards, setExpandedJobCards] = useState<Set<number>>(new Set());
   
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const matchingCardRef = useRef<HTMLDivElement>(null);
@@ -124,6 +208,63 @@ export default function App() {
       chatBottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatMessages, isSendingMessage]);
+
+  // Persist profile data to localStorage
+  useEffect(() => { try { localStorage.setItem("kt-lang", lang); } catch {} }, [lang]);
+  useEffect(() => { try { localStorage.setItem("kt-age", String(age)); } catch {} }, [age]);
+  useEffect(() => { try { localStorage.setItem("kt-education", education); } catch {} }, [education]);
+  useEffect(() => { try { localStorage.setItem("kt-region", selectedRegion); } catch {} }, [selectedRegion]);
+  useEffect(() => { try { localStorage.setItem("kt-province", selectedProvince); } catch {} }, [selectedProvince]);
+  useEffect(() => { try { localStorage.setItem("kt-interests", JSON.stringify(customInterests)); } catch {} }, [customInterests]);
+  useEffect(() => { try { localStorage.setItem("kt-skills", JSON.stringify(customSkills)); } catch {} }, [customSkills]);
+  useEffect(() => { try { localStorage.setItem("kt-careerGoal", careerGoal); } catch {} }, [careerGoal]);
+  useEffect(() => { try { if (matchResult) localStorage.setItem("kt-matchResult", JSON.stringify(matchResult)); else localStorage.removeItem("kt-matchResult"); } catch {} }, [matchResult]);
+  useEffect(() => { try { if (jobMatchResult) localStorage.setItem("kt-jobMatchResult", JSON.stringify(jobMatchResult)); else localStorage.removeItem("kt-jobMatchResult"); } catch {} }, [jobMatchResult]);
+  useEffect(() => { try { const capped = chatMessages.slice(-50); const serializable = capped.map(m => ({ ...m, timestamp: m.timestamp.toISOString() })); localStorage.setItem("kt-chatMessages", JSON.stringify(serializable)); if (chatMessages.length > 50) setChatMessages(capped); } catch {} }, [chatMessages]);
+  useEffect(() => { if (jobMatchResult) setJobFormCollapsed(true); }, [jobMatchResult]);
+
+  const acceptPrivacy = () => {
+    setShowPrivacyNotice(false);
+    try { localStorage.setItem("kt-privacyAccepted", "1"); } catch {}
+  };
+
+  const handleClearAllData = () => {
+    const keys = ["kt-lang","kt-age","kt-education","kt-region","kt-province","kt-interests","kt-skills","kt-careerGoal","kt-matchResult","kt-jobMatchResult","kt-chatMessages","kt-privacyAccepted"];
+    keys.forEach(k => { try { localStorage.removeItem(k); } catch {} });
+    setLang("fil");
+    setAge(18);
+    setEducation("Junior High School Graduate");
+    setSelectedRegion("NCR");
+    const ncr = PHILIPPINES_REGIONS.find(r => r.code === "NCR");
+    setSelectedProvincesList(ncr?.provinces || []);
+    setSelectedProvince(ncr?.provinces[0] || "");
+    setCustomInterests([]);
+    setCustomSkills([]);
+    setCareerGoal("");
+    setInterestInput("");
+    setSkillInput("");
+    setMatchResult(null);
+    setJobMatchResult(null);
+    setMatchError(null);
+    setJobMatchError(null);
+    setChatMessages([{
+      id: "welcome",
+      role: "model",
+      text: "Mabuhay! Ako si Ka-TrabaHO, ang iyong gabay sa mga libreng kurso at iskolarship ng TESDA. Pwede mo akong tanungin tungkol sa mga pre-requisites ng kurso, mga kailangang dokumento, o kung paano mag-apply. Handa akong tumulong sa iyo!",
+      timestamp: new Date()
+    }]);
+    setConfirmClearData(false);
+    setJobFormCollapsed(false);
+  };
+
+  const handleClearChat = () => {
+    setChatMessages([{
+      id: "welcome",
+      role: "model",
+      text: "Mabuhay! Ako si Ka-TrabaHO, ang iyong gabay sa mga libreng kurso at iskolarship ng TESDA. Pwede mo akong tanungin tungkol sa mga pre-requisites ng kurso, mga kailangang dokumento, o kung paano mag-apply. Handa akong tumulong sa iyo!",
+      timestamp: new Date()
+    }]);
+  };
 
   // Handle region change to update province lists
   const handleRegionChange = (regionCode: string) => {
@@ -244,7 +385,7 @@ export default function App() {
 
   const handleAddCustomInterest = (e: React.FormEvent) => {
     e.preventDefault();
-    if (interestInput.trim() && !customInterests.includes(interestInput.trim())) {
+    if (interestInput.trim() && !customInterests.includes(interestInput.trim()) && customInterests.length < 20) {
       setCustomInterests([...customInterests, interestInput.trim()]);
       setInterestInput("");
     }
@@ -252,7 +393,7 @@ export default function App() {
 
   const handleAddCustomSkill = (e: React.FormEvent) => {
     e.preventDefault();
-    if (skillInput.trim() && !customSkills.includes(skillInput.trim())) {
+    if (skillInput.trim() && !customSkills.includes(skillInput.trim()) && customSkills.length < 20) {
       setCustomSkills([...customSkills, skillInput.trim()]);
       setSkillInput("");
     }
@@ -278,11 +419,15 @@ export default function App() {
 
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
       const response = await fetch("/api/recommendation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profile)
+        body: JSON.stringify(profile),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       
       // Update rate limit tracking from headers
       const remainingHeader = response.headers.get('X-RateLimit-Remaining');
@@ -333,8 +478,7 @@ export default function App() {
         }
       ]);
 
-    } catch (err: any) {
-
+    } catch {
       setMatchError(lang === "fil" ? "Hindi namin makakonek sa aming AI server ngayon. Huwag mag-alala! Maaari mo pa ring mano-manong tingnan ang mga kurso sa 'Sektor at Kurso' tab sa itaas." : "We can't connect to our AI server right now. Don't worry! You can still manually browse courses in the 'Course & Job Explorer' tab above.");
     } finally {
 
@@ -361,11 +505,15 @@ export default function App() {
     };
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
       const response = await fetch("/api/job-recommendation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profile)
+        body: JSON.stringify(profile),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
 
       // Update rate limit tracking from headers
       const remainingHeader = response.headers.get('X-RateLimit-Remaining');
@@ -396,8 +544,9 @@ export default function App() {
       
       setJobMatchResult(data);
       
-    } catch (err: any) {
-      setJobMatchError(err.message || (lang === "fil" ? "Hindi namin ma-konekta sa aming AI server. Subukang muli o manu-manong tignan ang mga sektor sa itaas." : "We can't connect to our AI server. Please try again or browse sectors manually above."));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setJobMatchError(message || (lang === "fil" ? "Hindi namin ma-konekta sa aming AI server. Subukang muli o manu-manong tignan ang mga sektor sa itaas." : "We can't connect to our AI server. Please try again or browse sectors manually above."));
     } finally {
       setIsJobMatching(false);
     }
@@ -462,6 +611,8 @@ export default function App() {
         text: msg.text
       }));
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -469,8 +620,10 @@ export default function App() {
           message: textToSend,
           history: apiHistory,
           userProfile
-        })
+        }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
 
       // Update rate limit tracking from headers
       const remainingHeader = response.headers.get('X-RateLimit-Remaining');
@@ -503,6 +656,8 @@ export default function App() {
           // Wait 3 seconds and retry
           await new Promise(resolve => setTimeout(resolve, 3000));
           
+          const retryController = new AbortController();
+          const retryTimeoutId = setTimeout(() => retryController.abort(), 30000);
           const retryResponse = await fetch("/api/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -510,8 +665,10 @@ export default function App() {
               message: textToSend,
               history: apiHistory,
               userProfile
-            })
+            }),
+            signal: retryController.signal
           });
+          clearTimeout(retryTimeoutId);
           
           if (retryResponse.ok) {
             const retryData = await retryResponse.json();
@@ -543,13 +700,14 @@ export default function App() {
           timestamp: new Date()
         }
       ]);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
       setChatMessages(prev => [
         ...prev,
         {
           id: `ai-err-${Date.now()}`,
           role: "model",
-          text: err.message || (lang === "fil" ? "Pasensya na po, parang naputol ang aking koneksyon. Pakiunawa na palagi kang pwedeng pumunta sa pinakamalapit na sangay ng TESDA sa inyong komunidad para sa agarang suporta!" : "I apologize, it seems my connection was interrupted. Please note you can always visit the nearest TESDA branch in your community for immediate support!"),
+          text: message || (lang === "fil" ? "Pasensya na po, parang naputol ang aking koneksyon. Pakiunawa na palagi kang pwedeng pumunta sa pinakamalapit na sangay ng TESDA sa inyong komunidad para sa agarang suporta!" : "I apologize, it seems my connection was interrupted. Please note you can always visit the nearest TESDA branch in your community for immediate support!"),
           timestamp: new Date()
         }
       ]);
@@ -567,9 +725,9 @@ export default function App() {
     handleSendChatMessage(promptText);
   };
 
-  const askChatAboutJob = (jobTitle: string, requiredCourses: any[]) => {
+  const askChatAboutJob = (jobTitle: string, requiredCourses: JobMatchCourse[]) => {
     navigate("/chat");
-    const courseNames = requiredCourses.map((c: any) => c.name).join(", ");
+    const courseNames = requiredCourses.map((c) => c.name).join(", ");
     const promptText = lang === "fil"
       ? `Interesado po ako sa trabahong ${jobTitle}. Ano po ba ang mga kailangang TESDA courses para makapag-apply? Naririnig ko na kailangan ng ${courseNames}. Pwede po bang magbigay ng detalye?`
       : `I'm interested in the ${jobTitle} job. What TESDA courses do I need to apply? I've heard that ${courseNames} are required. Can you provide details?`;
@@ -613,11 +771,34 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] font-sans text-[#1A1A2E] overflow-x-hidden" id="main-root-container">
+    <div className="min-h-screen bg-kt-bg font-sans text-kt-near-black overflow-x-hidden" id="main-root-container">
+      <a href="#app-main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-kt-blue focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-bold focus:outline-none">
+        {lang === "fil" ? "Laktawan patungo sa nilalaman" : "Skip to content"}
+      </a>
+      {showPrivacyNotice && (
+        <div className="bg-kt-blue text-white px-4 py-3 text-center text-sm relative z-50" role="status">
+          <p className="max-w-3xl mx-auto">
+            {lang === "fil"
+              ? <>Ang iyong data ay naka-save sa device na ito para maibalik sa susunod na bisita. <strong>Hindi ito nai-upload sa server.</strong> Kung nakikibahagi ka ng device, pindutin ang menu (⋮) at "Burahin ang Data Ko" pagkatapos gamit.</>
+              : <>Your data is saved on this device so it returns on your next visit. <strong>Nothing is uploaded to any server.</strong> If you share this device, tap the menu (⋮) and "Clear My Data" after each session.</>
+            }
+          </p>
+          <button
+            type="button"
+            onClick={acceptPrivacy}
+            className="mt-2 bg-kt-gold text-kt-near-black font-bold text-xs px-4 py-1.5 rounded-lg hover:bg-kt-gold-dark transition-all"
+          >
+            {lang === "fil" ? "Naiintindihan" : "Got it"}
+          </button>
+        </div>
+      )}
       {/* Navbar section */}
       <Navbar 
         lang={lang} 
         setLang={setLang}
+        onClearData={handleClearAllData}
+        confirmClearData={confirmClearData}
+        onConfirmClearData={setConfirmClearData}
       />
 
       {/* Main Content Area */}
@@ -681,6 +862,12 @@ export default function App() {
               }}
               onGoToChat={() => navigate("/chat")}
               onGoToFaq={() => navigate("/faq")}
+              onResetProfile={() => {
+                setMatchResult(null);
+                setJobMatchResult(null);
+                setMatchError(null);
+                setJobMatchError(null);
+              }}
             />
           </div>
         )}
@@ -692,19 +879,19 @@ export default function App() {
           <div id="tab-explorer-content" className="space-y-8 animate-fade-in">
             {renderPageHeader("explorer")}
             {/* Search Input Filter */}
-            <div className="bg-white rounded-2xl border border-[#e5e8ef] p-5 shadow-[0_4px_32px_rgba(15,61,145,0.07)] max-w-xl">
-              <label className="block text-xs font-bold uppercase text-[#6B7280] tracking-wider mb-2" htmlFor="input-explorer-search">
+            <div className="bg-white rounded-2xl border border-kt-border p-5 max-w-xl">
+              <label className="block text-xs font-bold text-kt-slate mb-2" htmlFor="input-explorer-search">
                 {lang === "fil" ? "Mabilisang Paghahanap sa Sektor o Kurso" : "Search Vocational Database"}
               </label>
               <div className="relative">
-                <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-[#6B7280]" />
+                <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-kt-slate" />
                 <input
                   id="input-explorer-search"
                   type="text"
                   placeholder={lang === "fil" ? "I-type e.g., computer, barista, welding, NC II..." : "Type keywords like welding, cookery..."}
                   value={explorerQuery}
                   onChange={(e) => setExplorerQuery(e.target.value)}
-                  className="w-full rounded-xl border border-[#e5e8ef] bg-white pl-10 pr-4 py-3 text-sm focus:bg-white focus:border-[#0F3D91] focus:ring-3 focus:ring-[#E8F0FE] font-medium transition-all"
+                  className="w-full rounded-xl border border-kt-border bg-white pl-10 pr-4 py-3 text-sm focus:bg-white focus:border-kt-blue focus:ring-3 focus:ring-kt-blue-light font-medium transition-all"
                 />
               </div>
             </div>
@@ -713,7 +900,7 @@ export default function App() {
               
               {/* Sector Selection Panel */}
               <div id="explorer-left-sectors" className="lg:col-span-4 space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7280] pl-1 mb-2">
+                <h3 className="text-xs font-semibold text-kt-slate pl-1 mb-2">
                   {lang === "fil" ? "Pumili ng Sektor na Gusto:" : "Choose a Vocational Sector:"}
                 </h3>
                 
@@ -724,14 +911,14 @@ export default function App() {
                       type="button"
                       id={`btn-explorer-sector-${sector.id}`}
                       onClick={() => setSelectedSector(sector)}
-                      className={`w-full text-left rounded-xl p-4 border transition-all flex items-start gap-3.5 min-h-[64px] ${
+                      className={`w-full text-left rounded-xl p-4 border transition-all flex items-start gap-3.5 min-h-[64px] touch-manipulation ${
                         selectedSector.id === sector.id
-                          ? "bg-[#0F3D91] text-white border-[#0F3D91] shadow-md shadow-[#E8F0FE]"
-                          : "bg-white text-[#1A1A2E] border-[#e5e8ef] hover:bg-[#E8F0FE]"
+                          ? "bg-kt-blue text-white border-kt-blue"
+                          : "bg-white text-kt-near-black border-kt-border hover:bg-kt-blue-light"
                       }`}
                     >
                       <div className={`p-2.5 rounded-lg shrink-0 ${
-                        selectedSector.id === sector.id ? "bg-white/10 text-white" : "bg-[#E8F0FE] text-[#0F3D91]"
+                        selectedSector.id === sector.id ? "bg-white/10 text-white" : "bg-kt-blue-light text-kt-blue"
                       }`}>
                         {getSectorIcon(sector.iconName)}
                       </div>
@@ -739,8 +926,8 @@ export default function App() {
                         <span className="block font-display font-bold text-sm tracking-tight leading-none">
                           {sector.name}
                         </span>
-                        <span className={`block text-[11px] mt-1.5 leading-normal ${
-                          selectedSector.id === sector.id ? "text-white/80" : "text-[#6B7280]"
+                        <span className={`block text-xs mt-1.5 leading-normal ${
+                          selectedSector.id === sector.id ? "text-white/80" : "text-kt-slate"
                         }`}>
                           {sector.courses.length} {lang === "fil" ? "na accredited na kurso" : "accredited courses"}
                         </span>
@@ -749,13 +936,13 @@ export default function App() {
                   ))}
 
                   {filteredSectors.length === 0 && (
-                    <div className="text-center p-8 bg-[#F8F9FC] rounded-xl border border-dashed border-[#e5e8ef] col-span-full">
-                      <BadgeHelp className="h-8 w-8 text-[#6B7280] mx-auto mb-2" />
-                      <p className="text-xs text-[#6B7280] font-bold">{lang === "fil" ? "Walang tumugmang sektor" : "No matching sectors"}</p>
+                    <div className="text-center p-8 bg-kt-bg rounded-xl border border-dashed border-kt-border col-span-full">
+                      <BadgeHelp className="h-8 w-8 text-kt-slate mx-auto mb-2" />
+                      <p className="text-xs text-kt-slate font-bold">{lang === "fil" ? "Walang tumugmang sektor" : "No matching sectors"}</p>
                       <button 
                         id="btn-clear-search"
                         onClick={() => setExplorerQuery("")}
-                        className="mt-2 text-xs font-bold text-[#0F3D91] decoration-dotted underline"
+                        className="mt-2 text-xs font-bold text-kt-blue decoration-dotted underline"
                       >
                         {lang === "fil" ? "I-clear ang filter" : "Clear filter"}
                       </button>
@@ -768,135 +955,159 @@ export default function App() {
               <div id="explorer-right-details" className="lg:col-span-8 space-y-6">
                 
                 {/* Sector Description Box */}
-                <div className="bg-white rounded-2xl border border-[#e5e8ef] p-6 shadow-[0_4px_32px_rgba(15,61,145,0.07)]">
+                <div className="bg-white rounded-2xl border border-kt-border p-6">
                   <div className="flex items-center gap-3.5 mb-3.5">
-                    <div className="p-3 bg-[#E8F0FE] text-[#0F3D91] rounded-xl">
+                    <div className="p-3 bg-kt-blue-light text-kt-blue rounded-xl">
                       {getSectorIcon(selectedSector.iconName)}
                     </div>
                     <div>
-                      <h2 className="font-display font-black text-xl text-[#1A1A2E]">
+                      <h2 className="font-display font-black text-xl text-kt-near-black">
                         {selectedSector.name}
                       </h2>
-                      <span className="inline-block bg-[#E8F0FE] text-[#0F3D91] font-bold text-[11px] px-2.5 py-0.5 rounded-full mt-1 uppercase border border-[#d4e3ff]">
+                      <span className="inline-block bg-kt-blue-light text-kt-blue font-bold text-xs px-2.5 py-0.5 rounded-full mt-1 border border-kt-blue-soft">
                         Accredited Sector Program
                       </span>
                     </div>
                   </div>
-                  <p className="text-xs sm:text-sm text-[#6B7280] leading-relaxed">
+                  <p className="text-xs sm:text-sm text-kt-slate leading-relaxed">
                     {selectedSector.description}
                   </p>
                 </div>
 
-                {/* Section Jobs mapped */}
-                <div>
-                  <h3 className="font-display font-bold text-sm text-[#1A1A2E] mb-3 flex items-center gap-2">
-                    <Briefcase className="h-4 w-4 text-[#0F3D91]" />
-                    {lang === "fil" ? "Paghahanap ng Trabaho at Kita" : "Job Search & Salary"} (Employment Demand Index)
-                  </h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="explorer-jobs-list">
-                    {selectedSector.jobs.map((job, idx) => (
-                      <div key={idx} className="bg-white border border-[#e5e8ef] rounded-2xl p-4 shadow-[0_4px_32px_rgba(15,61,145,0.07)] flex flex-col justify-between">
-                        <div>
-                          <div className="flex items-start justify-between gap-2">
-                            <h4 className="font-display font-bold text-xs text-[#1A1A2E] leading-tight">
-                              {job.title}
-                            </h4>
-                            <span className={`flex-shrink-0 text-[11px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${
-                              job.demandLevel === "Very High" 
-                                ? "bg-red-50 text-red-700 border-red-200" 
-                                : job.demandLevel === "High"
-                                ? "bg-amber-50 text-amber-700 border-amber-200"
-                                : "bg-[#E8F0FE] text-[#0F3D91] border-[#d4e3ff]"
-                            }`}>
-                              {job.demandLevel} Demand
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-[#6B7280] mt-2 leading-relaxed">
-                            {job.description}
-                          </p>
-                        </div>
+                {/* Section Jobs mapped — progressive disclosure */}
+                <div className="bg-white rounded-2xl border border-kt-border">
+                  <button
+                    type="button"
+                    onClick={() => setExplorerShowJobs(!explorerShowJobs)}
+                    className="w-full flex items-center justify-between p-5 text-left touch-manipulation"
+                    aria-expanded={explorerShowJobs}
+                    aria-controls="explorer-jobs-list"
+                  >
+                    <span className="flex items-center gap-2 font-display font-bold text-sm text-kt-near-black">
+                      <Briefcase className="h-4 w-4 text-kt-blue" />
+                      {lang === "fil" ? "Trabaho at Sahod" : "Jobs & Salary"}
+                      <span className="text-xs font-semibold text-kt-slate ml-1">({selectedSector.jobs.length})</span>
+                    </span>
+                    <ChevronDown className={`h-4 w-4 text-kt-slate transition-transform duration-200 ${explorerShowJobs ? "rotate-180" : ""}`} />
+                  </button>
+                  {explorerShowJobs && (
+                    <div className="px-5 pb-5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="explorer-jobs-list">
+                        {selectedSector.jobs.map((job, idx) => (
+                          <div key={idx} className="bg-kt-bg border border-kt-border rounded-xl p-4 flex flex-col justify-between">
+                            <div>
+                              <div className="flex items-start justify-between gap-2">
+                                <h4 className="font-display font-bold text-xs text-kt-near-black leading-tight">
+                                  {job.title}
+                                </h4>
+                                <span className={`flex-shrink-0 text-xs font-extrabold px-2 py-0.5 rounded border ${
+                                  job.demandLevel === "Very High" 
+                                    ? "bg-kt-danger-light text-kt-danger border-kt-danger-border" 
+                                    : job.demandLevel === "High"
+                                    ? "bg-kt-warn-light text-kt-warn border-kt-warn-border"
+                                    : "bg-kt-blue-light text-kt-blue border-kt-blue-soft"
+                                }`}>
+                                  {job.demandLevel}
+                                </span>
+                              </div>
+                              <p className="text-xs text-kt-slate mt-2 leading-relaxed">
+                                {job.description}
+                              </p>
+                            </div>
 
-                        <div className="mt-4 pt-3 border-t border-[#e5e8ef] flex justify-between items-center bg-[#F8F9FC] p-2.5 rounded-lg">
-                           <span className="text-[11px] text-[#6B7280] block font-bold uppercase tracking-wider">{lang === "fil" ? "Tantiya sa Sahod" : "Salary Estimate"}</span>
-                          <span className="font-mono text-xs font-bold text-[#1A1A2E]">{job.averageSalary}</span>
-                        </div>
+                            <div className="mt-4 pt-3 border-t border-kt-border flex justify-between items-center bg-white p-2.5 rounded-lg">
+                               <span className="text-xs text-kt-slate block font-semibold">{lang === "fil" ? "Tantiya sa Sahod" : "Salary Estimate"}</span>
+                              <span className="font-mono text-xs font-bold text-kt-near-black">{job.averageSalary}</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* Courses detail tabs */}
-                <div id="explorer-courses-list" className="space-y-4">
-                  <h3 className="font-display font-bold text-sm text-[#1A1A2E] flex items-center gap-2">
-                    <GraduationCap className="h-4 w-4 text-[#0F3D91]" />
-                    {lang === "fil" ? "Mga Accredited TESDA Program at Micro-Credentials" : "Accredited TESDA Programs & Micro-Credentials"}
-                  </h3>
+                {/* Courses detail — progressive disclosure */}
+                <div className="bg-white rounded-2xl border border-kt-border">
+                  <button
+                    type="button"
+                    onClick={() => setExplorerShowCourses(!explorerShowCourses)}
+                    className="w-full flex items-center justify-between p-5 text-left touch-manipulation"
+                    aria-expanded={explorerShowCourses}
+                    aria-controls="explorer-courses-list"
+                  >
+                    <span className="flex items-center gap-2 font-display font-bold text-sm text-kt-near-black">
+                      <GraduationCap className="h-4 w-4 text-kt-blue" />
+                      {lang === "fil" ? "Mga TESDA Program" : "TESDA Programs"}
+                      <span className="text-xs font-semibold text-kt-slate ml-1">({selectedSector.courses.length})</span>
+                    </span>
+                    <ChevronDown className={`h-4 w-4 text-kt-slate transition-transform duration-200 ${explorerShowCourses ? "rotate-180" : ""}`} />
+                  </button>
+                  {explorerShowCourses && (
+                    <div id="explorer-courses-list" className="px-5 pb-5 space-y-4">
+                      {selectedSector.courses.map((course) => (
+                        <div 
+                          key={course.code} 
+                          id={`course-card-${course.code}`}
+                          className="bg-kt-bg rounded-xl border border-kt-border p-5 hover:border-kt-blue-soft transition-all space-y-4"
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="flex items-center gap-2.5 flex-wrap">
+                              <span className="font-mono text-xs font-bold px-2 rounded-md bg-kt-blue-light text-kt-blue border border-kt-blue-soft shrink-0">
+                                {course.code}
+                              </span>
+                              <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full shrink-0 ${
+                                course.level === "Micro-credential" 
+                                  ? "bg-kt-chat-purple-light text-kt-chat-purple border border-kt-chat-purple-border"
+                                  : "bg-kt-blue-light text-kt-blue border border-kt-blue-soft"
+                              }`}>
+                                {course.level}
+                              </span>
+                              <span className="text-kt-border">|</span>
+                              <span className="flex items-center gap-1.5 text-xs text-kt-slate font-medium">
+                                <Clock className="h-3.5 w-3.5 text-kt-slate" />
+                                {course.duration}
+                              </span>
+                            </div>
 
-                  <div className="space-y-4">
-                    {selectedSector.courses.map((course) => (
-                      <div 
-                        key={course.code} 
-                        id={`course-card-${course.code}`}
-                        className="bg-white rounded-2xl border border-[#e5e8ef] p-5 shadow-[0_4px_32px_rgba(15,61,145,0.07)] hover:border-[#d4e3ff] transition-all space-y-4"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                          <div className="flex items-center gap-2.5 flex-wrap">
-                            <span className="font-mono text-xs font-bold px-2 rounded-md bg-[#E8F0FE] text-[#0F3D91] border border-[#d4e3ff] shrink-0">
-                              {course.code}
-                            </span>
-                            <span className={`text-[11px] font-extrabold px-2.5 py-0.5 rounded-full shrink-0 ${
-                              course.level === "Micro-credential" 
-                                ? "bg-[#f3f0ff] text-[#5b21b6] border border-[#ddd6fe]"
-                                : "bg-[#E8F0FE] text-[#0F3D91] border border-[#d4e3ff]"
-                            }`}>
-                              {course.level}
-                            </span>
-                            <span className="text-[#e5e8ef]">|</span>
-                            <span className="flex items-center gap-1.5 text-xs text-[#6B7280] font-medium">
-                              <Clock className="h-3.5 w-3.5 text-[#6B7280]" />
-                              {course.duration}
-                            </span>
+                            <button
+                              id={`btn-explorer-engage-chat-${course.code}`}
+                              onClick={() => askChatAboutCourse(course.code, course.name)}
+                              className="text-xs font-bold text-kt-blue hover:text-kt-blue hover:bg-kt-blue-light rounded-lg px-3 py-1.5 border border-kt-blue-soft flex items-center gap-1.5 self-start sm:self-auto touch-manipulation"
+                            >
+                              <MessageSquare className="h-3.5 w-3.5" />
+                              <span>{lang === "fil" ? "Itanong kung paano sumali" : "Ask how to join"}</span>
+                            </button>
                           </div>
 
-                          <button
-                            id={`btn-explorer-engage-chat-${course.code}`}
-                            onClick={() => askChatAboutCourse(course.code, course.name)}
-                            className="text-xs font-bold text-[#0F3D91] hover:text-[#0F3D91] hover:bg-[#E8F0FE] rounded-lg px-3 py-1.5 border border-[#d4e3ff] flex items-center gap-1.5 self-start sm:self-auto touch-manipulation"
-                          >
-                            <MessageSquare className="h-3.5 w-3.5" />
-                            <span>{lang === "fil" ? "Itanong kung paano sumali" : "Ask how to join"}</span>
-                          </button>
-                        </div>
-
-                        <div>
-                          <h4 className="font-display font-bold text-sm sm:text-base text-[#1A1A2E]">
-                            {course.name}
-                          </h4>
-                          <p className="text-xs text-[#6B7280] mt-2 leading-relaxed">
-                            {course.description}
-                          </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-[#e5e8ef]">
                           <div>
-                             <span className="block text-[11px] uppercase font-bold text-[#6B7280] mb-1">{lang === "fil" ? "Prerequisite (Sino ang pwede?)" : "Prerequisite (Who can enroll?)"}</span>
-                            <span className="block text-xs font-bold text-[#1A1A2E]">{course.entryReq}</span>
+                            <h4 className="font-display font-bold text-sm sm:text-base text-kt-near-black">
+                              {course.name}
+                            </h4>
+                            <p className="text-xs text-kt-slate mt-2 leading-relaxed">
+                              {course.description}
+                            </p>
                           </div>
-                          <div>
-                             <span className="block text-[11px] uppercase font-bold text-[#6B7280] mb-1">{lang === "fil" ? "Matututunang Kakayahan (Skills)" : "Skills You'll Learn"}</span>
-                            <div className="flex flex-wrap gap-1.5 mt-1.5">
-                              {course.skillsAcquired.map((skill, idx) => (
-                                <span key={idx} className="bg-[#F8F9FC] text-[#6B7280] text-[11px] font-medium px-2 py-0.5 rounded border border-[#e5e8ef]">
-                                  {skill}
-                                </span>
-                              ))}
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-kt-border">
+                            <div>
+                               <span className="block text-xs font-semibold text-kt-slate mb-1">{lang === "fil" ? "Prerequisite (Sino ang pwede?)" : "Prerequisite (Who can enroll?)"}</span>
+                              <span className="block text-xs font-bold text-kt-near-black">{course.entryReq[lang]}</span>
+                            </div>
+                            <div>
+                               <span className="block text-xs font-semibold text-kt-slate mb-1">{lang === "fil" ? "Matututunang Kakayahan (Skills)" : "Skills You'll Learn"}</span>
+                              <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                {course.skillsAcquired.map((skill, idx) => (
+                                  <span key={idx} className="bg-white text-kt-slate text-xs font-medium px-2 py-0.5 rounded border border-kt-border">
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
               </div>
@@ -917,54 +1128,64 @@ export default function App() {
               <button
                 id="preset-q-allowance"
                 onClick={() => handleSendChatMessage("May allowance po ba habang nag-aaral sa TESDA?")}
-                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
+                className="rounded-full bg-kt-blue-light hover:bg-kt-blue-soft text-kt-blue text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-kt-blue-soft font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
               >
                 <DollarSign className="h-4 w-4 inline" /> {lang === "fil" ? "May daily allowance po ba?" : "Is there a daily allowance?"}
               </button>
               <button
                 id="preset-q-als"
                 onClick={() => handleSendChatMessage("Pwede po ba akong mag-TESDA kahit ALS Graduate lang ako?")}
-                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
+                className="rounded-full bg-kt-blue-light hover:bg-kt-blue-soft text-kt-blue text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-kt-blue-soft font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
               >
                 <GraduationCap className="h-4 w-4 inline" /> {lang === "fil" ? "Pwede ba ang ALS graduate?" : "Is ALS graduate accepted?"}
               </button>
               <button
                 id="preset-q-docs"
                 onClick={() => handleSendChatMessage("Ano-ano po bang dokumento ang kailangan ko ihanda kapag mag-e-enroll?")}
-                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
+                className="rounded-full bg-kt-blue-light hover:bg-kt-blue-soft text-kt-blue text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-kt-blue-soft font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
               >
                 <FileText className="h-4 w-4 inline" /> {lang === "fil" ? "Dokumentong kailangan?" : "Required documents?"}
               </button>
               <button
                 id="preset-q-nc"
                 onClick={() => handleSendChatMessage("Ano po ba ang makukuha kong certificate pagkatapos ng training?")}
-                className="rounded-full bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-[#d4e3ff] font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
+                className="rounded-full bg-kt-blue-light hover:bg-kt-blue-soft text-kt-blue text-sm px-4 py-2 sm:px-5 sm:py-2.5 border border-kt-blue-soft font-bold transition-all hover:shadow-md hover:-translate-y-0.5 touch-manipulation"
               >
                 <Award className="h-4 w-4 inline" /> {lang === "fil" ? "Ano ang National Certificate (NC)?" : "What is a National Certificate (NC)?"}
               </button>
             </div>
 
             {/* Chat Messages Log Frame */}
-            <div className="bg-white rounded-3xl border border-[#e5e8ef] shadow-[0_4px_32px_rgba(15,61,145,0.07)] overflow-hidden flex flex-col h-[60vh] min-h-[300px] sm:h-[600px]">
+            <div className="bg-white rounded-3xl border border-kt-border overflow-hidden flex flex-col h-[60vh] min-h-[300px] sm:h-[600px]">
               
               {/* Profile Bar indicator */}
-              <div className="bg-[#0F3D91] text-white px-4 sm:px-6 py-4 flex items-center justify-between border-b border-[#0F3D91]/20">
+              <div className="bg-kt-blue text-white px-4 sm:px-6 py-4 flex items-center justify-between border-b border-kt-blue/20">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FCD116] font-black text-sm text-[#1A1A2E] shadow-lg">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kt-gold font-black text-sm text-kt-near-black">
                     KT
                   </div>
                   <div>
                     <span className="block text-sm font-bold leading-tight">Ka-TrabaHO AI Companion</span>
                     <span className="block text-xs text-white/80 flex items-center gap-1.5">
-                       <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" /> {lang === "fil" ? "Handang tumulong ngayon" : "Ready to help now"}
+                       <span className="w-1.5 h-1.5 rounded-full bg-kt-online" /> {lang === "fil" ? "Handang tumulong ngayon" : "Ready to help now"}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleClearChat}
+                    className="text-xs text-white/60 hover:text-white font-semibold flex items-center gap-1 transition-colors touch-manipulation"
+                    aria-label={lang === "fil" ? "Burahin ang usapan" : "Clear conversation"}
+                    title={lang === "fil" ? "Burahin ang usapan" : "Clear conversation"}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{lang === "fil" ? "Burahin" : "Clear"}</span>
+                  </button>
                   {/* Rate Limit Badge */}
                   {rateLimits.chat.remaining < 5 && (
-                    <div className={`flex sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                    <div className={`flex sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
                       rateLimits.chat.remaining > 2 
                         ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
                         : rateLimits.chat.remaining > 0 
@@ -982,36 +1203,20 @@ export default function App() {
               </div>
 
               {/* Message log */}
-              <div id="chat-messages-scrollarea" className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 bg-[#F8F9FC]">
+              <div id="chat-messages-scrollarea" className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 bg-kt-bg" aria-live="polite" aria-relevant="additions">
                 {chatMessages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} max-w-full animate-slide-in`}
-                  >
-                    <div
-                      className={`rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm leading-relaxed max-w-[80%] sm:max-w-[75%] shadow-md ${
-                        msg.role === "user"
-                          ? "bg-[#0F3D91] text-white rounded-tr-none"
-                          : "bg-white text-[#1A1A2E] border border-[#e5e8ef] rounded-tl-none whitespace-pre-line"
-                      }`}
-                    >
-                      <div className="font-medium break-words">{msg.text}</div>
-                      <div className={`text-[11px] mt-2 ${msg.role === "user" ? "text-white/70" : "text-[#6B7280]"}`}>
-                        {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </div>
-                    </div>
-                  </div>
+                  <ChatBubble key={msg.id} msg={msg} />
                 ))}
                 {isSendingMessage && (
-                  <div className="flex justify-start">
-                    <div className="bg-white border border-[#e5e8ef] rounded-2xl rounded-tl-none px-4 sm:px-5 py-3 sm:py-4 shadow-md">
+                  <div className="flex justify-start" aria-hidden="true">
+                    <div className="bg-white border border-kt-border rounded-2xl rounded-tl-none px-4 sm:px-5 py-3 sm:py-4">
                       <div className="flex items-center gap-2">
                         <div className="flex gap-1.5">
-                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#0F3D91] animate-bounce" style={{ animationDelay: '0ms' }} />
-                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#0F3D91] animate-bounce" style={{ animationDelay: '150ms' }} />
-                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#0F3D91] animate-bounce" style={{ animationDelay: '300ms' }} />
+                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-kt-blue animate-typing-dot" style={{ animationDelay: '0ms' }} />
+                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-kt-blue animate-typing-dot" style={{ animationDelay: '200ms' }} />
+                          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-kt-blue animate-typing-dot" style={{ animationDelay: '400ms' }} />
                         </div>
-                        <span className="text-sm text-[#6B7280]">{lang === "fil" ? "Nagsusulat si Ka-TrabaHO..." : "Ka-TrabaHO is typing..."}</span>
+                        <span className="text-sm text-kt-slate">{lang === "fil" ? "Nagsusulat si Ka-TrabaHO..." : "Ka-TrabaHO is typing..."}</span>
                       </div>
                     </div>
                   </div>
@@ -1020,7 +1225,7 @@ export default function App() {
               </div>
 
               {/* Chat Input Area */}
-              <div className="border-t border-[#e5e8ef] bg-white p-3 sm:p-4">
+              <div className="border-t border-kt-border bg-white p-3 sm:p-4">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -1032,6 +1237,7 @@ export default function App() {
                     <input
                       id="chat-input"
                       type="text"
+                      aria-label={lang === "fil" ? "Magtanong tungkol sa TESDA" : "Ask about TESDA"}
                       value={chatInput}
                       onChange={(e) => {
                         const value = e.target.value;
@@ -1041,22 +1247,23 @@ export default function App() {
                         }
                       }}
                       placeholder={lang === "fil" ? "Magtanong tungkol sa TESDA..." : "Ask about TESDA..."}
-                      className={`w-full rounded-xl border px-3 sm:px-4 py-2.5 sm:py-3 text-sm focus:bg-white focus:ring-3 transition-all ${
+                       className={`w-full rounded-xl border px-3 sm:px-4 pr-16 py-2.5 sm:py-3 text-sm focus:bg-white focus:ring-3 transition-all ${
                         chatInputError 
                           ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-100' 
-                          : 'border-[#e5e8ef] bg-white focus:border-[#0F3D91] focus:ring-[#E8F0FE]'
+                          : 'border-kt-border bg-white focus:border-kt-blue focus:ring-kt-blue-light'
                       }`}
                       maxLength={500}
                     />
                     {/* Character Counter */}
-                    <div className="absolute right-2 bottom-1 text-[11px] text-[#6B7280]">
+                    <div className="absolute right-2 bottom-1 text-xs text-kt-slate">
                       {chatInput.length}/500
                     </div>
                   </div>
                   <button
                     type="submit"
                     disabled={isSendingMessage || !chatInput.trim() || chatInput.length > 500}
-                    className="rounded-xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white px-4 sm:px-5 py-2.5 sm:py-3 font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-[#E8F0FE] hover:shadow-lg flex items-center gap-2 touch-manipulation"
+                    aria-disabled={isSendingMessage || !chatInput.trim() || chatInput.length > 500}
+                    className="rounded-xl bg-kt-blue hover:bg-kt-blue-mid text-white px-4 sm:px-5 py-2.5 sm:py-3 font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg flex items-center gap-2 touch-manipulation"
                   >
                     <Send className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span className="hidden sm:inline">Send</span>
@@ -1064,7 +1271,7 @@ export default function App() {
                 </form>
                 {/* Input Error Message */}
                 {chatInputError && (
-                  <div className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                  <div role="alert" className="mt-2 text-xs text-red-500 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
                     {chatInputError}
                   </div>
@@ -1074,12 +1281,14 @@ export default function App() {
                   <div className="mt-2 text-xs text-amber-600 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
                     {rateLimits.chat.remaining} {lang === "fil" ? `nawawalang kahilingan` : `request${rateLimits.chat.remaining !== 1 ? 's' : ''} remaining today`}
+                    {rateLimits.chat.resetDate && <span className="ml-1">({lang === "fil" ? "reset" : "resets"} {new Date(rateLimits.chat.resetDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})</span>}
                   </div>
                 )}
                 {rateLimits.chat.remaining === 0 && (
                   <div className="mt-2 text-xs text-red-500 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
-                    {lang === "fil" ? "Naabot na ang arawang limit. Subukan bukas." : "Daily limit reached. Try again tomorrow."}
+                    {lang === "fil" ? "Naabot na ang arawang limit." : "Daily limit reached."}
+                    {rateLimits.chat.resetDate && <span className="ml-1">{lang === "fil" ? "Magagamit ulit" : "Resets"} {new Date(rateLimits.chat.resetDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}
                   </div>
                 )}
               </div>
@@ -1093,36 +1302,50 @@ export default function App() {
         {currentTab === "faq" && (
           <div id="tab-faq-content" className="space-y-6 animate-fade-in max-w-5xl mx-auto">
             {renderPageHeader("faq")}
-            <div className="space-y-4" id="faq-accordions-container">
-              {(lang === "fil" ? TESDA_FAQ : TESDA_FAQ_EN).map((faq, idx) => (
-                <div key={idx} className="bg-white rounded-2xl border border-[#e5e8ef] p-5 shadow-[0_4px_32px_rgba(15,61,145,0.07)] space-y-2">
-                  <h3 className="font-display font-extrabold text-sm sm:text-base text-[#1A1A2E] flex items-start gap-2.5 leading-snug">
-                    <span className="bg-[#E8F0FE] shrink-0 text-xs px-2 py-0.5 rounded-md text-[#0F3D91] border border-[#d4e3ff]">{lang === "fil" ? `T${idx + 1}` : `Q${idx + 1}`}</span>
-                    <span>{faq.question}</span>
-                  </h3>
-                  <div className="pl-5 sm:pl-9 text-xs sm:text-sm text-[#6B7280] leading-relaxed mt-2 font-medium">
-                    {faq.answer}
+            <div className="space-y-3" id="faq-accordions-container">
+              {(lang === "fil" ? TESDA_FAQ : TESDA_FAQ_EN).map((faq, idx) => {
+                const isOpen = faqOpenIndex === idx;
+                return (
+                  <div key={idx} className="bg-white rounded-2xl border border-kt-border overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setFaqOpenIndex(isOpen ? null : idx)}
+                      className="w-full flex items-start justify-between gap-3 p-5 text-left touch-manipulation"
+                      aria-expanded={isOpen}
+                      aria-controls={`faq-answer-${idx}`}
+                    >
+                      <span className="flex items-start gap-2.5 leading-snug">
+                        <span className="bg-kt-blue-light shrink-0 text-xs px-2 py-0.5 rounded-md text-kt-blue border border-kt-blue-soft" aria-hidden="true">{lang === "fil" ? `T${idx + 1}` : `Q${idx + 1}`}</span>
+                        <span className="font-display font-bold text-sm text-kt-near-black">{faq.question}</span>
+                      </span>
+                      <ChevronDown className={`h-4 w-4 text-kt-slate shrink-0 mt-1 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                    </button>
+                    {isOpen && (
+                      <div id={`faq-answer-${idx}`} className="px-5 pb-5 pl-10 sm:pl-12 text-sm text-kt-slate leading-relaxed font-medium border-t border-kt-border pt-4">
+                        {faq.answer}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Offline-apply reference block */}
-            <div className="bg-white rounded-2xl border border-[#e5e8ef] p-6 shadow-[0_4px_32px_rgba(15,61,145,0.07)] mt-8 space-y-4">
-              <h3 className="font-display font-bold text-sm text-[#1A1A2E] flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-[#0F3D91]" />
+            <div className="bg-white rounded-2xl border border-kt-border p-6 mt-8 space-y-4">
+              <h3 className="font-display font-bold text-sm text-kt-near-black flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-kt-blue" />
                 {lang === "fil" ? "Handa ka na bang bumisita?" : "Ready to visit?"}
               </h3>
-              <p className="text-xs text-[#6B7280] leading-normal">
+              <p className="text-xs text-kt-slate leading-normal">
                 {lang === "fil"
                   ? <>Maaari mong hanapin ang pinakamalapit na TESDA Regional o Provincial Office sa inyong komunidad. Magdala lamang ng panulat, iyong PSA birth certificate, at school credentials or ALS completer duplicate certificate. Sila ay bukas mula <strong>Lunes hanggang Biyernes (8:00 AM - 5:00 PM)</strong>.</>
                   : <>You can find the nearest TESDA Regional or Provincial Office in your community. Just bring a pen, your PSA birth certificate, and school credentials or ALS completer duplicate certificate. They are open <strong>Monday through Friday (8:00 AM - 5:00 PM)</strong>.</>
                 }
               </p>
               
-              <div className="rounded-xl bg-[#E8F0FE] p-4 border border-[#d4e3ff] flex items-start gap-3">
-                <Info className="h-5 w-5 text-[#0F3D91] shrink-0 mt-0.5" />
-                <p className="text-xs text-[#0F3D91] leading-relaxed">
+              <div className="rounded-xl bg-kt-blue-light p-4 border border-kt-blue-soft flex items-start gap-3">
+                <Info className="h-5 w-5 text-kt-blue shrink-0 mt-0.5" />
+                <p className="text-xs text-kt-blue leading-relaxed">
                   {lang === "fil"
                     ? <><strong>Iskolarship Alert:</strong> Palaging itanong ang programang <strong>UAQTE</strong> o <strong>STPES (Special Training for Employment Program)</strong> dahil ang mga ito ay may kaakibat na kumpletong libreng gamit at daily allowances!</>
                     : <><strong>Scholarship Alert:</strong> Always ask about the <strong>UAQTE</strong> or <strong>STPES (Special Training for Employment Program)</strong> as these come with completely free supplies and daily allowances!</>
@@ -1140,70 +1363,107 @@ export default function App() {
         {currentTab === "jobs" && (
           <div id="tab-jobs-content" className="space-y-8 animate-fade-in">
             {renderPageHeader("jobs")}
-            {/* Job Matching Form */}
-            <div className="max-w-2xl mx-auto bg-white rounded-2xl border border-[#e5e8ef] p-6 md:p-8 shadow-[0_4px_32px_rgba(15,61,145,0.07)]">
-              <div className="space-y-4">
-                <div className="bg-[#F8F9FC] rounded-xl p-4 border border-[#e5e8ef]">
-                  <p className="text-sm text-[#1A1A2E]">
-                    <strong>{lang === "fil" ? "Kasalukuyang Profile:" : "Current Profile:"}</strong> {age} {lang === "fil" ? "taong gulang" : "years old"}, {education}, {PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion}
-                  </p>
+            {/* Job Matching Form — collapsible when results exist */}
+            {!jobFormCollapsed ? (
+              <div className="max-w-2xl mx-auto bg-white rounded-2xl border border-kt-border p-6 md:p-8">
+                {jobMatchResult && (
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-kt-border">
+                    <span className="text-xs font-bold text-kt-slate">
+                      {lang === "fil" ? "I-edit ang profile" : "Edit your profile"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setJobFormCollapsed(true)}
+                      className="text-xs font-bold text-kt-blue hover:text-kt-blue-mid flex items-center gap-1 touch-manipulation"
+                      aria-label={lang === "fil" ? "Itago ang form" : "Hide form"}
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                      {lang === "fil" ? "Itago" : "Hide"}
+                    </button>
+                  </div>
+                )}
+                <div className="space-y-4">
+                  <div className="bg-kt-bg rounded-xl p-4 border border-kt-border">
+                    <p className="text-sm text-kt-near-black">
+                      <strong>{lang === "fil" ? "Kasalukuyang Profile:" : "Current Profile:"}</strong> {age} {lang === "fil" ? "taong gulang" : "years old"}, {education}, {PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion}
+                    </p>
+                  </div>
+
+                  <ProfileMiniForm
+                    lang={lang}
+                    customInterests={customInterests}
+                    customSkills={customSkills}
+                    careerGoal={careerGoal}
+                    setCareerGoal={setCareerGoal}
+                    interestInput={interestInput}
+                    setInterestInput={setInterestInput}
+                    skillInput={skillInput}
+                    setSkillInput={setSkillInput}
+                    handleAddCustomInterest={handleAddCustomInterest}
+                    handleAddCustomSkill={handleAddCustomSkill}
+                    toggleInterestTag={toggleInterestTag}
+                    toggleSkillTag={toggleSkillTag}
+                    QUICK_INTERESTS={QUICK_INTERESTS}
+                    QUICK_SKILLS={QUICK_SKILLS}
+                    onGoToFullAssessment={() => navigate("/match")}
+                  />
+
+                  <button
+                    id="btn-submit-job-matching"
+                    type="button"
+                    onClick={handleSubmitJobMatching}
+                    disabled={isJobMatching || !isJobProfileReady}
+                    className={`w-full rounded-xl py-4 text-sm font-bold transition-all flex items-center justify-center gap-2 touch-manipulation ${
+                      isJobMatching
+                        ? "bg-kt-gold-light text-kt-gold-ink cursor-wait border-2 border-kt-gold"
+                        : !isJobProfileReady
+                        ? "bg-kt-bg text-kt-slate cursor-not-allowed border-2 border-dashed border-kt-border"
+                        : "bg-kt-blue hover:bg-kt-blue-mid text-white hover:shadow-xl hover:scale-[1.01] active:scale-[0.99]"
+                    }`}
+                  >
+                    {isJobMatching ? (
+                      <>
+                        <span className="animate-spin inline-block h-5 w-5 border-2 border-kt-gold border-t-transparent rounded-full" />
+                        <span className="font-extrabold">{lang === "fil" ? "Sinusuri ng AI ang mga trabaho..." : "AI is analyzing jobs..."}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Briefcase className="h-4 w-4" />
+                        <span>
+                          {lang === "fil" 
+                            ? "Hanapin ang Trabaho para sa Akin!" 
+                            : "Find Jobs for Me!"
+                          }
+                        </span>
+                      </>
+                    )}
+                  </button>
                 </div>
-
-                <ProfileMiniForm
-                  lang={lang}
-                  customInterests={customInterests}
-                  customSkills={customSkills}
-                  careerGoal={careerGoal}
-                  setCareerGoal={setCareerGoal}
-                  interestInput={interestInput}
-                  setInterestInput={setInterestInput}
-                  skillInput={skillInput}
-                  setSkillInput={setSkillInput}
-                  handleAddCustomInterest={handleAddCustomInterest}
-                  handleAddCustomSkill={handleAddCustomSkill}
-                  toggleInterestTag={toggleInterestTag}
-                  toggleSkillTag={toggleSkillTag}
-                  QUICK_INTERESTS={QUICK_INTERESTS}
-                  QUICK_SKILLS={QUICK_SKILLS}
-                  onGoToFullAssessment={() => navigate("/match")}
-                />
-
+              </div>
+            ) : (
+              <div className="max-w-2xl mx-auto">
                 <button
-                  id="btn-submit-job-matching"
                   type="button"
-                  onClick={handleSubmitJobMatching}
-                  disabled={isJobMatching || !isJobProfileReady}
-                  className={`w-full rounded-xl py-4 text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2 touch-manipulation ${
-                    isJobMatching
-                      ? "bg-[#fffbe6] text-[#92710a] cursor-wait border-2 border-[#FCD116]"
-                      : !isJobProfileReady
-                      ? "bg-[#F8F9FC] text-[#6B7280] cursor-not-allowed border-2 border-dashed border-[#e5e8ef]"
-                      : "bg-[#0F3D91] hover:bg-[#1a52c4] text-white hover:shadow-xl hover:scale-[1.01]"
-                  }`}
+                  onClick={() => setJobFormCollapsed(false)}
+                  className="w-full flex items-center justify-between bg-white rounded-2xl border border-kt-border p-5 text-left touch-manipulation hover:border-kt-blue-soft transition-all"
+                  aria-expanded="false"
                 >
-                  {isJobMatching ? (
-                    <>
-                      <span className="animate-spin inline-block h-5 w-5 border-2 border-[#FCD116] border-t-transparent rounded-full" />
-                      <span className="font-extrabold">{lang === "fil" ? "Sinusuri ng AI ang mga trabaho..." : "AI is analyzing jobs..."}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Briefcase className="h-4 w-4" />
-                      <span>
-                        {lang === "fil" 
-                          ? "Hanapin ang Trabaho para sa Akin!" 
-                          : "Find Jobs for Me!"
-                        }
-                      </span>
-                    </>
-                  )}
+                  <span className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-kt-blue-light text-kt-blue">
+                      <Sparkles className="h-4 w-4" />
+                    </div>
+                    <span className="text-sm font-bold text-kt-near-black">
+                      {lang === "fil" ? "I-edit ang Profile" : "Edit Profile"}
+                    </span>
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-kt-slate" />
                 </button>
               </div>
-            </div>
+            )}
 
             {/* Job Match Error */}
             {jobMatchError && (
-              <div id="job-matching-error" className="p-6 rounded-2xl border border-red-200 flex items-start gap-4 bg-red-50 text-red-700 max-w-2xl mx-auto shadow-lg">
+              <div id="job-matching-error" role="alert" className="p-6 rounded-2xl border border-red-200 flex items-start gap-4 bg-red-50 text-red-700 max-w-2xl mx-auto shadow-lg">
                 <div className="p-2 rounded-xl bg-red-100">
                   <AlertCircle className="h-6 w-6 shrink-0" />
                 </div>
@@ -1216,126 +1476,144 @@ export default function App() {
 
             {/* Job Results */}
             {jobMatchResult && Array.isArray(jobMatchResult.recommendedJobs) && (
-              <div id="job-results-section" className="space-y-8 max-w-5xl mx-auto">
+              <div id="job-results-section" className="space-y-8 max-w-5xl mx-auto" aria-live="polite">
                 <div className="text-center">
-                    <span className="inline-flex items-center gap-2 bg-[#f0fdf4] text-[#166534] font-extrabold text-xs px-4 py-2 rounded-full border border-[#bbf7d0] uppercase tracking-wider mb-4">
+                    <span className="inline-flex items-center gap-2 bg-kt-success-light text-kt-success-ink font-extrabold text-xs px-4 py-2 rounded-full border border-kt-success-border uppercase tracking-wider mb-4">
                     <CheckCircle2 className="h-4 w-4" /> {lang === "fil" ? "Nakakita ng Tugma!" : "Found a Match!"}
                   </span>
-                <h2 className="font-display font-extrabold text-2xl text-[#1A1A2E] sm:text-3xl">
+                <h2 className="font-display font-extrabold text-2xl text-kt-near-black sm:text-3xl">
                   {lang === "fil"
                     ? "Ang Iyong AI Report sa Pagtutugma ng Trabaho"
                     : "Your AI Job Match Report"
                   }
                 </h2>
-                  <p className="text-sm text-[#6B7280] mt-3 max-w-2xl mx-auto leading-relaxed">
+                  <p className="text-sm text-kt-slate mt-3 max-w-2xl mx-auto leading-relaxed prose-pretty">
                     {jobMatchResult.matchedSummary}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {jobMatchResult.recommendedJobs.map((job: any, idx: number) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {jobMatchResult.recommendedJobs.map((job, idx: number) => {
+                    const isExpanded = expandedJobCards.has(idx);
+                    return (
                     <div 
                       key={idx} 
-                      className="bg-white rounded-2xl border border-[#e5e8ef] shadow-[0_4px_32px_rgba(15,61,145,0.07)] overflow-hidden hover:shadow-lg transition-all flex flex-col h-full card-hover group"
+                      className="bg-white rounded-2xl border border-kt-border overflow-hidden hover:shadow-[0_4px_32px_rgba(15,61,145,0.07)] transition-all flex flex-col card-hover group"
                     >
-                      <div className="bg-[#F8F9FC] px-6 py-5 border-b border-[#e5e8ef] flex justify-between items-center">
-                        <span className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">
-                          {lang === "fil" ? "Tugma sa Trabaho" : "Job Match"} #{idx + 1}
-                        </span>
-                        <span className="flex items-center gap-1 font-mono text-sm font-bold px-3 py-1.5 rounded-full bg-[#0F3D91] text-white">
-                          {job.matchScore}% {lang === "fil" ? "Tugma" : "Match"}
-                        </span>
-                      </div>
-
-                      <div className="p-6 flex-1 flex flex-col justify-between">
-                        <div>
-                          <h3 className="font-display font-bold text-lg text-[#1A1A2E] leading-tight">
+                      <button
+                        type="button"
+                        onClick={() => setExpandedJobCards(prev => {
+                          const next = new Set(prev);
+                          if (next.has(idx)) next.delete(idx); else next.add(idx);
+                          return next;
+                        })}
+                        className="w-full text-left bg-kt-bg px-5 py-4 border-b border-kt-border flex items-center justify-between gap-3 touch-manipulation"
+                        aria-expanded={isExpanded}
+                        aria-label={isExpanded
+                          ? (lang === "fil" ? "Itago ang detalye" : "Hide details")
+                          : (lang === "fil" ? "Ipakita ang detalye" : "Show details")
+                        }
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <h3 className="font-display font-bold text-base text-kt-near-black leading-tight break-words truncate">
                             {job.jobTitle}
                           </h3>
-                          
-                          <div className="flex items-center gap-3 mt-3">
-                            <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${
-                              job.demandLevel === "Very High" 
-                                ? "bg-red-50 text-red-700 border border-red-200" 
-                                : job.demandLevel === "High"
-                                ? "bg-amber-50 text-amber-700 border border-amber-200"
-                                : "bg-[#E8F0FE] text-[#0F3D91] border border-[#d4e3ff]"
-                            }`}>
-                              {job.demandLevel} Demand
-                            </span>
-                            <span className="text-xs text-[#6B7280] font-mono font-semibold">
-                              {job.averageSalary}
-                            </span>
-                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="flex items-center gap-1 font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-kt-blue text-white">
+                            {job.matchScore}%
+                          </span>
+                          <span className={`text-[11px] font-bold px-2 py-1 rounded-full ${
+                            job.demandLevel === "Very High" 
+                              ? "bg-kt-danger-light text-kt-danger border border-kt-danger-border" 
+                              : job.demandLevel === "High"
+                              ? "bg-kt-warn-light text-kt-warn border border-kt-warn-border"
+                              : "bg-kt-blue-light text-kt-blue border border-kt-blue-soft"
+                          }`}>
+                            {job.demandLevel}
+                          </span>
+                          <ChevronDown className={`h-4 w-4 text-kt-slate transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                        </div>
+                      </button>
 
-                          <p className="text-sm text-[#6B7280] mt-4 leading-relaxed bg-[#F8F9FC] p-4 rounded-2xl border border-[#e5e8ef]">
-                            <strong className="text-[#1A1A2E]">{lang === "fil" ? "Bakit para sa iyo:" : "Why it's for you:"}</strong> &ldquo;{job.reasonForYouth}&rdquo;
+                      <div className="px-5 py-3 border-b border-kt-border flex items-center gap-3">
+                        <span className="text-xs text-kt-slate font-mono font-semibold">
+                          {job.averageSalary}
+                        </span>
+                        <button
+                          onClick={() => askChatAboutJob(job.jobTitle, job.requiredCourses)}
+                          className="ml-auto text-xs text-kt-blue font-bold hover:text-kt-blue-mid flex items-center gap-1 touch-manipulation"
+                        >
+                          <MessageSquare className="h-3.5 w-3.5" />
+                          {lang === "fil" ? "Kausapin" : "Chat"}
+                        </button>
+                      </div>
+
+                      {isExpanded && (
+                      <div className="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                          <p className="text-sm text-kt-slate leading-relaxed bg-kt-bg p-4 rounded-xl border border-kt-border prose-pretty">
+                            <strong className="text-kt-near-black">{lang === "fil" ? "Bakit para sa iyo:" : "Why it's for you:"}</strong> &ldquo;{job.reasonForYouth}&rdquo;
                           </p>
 
                           {job.description && (
-                            <p className="text-sm text-[#6B7280] mt-3 leading-relaxed">
+                            <p className="text-sm text-kt-slate mt-3 leading-relaxed prose-pretty">
                               {job.description}
                             </p>
                           )}
                         </div>
 
-                        <div className="mt-8 pt-5 border-t border-[#e5e8ef] space-y-4">
+                        <div className="mt-6 pt-4 border-t border-kt-border space-y-3">
                           {job.requiredCourses && job.requiredCourses.length > 0 && (
                             <div>
-                              <span className="text-xs font-bold uppercase text-[#6B7280] tracking-wider">
+                              <span className="text-xs font-semibold text-kt-slate">
                                 {lang === "fil" ? "Kailangang TESDA Courses:" : "Required TESDA Courses:"}
                               </span>
-                              <div className="mt-3 space-y-3">
-                                {job.requiredCourses.map((course: any, cidx: number) => (
-                                  <div key={cidx} className="flex flex-wrap items-center justify-between gap-2 bg-[#F8F9FC] rounded-2xl p-3 border border-[#e5e8ef] group-hover:border-[#d4e3ff] transition-all">
+                              <div className="mt-2 space-y-2">
+                                {job.requiredCourses.map((course, cidx: number) => (
+                                  <div key={cidx} className="flex flex-wrap items-center justify-between gap-2 bg-kt-bg rounded-xl p-3 border border-kt-border group-hover:border-kt-blue-soft transition-all">
                                      <div className="flex items-center gap-3 min-w-0">
-                                      <div className="p-2 rounded-xl bg-[#E8F0FE] text-[#0F3D91]">
-                                        <GraduationCap className="h-5 w-5" />
-                                      </div>
-                                      <div>
-                                        <span className="text-sm font-bold text-[#1A1A2E]">{course.name}</span>
-                                        <span className="text-xs text-[#6B7280] block">{course.code} | {course.duration}</span>
-                                      </div>
-                                    </div>
-                                    <button
-                                      onClick={() => {
-                                        const sector = SECTORS_DATA.find((s: any) => s.id === course.sectorId);
-                                        if (sector) setSelectedSector(sector);
-                                        navigate("/explorer");
-                                      }}
-                                      className="text-sm text-[#0F3D91] font-bold hover:text-[#0F3D91] px-3 py-2 rounded-xl hover:bg-[#E8F0FE] transition-all border border-[#d4e3ff] touch-manipulation"
-                                    >
-                                      {lang === "fil" ? "Detalye" : "Details"}
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          <button
-                            onClick={() => askChatAboutJob(job.jobTitle, job.requiredCourses)}
-                            className="w-full rounded-2xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-bold text-sm py-3 text-center flex items-center justify-center gap-2 shadow-md shadow-[#E8F0FE] hover:shadow-lg hover:-translate-y-0.5 transition-all touch-manipulation"
-                          >
-                            <MessageSquare className="h-4 w-4" />
-                            <span>{lang === "fil" ? "Kausapin ang Counselor" : "Chat with Counselor"}</span>
-                          </button>
+                                       <div className="p-2 rounded-lg bg-kt-blue-light text-kt-blue">
+                                         <GraduationCap className="h-4 w-4" />
+                                       </div>
+                                       <div>
+                                         <span className="text-sm font-bold text-kt-near-black">{course.name}</span>
+                                         <span className="text-xs text-kt-slate block">{course.code} | {course.duration}</span>
+                                       </div>
+                                     </div>
+                                     <button
+                                       onClick={() => {
+                                         const sector = SECTORS_DATA.find((s) => s.id === course.sectorId);
+                                         if (sector) setSelectedSector(sector);
+                                         navigate("/explorer");
+                                       }}
+                                       className="text-xs text-kt-blue font-bold hover:text-kt-blue px-2 py-1.5 rounded-lg hover:bg-kt-blue-light transition-all border border-kt-blue-soft touch-manipulation"
+                                     >
+                                       {lang === "fil" ? "Detalye" : "Details"}
+                                     </button>
+                                   </div>
+                                 ))}
+                               </div>
+                             </div>
+                           )}
                         </div>
                       </div>
+                      )}
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* FAQ Tip */}
                 {jobMatchResult.faqTip && (
-                  <div className="bg-[#0F3D91] rounded-3xl p-5 md:p-8 text-white border border-[#0F3D91]/20 shadow-[0_4px_32px_rgba(15,61,145,0.15)] relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-[#FCD116]/10 rounded-full blur-3xl" />
+                  <div className="bg-kt-blue rounded-3xl p-5 md:p-8 text-white border border-kt-blue/20 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-kt-gold/10 rounded-full blur-3xl" />
                     <div className="relative flex items-start gap-4">
                       <div className="p-3 rounded-xl bg-white/10">
-                        <Info className="h-6 w-6 text-[#FCD116]" />
+                        <Info className="h-6 w-6 text-kt-gold" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-lg text-[#FCD116] mb-2">{lang === "fil" ? "Susunod na Hakbang" : "Next Step"}</h3>
+                        <h3 className="font-bold text-lg text-kt-gold mb-2">{lang === "fil" ? "Susunod na Hakbang" : "Next Step"}</h3>
                         <p className="text-sm text-white/70 leading-relaxed">{jobMatchResult.faqTip}</p>
                       </div>
                     </div>
@@ -1351,24 +1629,26 @@ export default function App() {
       </main>
 
       {/* Footer Branding Area */}
-      <footer id="app-footer" className="mt-20 border-t border-[#e5e8ef] bg-[#F8F9FC] py-12 text-center">
+      {currentTab !== "chat" && (
+      <footer id="app-footer" className="mt-20 border-t border-kt-border bg-kt-bg py-12 text-center">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 rounded-2xl bg-[#0F3D91] shadow-md shadow-[#E8F0FE]">
+            <div className="p-3 rounded-2xl bg-kt-blue">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
-            <span className="font-display text-xl font-extrabold text-[#1A1A2E]">
-              Ka-Traba<span className="text-[#FCD116]">HO</span>
+            <span className="font-display text-xl font-extrabold text-kt-near-black">
+              Ka-Traba<span className="text-kt-gold">HO</span>
             </span>
           </div>
-          <p className="font-bold text-[#1A1A2E] text-base">Ka-TrabaHO Career Guidance System</p>
-          <p className="text-sm text-[#6B7280] max-w-lg mx-auto leading-relaxed">{lang === "fil" ? "Hindi opisyal ngunit magalang na sumusuporta sa mga kabataang Pilipino na kumuha ng libreng TESDA vocational training." : "Unofficial yet respectfully supporting Filipino youth in accessing free TESDA vocational training."}</p>
-          <div className="pt-4 border-t border-[#e5e8ef] mt-6">
-            <p className="text-xs text-[#6B7280]">{lang === "fil" ? "Platform na ginawa gamit ang AI support at lokal na job insights." : "Platform built using AI support and local job insights."}</p>
+          <p className="font-bold text-kt-near-black text-base">Ka-TrabaHO Career Guidance System</p>
+          <p className="text-sm text-kt-slate max-w-lg mx-auto leading-relaxed">{lang === "fil" ? "Hindi opisyal ngunit magalang na sumusuporta sa mga kabataang Pilipino na kumuha ng libreng TESDA vocational training." : "Unofficial yet respectfully supporting Filipino youth in accessing free TESDA vocational training."}</p>
+          <div className="pt-4 border-t border-kt-border mt-6">
+            <p className="text-xs text-kt-slate">{lang === "fil" ? "Platform na ginawa gamit ang AI support at lokal na job insights." : "Platform built using AI support and local job insights."}</p>
           </div>
         </div>
-      </footer>
-      <BottomNav lang={lang} />
+       </footer>
+      )}
+       <BottomNav lang={lang} />
     </div>
   );
 }
