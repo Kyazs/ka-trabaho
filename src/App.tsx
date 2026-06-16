@@ -33,6 +33,7 @@ import {
 import Navbar from "./components/Navbar";
 import PageHeader from "./components/PageHeader";
 import BottomNav from "./components/BottomNav";
+import Footer from "./components/Footer";
 import LandingPage from "./components/LandingPage";
 import AssessmentWizard from "./components/AssessmentWizard";
 import ProfileMiniForm from "./components/ProfileMiniForm";
@@ -1661,26 +1662,7 @@ export default function App() {
 
       </main>
 
-      {/* Footer Branding Area */}
-      {currentTab !== "chat" && (
-      <footer id="app-footer" className="mt-20 border-t border-kt-border bg-kt-bg py-12 text-center">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 rounded-2xl bg-kt-blue">
-              <GraduationCap className="h-6 w-6 text-white" />
-            </div>
-            <span className="font-display text-xl font-extrabold text-kt-near-black">
-              Ka-Traba<span className="text-kt-gold">HO</span>
-            </span>
-          </div>
-          <p className="font-bold text-kt-near-black text-base">Ka-TrabaHO Career Guidance System</p>
-          <p className="text-sm text-kt-slate max-w-lg mx-auto leading-relaxed">{lang === "fil" ? "Hindi opisyal ngunit magalang na sumusuporta sa mga kabataang Pilipino na kumuha ng libreng TESDA vocational training." : "Unofficial yet respectfully supporting Filipino youth in accessing free TESDA vocational training."}</p>
-          <div className="pt-4 border-t border-kt-border mt-6">
-            <p className="text-xs text-kt-slate">{lang === "fil" ? "Platform na ginawa gamit ang AI support at lokal na job insights." : "Platform built using AI support and local job insights."}</p>
-          </div>
-        </div>
-       </footer>
-      )}
+      {currentTab !== "chat" && <Footer lang={lang} />}
        <BottomNav lang={lang} />
     </div>
   );
