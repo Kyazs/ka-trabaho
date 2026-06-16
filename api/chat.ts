@@ -33,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Simple health check for GET requests
   if (req.method === 'GET') {
     await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 200, false, startTime);
-    return res.json({ status: 'ok', endpoint: 'chat', env: isDummyKey ? 'dummy' : 'live' });
+    return res.json({ status: 'ok', endpoint: 'chat' });
   }
 
   if (req.method !== 'POST') {
@@ -66,6 +66,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (userProfile) {
       const sanitizedInterests = sanitizeInput(userProfile.interests, 500);
       studentContext = `You are chatting with a student who is ${userProfile.age} years old from ${userProfile.province || userProfile.region}. Active educational status: Finished ${userProfile.education}. Interests: ${sanitizedInterests || "none specified"}.`;
+      const topCourses = (userProfile as any).topMatchedCourses as string[] | undefined;
+      if (topCourses && topCourses.length > 0) {
+        studentContext += ` Their top matched TESDA courses are: ${topCourses.join(', ')}. Reference these naturally in conversation.`;
+      }
     }
 
     const systemInstruction = `You are "Ka-TrabaHO", an official TESDA Career & Enrolment AI Counselor specifically designed for out-of-school Filipino youth aged 15-24.
