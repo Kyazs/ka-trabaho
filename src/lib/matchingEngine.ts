@@ -89,6 +89,14 @@ function jaccardSimilarity(setA: Set<string>, setB: Set<string>): number {
   return union === 0 ? 0 : intersection / union;
 }
 
+function findCourse(code: string) {
+  for (const sector of SECTORS_DATA) {
+    const course = sector.courses.find(c => c.code === code);
+    if (course) return { course, sectorId: sector.id };
+  }
+  return null;
+}
+
 function checkEducationEligibility(education: string, entryReqEn: string): number {
   const eduLevel = EDUCATION_LEVELS[education] ?? 2;
   const reqLower = entryReqEn.toLowerCase();
@@ -183,8 +191,8 @@ export function scoreJobs(
   for (const sector of SECTORS_DATA) {
     for (const job of sector.jobs) {
       const courseSkillSets = job.mappedCourses.map(code => {
-        const course = sector.courses.find(c => c.code === code);
-        return course ? tokenize(course.skillsAcquired.join(' ')) : [];
+        const found = findCourse(code);
+        return found ? tokenize(found.course.skillsAcquired.join(' ')) : [];
       });
       const allJobSkills = expandWithSynonyms(courseSkillSets.flat());
       const jobDescTokens = expandWithSynonyms(tokenize(job.description));
@@ -193,9 +201,9 @@ export function scoreJobs(
       const skillScore = jaccardSimilarity(skillTokens, allJobSkills);
 
       const highestEduReq = job.mappedCourses.map(code => {
-        const course = sector.courses.find(c => c.code === code);
-        if (!course) return 0.5;
-        const reqEn = typeof course.entryReq === 'string' ? course.entryReq : course.entryReq.en;
+        const found = findCourse(code);
+        if (!found) return 0.5;
+        const reqEn = typeof found.course.entryReq === 'string' ? found.course.entryReq : found.course.entryReq.en;
         return checkEducationEligibility(profile.education, reqEn) / 100;
       });
       const eduScore = Math.max(0, ...highestEduReq);
@@ -213,8 +221,8 @@ export function scoreJobs(
       if (reasonKeys.length === 0) reasonKeys.push("region_hot");
 
       const requiredCourses: JobMatchCourse[] = job.mappedCourses.map(code => {
-        const course = sector.courses.find(c => c.code === code);
-        return course ? { name: course.name, code: course.code, duration: course.duration, sectorId: sector.id } : { name: code, code, duration: "", sectorId: sector.id };
+        const found = findCourse(code);
+        return found ? { name: found.course.name, code: found.course.code, duration: found.course.duration, sectorId: found.sectorId } : { name: code, code, duration: "", sectorId: sector.id };
       });
 
       results.push({
