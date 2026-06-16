@@ -17,10 +17,13 @@ import {
   BookOpen,
   Clock,
   DollarSign,
-  Search
+  Search,
+  ChevronDown
 } from "lucide-react";
 import { AssessmentWizardProps, WizardStep } from "../types";
 import { SECTORS_DATA } from "../data/tesdaData";
+
+const TAG_LIMIT = 4;
 
 export default function AssessmentWizard(props: AssessmentWizardProps) {
   const {
@@ -32,13 +35,22 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
     toggleInterestTag, toggleSkillTag, handleRegionChange, handleSubmitProfile,
     isMatching, matchResult, matchError, lang,
     QUICK_INTERESTS, QUICK_SKILLS, PHILIPPINES_REGIONS,
-    onChatAboutCourse, onExploreCourse, onGoToChat, onGoToFaq
+    onChatAboutCourse, onExploreCourse, onGoToChat, onGoToFaq, onResetProfile
   } = props;
 
   const stepOrder: WizardStep[] = ['basic', 'interests', 'skills', 'goal', 'review', 'processing', 'results'];
-  const [currentStep, setCurrentStep] = useState<WizardStep>('basic');
+  const [currentStep, setCurrentStep] = useState<WizardStep>(() => {
+    try {
+      const saved = localStorage.getItem("kt-wizard-step");
+      if (saved && stepOrder.includes(saved as WizardStep) && saved !== 'processing') return saved as WizardStep;
+    } catch {}
+    return 'basic';
+  });
   const [fadeIn, setFadeIn] = useState(true);
   const [validationError, setValidationError] = useState<string>("");
+  const [wizardShowMoreInterests, setWizardShowMoreInterests] = useState(false);
+  const [wizardShowMoreSkills, setWizardShowMoreSkills] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
 
   const processingSteps = lang === 'fil'
     ? [
@@ -125,6 +137,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
     setFadeIn(false);
     setTimeout(() => {
       setCurrentStep(step);
+      try { localStorage.setItem("kt-wizard-step", step); } catch {}
       setFadeIn(true);
     }, 50);
   };
@@ -177,16 +190,16 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
         {/* Mobile progress bar */}
         <div className="md:hidden">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-[#6B7280] uppercase tracking-wider">
+            <span className="text-xs font-semibold text-kt-slate">
               {lang === 'fil' ? `Hakbang ${stepIndex + 1} ng ${stepOrder.length}` : `Step ${stepIndex + 1} of ${stepOrder.length}`}
             </span>
-            <span className="text-xs font-bold text-[#0F3D91]">
+            <span className="text-xs font-bold text-kt-blue">
               {stepLabels[currentStep]}
             </span>
           </div>
-          <div className="h-2 bg-[#E8F0FE] rounded-full overflow-hidden">
+          <div className="h-2 bg-kt-blue-light rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#0F3D91] rounded-full transition-all duration-500"
+              className="h-full bg-kt-blue rounded-full transition-all duration-500"
               style={{ width: `${((stepIndex + 1) / stepOrder.length) * 100}%` }}
             />
           </div>
@@ -202,15 +215,15 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
               }}
               className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
                 idx === stepIndex
-                  ? "bg-[#0F3D91] text-white shadow-md"
+                  ? "bg-kt-blue text-white"
                   : idx < stepIndex
-                  ? "bg-[#E8F0FE] text-[#0F3D91] border border-[#d4e3ff]"
-                  : "bg-[#F8F9FC] text-[#6B7280] border border-[#e5e8ef]"
+                  ? "bg-kt-blue-light text-kt-blue border border-kt-blue-soft"
+                  : "bg-kt-bg text-kt-slate border border-kt-border"
               }`}
               disabled={idx > stepIndex}
             >
               <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                idx === stepIndex ? "bg-white text-[#0F3D91]" : ""
+                idx === stepIndex ? "bg-white text-kt-blue" : ""
               }`}>
                 {idx < stepIndex ? (
                   <CheckCircle2 className="h-4 w-4" />
@@ -233,15 +246,15 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
       case 'basic':
         return (
           <div className={containerClass}>
-            <div className="flex items-center gap-3 pb-5 mb-8 border-b border-[#e5e8ef]">
-              <div className="p-3 rounded-xl bg-[#0F3D91] text-white shadow-sm">
+            <div className="flex items-center gap-3 pb-5 mb-8 border-b border-kt-border">
+              <div className="p-3 rounded-xl bg-kt-blue text-white">
                 <User className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="font-display font-bold text-xl text-[#1A1A2E]">
+                <h2 className="font-display font-bold text-xl text-kt-near-black">
                   {lang === "fil" ? "Mabilisang Profile Assessment" : "Quick Profile Assessment"}
                 </h2>
-                <p className="text-sm text-[#6B7280] mt-1">
+                <p className="text-sm text-kt-slate mt-1">
                   {lang === "fil" ? "Ilagay ang iyong basic info" : "Enter your basic information"}
                 </p>
               </div>
@@ -250,20 +263,24 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
             <div className="space-y-8">
               {/* Age Input */}
               <div>
-                <label className="block text-sm font-bold uppercase tracking-wider text-[#6B7280] mb-3">
+                <label htmlFor="input-profile-age-slider" className="block text-sm font-bold text-kt-slate mb-3">
                   {lang === "fil" ? "Ilang Taon Ka Na? (Para sa edad 15-24)" : "Your Age (15-24)"}
                 </label>
                  <div className="flex flex-col sm:flex-row items-center gap-4">
-                   <input 
-                     id="input-profile-age-slider"
-                     type="range" 
-                     min="15" 
-                     max="24" 
-                     value={age}
-                     onChange={(e) => setAge(Math.min(24, Math.max(15, parseInt(e.target.value) || 18)))}
-                     className="w-full h-3 bg-[#E8F0FE] rounded-lg appearance-none cursor-pointer accent-[#0F3D91]"
-                   />
-                   <span className="flex-shrink-0 inline-block bg-[#E8F0FE] text-[#0F3D91] font-bold px-4 py-2 rounded-xl text-base border border-[#d4e3ff]">
+                    <input 
+                      id="input-profile-age-slider"
+                      type="range" 
+                      min="15" 
+                      max="24" 
+                      value={age}
+                      onChange={(e) => setAge(Math.min(24, Math.max(15, parseInt(e.target.value) || 18)))}
+                      className="w-full h-3 bg-kt-blue-light rounded-lg appearance-none cursor-pointer accent-kt-blue"
+                      aria-valuenow={age}
+                      aria-valuemin={15}
+                      aria-valuemax={24}
+                      aria-valuetext={`${age} ${lang === 'fil' ? 'taong gulang' : 'years old'}`}
+                    />
+                   <span className="flex-shrink-0 inline-block bg-kt-blue-light text-kt-blue font-bold px-4 py-2 rounded-xl text-base border border-kt-blue-soft">
                     {age} {lang === "fil" ? "taong gulang" : "years old"}
                   </span>
                 </div>
@@ -271,14 +288,14 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
 
               {/* Completed Education Level */}
               <div>
-                <label className="block text-sm font-bold uppercase tracking-wider text-[#6B7280] mb-3">
+                <label htmlFor="select-profile-edu" className="block text-sm font-bold text-kt-slate mb-3">
                   {lang === "fil" ? "Ano ang pinakamataas na antas ng iyong pag-aaral?" : "What is your highest educational attainment?"}
                 </label>
                 <select
                   id="select-profile-edu"
                   value={education}
                   onChange={(e) => setEducation(e.target.value)}
-                    className="w-full rounded-xl border border-[#e5e8ef] bg-white px-5 py-4 text-base focus:bg-white focus:border-[#0F3D91] focus:ring-3 focus:ring-[#E8F0FE] focus:outline-none font-medium transition-all"
+                    className="w-full rounded-xl border border-kt-border bg-white px-5 py-4 text-base focus:bg-white focus:border-kt-blue focus:ring-3 focus:ring-kt-blue-light focus:outline-none font-medium transition-all"
                   >
                   <option value="Elementary Graduate">Grade 6 / Elementary Graduate (Completer)</option>
                   <option value="Elementary Undergrad">Elementary Undergraduate</option>
@@ -286,7 +303,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                   <option value="Junior High Undergrad">Junior High Undergraduate (Completer / Drop-out)</option>
                   <option value="Senior High School Graduate">Senior High School Graduate (Grade 12 Completer)</option>
                   <option value="ALS Graduate">ALS (Alternative Learning System) Graduate</option>
-                  <option value="Vocational College Undergraduate">College Level Undergrad / Drop-out</option>
+                  <option value="College Level Undergrad">College Level Undergrad / Drop-out</option>
                   <option value="College Graduate">College Graduate</option>
                  </select>
               </div>
@@ -294,32 +311,37 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
               {/* Region selection */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-bold uppercase tracking-wider text-[#6B7280] mb-3">
+                  <label htmlFor="select-profile-region" className="block text-sm font-bold text-kt-slate mb-3">
                     {lang === "fil" ? "Gustong Rehiyon (Region)" : "Desired Region"}
                   </label>
                   <select
                     id="select-profile-region"
                     value={selectedRegion}
                     onChange={(e) => handleRegionChange(e.target.value)}
-                    className="w-full rounded-xl border border-[#e5e8ef] bg-white px-5 py-4 text-base focus:bg-white focus:border-[#0F3D91] focus:ring-3 focus:ring-[#E8F0FE] focus:outline-none font-medium transition-all"
+                    className="w-full rounded-xl border border-kt-border bg-white px-5 py-4 text-base focus:bg-white focus:border-kt-blue focus:ring-3 focus:ring-kt-blue-light focus:outline-none font-medium transition-all"
                   >
-                    {PHILIPPINES_REGIONS.map((region) => (
-                      <option key={region.code} value={region.code}>
-                        {region.name}
-                      </option>
+                    <option value="">{lang === "fil" ? "Hindi ko alam / Pumili mamaya" : "I don't know / Choose later"}</option>
+                    {["Luzon", "Visayas", "Mindanao"].map(group => (
+                      <optgroup key={group} label={group}>
+                        {PHILIPPINES_REGIONS.filter(r => r.islandGroup === group).map((region) => (
+                          <option key={region.code} value={region.code}>
+                            {region.name}
+                          </option>
+                        ))}
+                      </optgroup>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold uppercase tracking-wider text-[#6B7280] mb-3">
+                  <label htmlFor="select-profile-province" className="block text-sm font-bold text-kt-slate mb-3">
                     {lang === "fil" ? "Probinsya / City Hub" : "Province / City Hub"}
                   </label>
                   <select
                     id="select-profile-province"
                     value={selectedProvince}
                     onChange={(e) => setSelectedProvince(e.target.value)}
-                    className="w-full rounded-xl border border-[#e5e8ef] bg-white px-5 py-4 text-base focus:bg-white focus:border-[#0F3D91] focus:ring-3 focus:ring-[#E8F0FE] focus:outline-none font-medium transition-all"
+                    className="w-full rounded-xl border border-kt-border bg-white px-5 py-4 text-base focus:bg-white focus:border-kt-blue focus:ring-3 focus:ring-kt-blue-light focus:outline-none font-medium transition-all"
                   >
                     {selectedProvincesList.map((prov) => (
                       <option key={prov} value={prov}>
@@ -336,15 +358,15 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
       case 'interests':
         return (
           <div className={containerClass}>
-            <div className="flex items-center gap-3 pb-5 mb-8 border-b border-[#e5e8ef]">
-              <div className="p-3 rounded-xl bg-[#0F3D91] text-white shadow-sm">
+            <div className="flex items-center gap-3 pb-5 mb-8 border-b border-kt-border">
+              <div className="p-3 rounded-xl bg-kt-blue text-white">
                 <Sparkles className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="font-display font-bold text-xl text-[#1A1A2E]">
+                <h2 className="font-display font-bold text-xl text-kt-near-black">
                   {lang === "fil" ? "Mga Interes" : "Your Interests"}
                 </h2>
-                <p className="text-sm text-[#6B7280] mt-1">
+                <p className="text-sm text-kt-slate mt-1">
                   {lang === "fil" ? "Piliin kung ano ang mga hilig mo" : "Select what you enjoy doing"}
                 </p>
               </div>
@@ -352,11 +374,11 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
 
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-bold uppercase tracking-wider text-[#6B7280] mb-3">
+                <label htmlFor="input-custom-interest" className="block text-sm font-bold text-kt-slate mb-3">
                   {lang === "fil" ? "Piliin ang Iyong mga Interes (Pumili ng higit sa isa):" : "Select Your Main Interests:"}
                 </label>
                 <div className="flex flex-wrap gap-3 mb-4">
-                  {QUICK_INTERESTS.map((int) => {
+                  {(wizardShowMoreInterests ? QUICK_INTERESTS : QUICK_INTERESTS.slice(0, TAG_LIMIT)).map((int) => {
                     const isSelected = customInterests.includes(int.label);
                     return (
                     <button
@@ -366,8 +388,8 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                       onClick={() => toggleInterestTag(int.label)}
                       className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-all touch-manipulation ${
                         isSelected
-                          ? "bg-[#0F3D91] text-white shadow-sm"
-                          : "bg-[#E8F0FE] border border-[#d4e3ff] text-[#0F3D91] hover:bg-[#d4e3ff]"
+                          ? "bg-kt-blue text-white"
+                          : "bg-kt-blue-light border border-kt-blue-soft text-kt-blue hover:bg-kt-blue-soft"
                       }`}
                     >
                       {isSelected && <Check className="h-3.5 w-3.5" />}
@@ -375,6 +397,19 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                     </button>
                     );
                   })}
+                  {QUICK_INTERESTS.length > TAG_LIMIT && (
+                    <button
+                      type="button"
+                      onClick={() => setWizardShowMoreInterests(!wizardShowMoreInterests)}
+                      className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-kt-blue bg-kt-bg border border-kt-border hover:bg-kt-blue-light transition-all touch-manipulation"
+                      aria-expanded={wizardShowMoreInterests}
+                    >
+                      <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${wizardShowMoreInterests ? "rotate-180" : ""}`} />
+                      {wizardShowMoreInterests
+                        ? (lang === "fil" ? "Wala na" : "Less")
+                        : (lang === "fil" ? `+${QUICK_INTERESTS.length - TAG_LIMIT} pa` : `+${QUICK_INTERESTS.length - TAG_LIMIT} more`)}
+                    </button>
+                  )}
                 </div>
 
                 {/* Manual interest add */}
@@ -385,12 +420,12 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                     placeholder={lang === "fil" ? "Magsulat ng iba pang interes (e.g., cellphones)" : "Type other custom interests..."}
                     value={interestInput}
                     onChange={(e) => setInterestInput(e.target.value)}
-                    className="flex-1 rounded-xl border border-[#e5e8ef] bg-white px-4 py-3 text-sm focus:bg-white focus:border-[#0F3D91] focus:ring-3 focus:ring-[#E8F0FE] focus:outline-none transition-all"
+                    className="flex-1 rounded-xl border border-kt-border bg-white px-4 py-3 text-sm focus:bg-white focus:border-kt-blue focus:ring-3 focus:ring-kt-blue-light focus:outline-none transition-all"
                   />
                   <button
                     id="btn-add-custom-interest"
                     type="submit"
-                    className="rounded-xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white px-5 py-3 text-sm font-bold shadow-md hover:shadow-lg transition-all"
+                    className="rounded-xl bg-kt-blue hover:bg-kt-blue-mid text-white px-5 py-3 text-sm font-bold hover:shadow-lg transition-all"
                   >
                     {lang === "fil" ? "I-add" : "Add"}
                   </button>
@@ -402,12 +437,13 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                   {customInterests.map((interest, idx) => (
                     <span 
                       key={idx} 
-                      className="inline-flex items-center gap-1.5 bg-[#E8F0FE] text-[#0F3D91] px-3 py-1.5 rounded-full text-sm font-medium border border-[#d4e3ff]"
+                      className="inline-flex items-center gap-1.5 bg-kt-blue-light text-kt-blue px-3 py-1.5 rounded-full text-sm font-medium border border-kt-blue-soft"
                     >
                       {interest}
                       <button 
                         onClick={() => toggleInterestTag(interest)}
-                        className="text-[#0F3D91]/60 hover:text-[#0F3D91] font-bold"
+                        className="min-w-[44px] min-h-[44px] flex items-center justify-center text-kt-blue/50 hover:text-kt-danger font-bold rounded-full hover:bg-kt-danger-light transition-colors"
+                        aria-label={lang === 'fil' ? `Alisin ang ${interest}` : `Remove ${interest}`}
                       >
                         ×
                       </button>
@@ -422,15 +458,15 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
       case 'skills':
         return (
           <div className={containerClass}>
-            <div className="flex items-center gap-3 pb-5 mb-8 border-b border-[#e5e8ef]">
-              <div className="p-3 rounded-xl bg-[#FCD116] text-[#1A1A2E] shadow-sm">
+            <div className="flex items-center gap-3 pb-5 mb-8 border-b border-kt-border">
+              <div className="p-3 rounded-xl bg-kt-gold text-kt-near-black">
                 <Award className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="font-display font-bold text-xl text-[#1A1A2E]">
+                <h2 className="font-display font-bold text-xl text-kt-near-black">
                   {lang === "fil" ? "Mga Galing at Kakayahan" : "Your Skills"}
                 </h2>
-                <p className="text-sm text-[#6B7280] mt-1">
+                <p className="text-sm text-kt-slate mt-1">
                   {lang === "fil" ? "Ano ang mga kakayahan mo na ngayon?" : "What can you already do?"}
                 </p>
               </div>
@@ -438,11 +474,11 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
 
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-bold uppercase tracking-wider text-[#6B7280] mb-3">
+                <label htmlFor="input-custom-skill" className="block text-sm font-bold text-kt-slate mb-3">
                   {lang === "fil" ? "Anong mga praktikal na bagay ang marunong ka na?" : "What practical skills do you already have?"}
                 </label>
                 <div className="flex flex-wrap gap-3 mb-4">
-                  {QUICK_SKILLS.map((skill) => {
+                  {(wizardShowMoreSkills ? QUICK_SKILLS : QUICK_SKILLS.slice(0, TAG_LIMIT)).map((skill) => {
                     const isSelected = customSkills.includes(skill.label);
                     return (
                     <button
@@ -452,8 +488,8 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                       onClick={() => toggleSkillTag(skill.label)}
                       className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-all touch-manipulation ${
                         isSelected
-                          ? "bg-[#0F3D91] text-white shadow-sm"
-                          : "bg-[#E8F0FE] border border-[#d4e3ff] text-[#0F3D91] hover:bg-[#d4e3ff]"
+                          ? "bg-kt-blue text-white"
+                          : "bg-kt-blue-light border border-kt-blue-soft text-kt-blue hover:bg-kt-blue-soft"
                       }`}
                     >
                       {isSelected && <Check className="h-3.5 w-3.5" />}
@@ -461,6 +497,19 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                     </button>
                     );
                   })}
+                  {QUICK_SKILLS.length > TAG_LIMIT && (
+                    <button
+                      type="button"
+                      onClick={() => setWizardShowMoreSkills(!wizardShowMoreSkills)}
+                      className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-kt-blue bg-kt-bg border border-kt-border hover:bg-kt-blue-light transition-all touch-manipulation"
+                      aria-expanded={wizardShowMoreSkills}
+                    >
+                      <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${wizardShowMoreSkills ? "rotate-180" : ""}`} />
+                      {wizardShowMoreSkills
+                        ? (lang === "fil" ? "Wala na" : "Less")
+                        : (lang === "fil" ? `+${QUICK_SKILLS.length - TAG_LIMIT} pa` : `+${QUICK_SKILLS.length - TAG_LIMIT} more`)}
+                    </button>
+                  )}
                 </div>
 
                 {/* Manual skill add */}
@@ -471,12 +520,12 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                      placeholder={lang === "fil" ? "Magsulat ng iba pang kakayahan o hilig" : "Type other skill..."}
                     value={skillInput}
                     onChange={(e) => setSkillInput(e.target.value)}
-                    className="flex-1 rounded-xl border border-[#e5e8ef] bg-white px-4 py-3 text-sm focus:bg-white focus:border-[#0F3D91] focus:ring-3 focus:ring-[#E8F0FE] focus:outline-none transition-all"
+                    className="flex-1 rounded-xl border border-kt-border bg-white px-4 py-3 text-sm focus:bg-white focus:border-kt-blue focus:ring-3 focus:ring-kt-blue-light focus:outline-none transition-all"
                   />
                   <button
                     id="btn-add-custom-skill"
                     type="submit"
-                    className="rounded-xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white px-5 py-3 text-sm font-bold shadow-md hover:shadow-lg transition-all"
+                    className="rounded-xl bg-kt-blue hover:bg-kt-blue-mid text-white px-5 py-3 text-sm font-bold hover:shadow-lg transition-all"
                   >
                     {lang === "fil" ? "I-add" : "Add"}
                   </button>
@@ -488,12 +537,13 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                   {customSkills.map((skill, idx) => (
                     <span 
                       key={idx} 
-                      className="inline-flex items-center gap-1.5 bg-[#E8F0FE] text-[#0F3D91] px-3 py-1.5 rounded-full text-sm font-medium border border-[#d4e3ff]"
+                      className="inline-flex items-center gap-1.5 bg-kt-blue-light text-kt-blue px-3 py-1.5 rounded-full text-sm font-medium border border-kt-blue-soft"
                     >
                       {skill}
                       <button 
                         onClick={() => toggleSkillTag(skill)}
-                        className="text-[#0F3D91]/60 hover:text-[#0F3D91] font-bold"
+                        className="min-w-[44px] min-h-[44px] flex items-center justify-center text-kt-blue/50 hover:text-kt-danger font-bold rounded-full hover:bg-kt-danger-light transition-colors"
+                        aria-label={lang === 'fil' ? `Alisin ang ${skill}` : `Remove ${skill}`}
                       >
                         ×
                       </button>
@@ -506,7 +556,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                   setCustomSkills([]);
                   nextStep();
                 }}
-                className="text-sm text-[#6B7280] underline hover:text-[#1A1A2E] transition-colors"
+                className="text-sm text-kt-slate underline hover:text-kt-near-black transition-colors"
               >
                 {lang === 'fil' ? "Walang skill? I-skip muna" : "No skills? Skip for now"}
               </button>
@@ -517,22 +567,22 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
       case 'goal':
         return (
           <div className={containerClass}>
-            <div className="flex items-center gap-3 pb-5 mb-8 border-b border-[#e5e8ef]">
-              <div className="p-3 rounded-xl bg-[#0F3D91] text-white shadow-sm">
+            <div className="flex items-center gap-3 pb-5 mb-8 border-b border-kt-border">
+              <div className="p-3 rounded-xl bg-kt-blue text-white">
                 <Briefcase className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="font-display font-bold text-xl text-[#1A1A2E]">
+                <h2 className="font-display font-bold text-xl text-kt-near-black">
                   {lang === "fil" ? "Plano sa Karera" : "Career Goal"}
                 </h2>
-                <p className="text-sm text-[#6B7280] mt-1">
+                <p className="text-sm text-kt-slate mt-1">
                   {lang === "fil" ? "Ano ang pangarap mong trabaho?" : "What job do you dream of?"}
                 </p>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold uppercase tracking-wider text-[#6B7280] mb-3">
+              <label htmlFor="textarea-profile-goal" className="block text-sm font-bold text-kt-slate mb-3">
                   {lang === "fil" ? "Anong trabaho ang pangarap mo, o ano ang plano mong karera?" : "Any specific job or lifetime plan?"}
               </label>
               <textarea
@@ -549,7 +599,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                 className={`w-full border rounded-xl px-4 py-3 text-base focus:ring-3 focus:outline-none transition-all resize-none ${
                   careerGoalError 
                     ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/20' 
-                    : 'border-[#e5e8ef] bg-white focus:border-[#0F3D91] focus:ring-[#E8F0FE]'
+                    : 'border-kt-border bg-white focus:border-kt-blue focus:ring-kt-blue-light'
                 }`}
                 maxLength={200}
               />
@@ -560,7 +610,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                     {careerGoalError}
                   </span>
                 )}
-                <span className={`text-xs ml-auto ${careerGoal.length >= 180 ? 'text-amber-500' : 'text-[#6B7280]'}`}>
+                <span className={`text-xs ml-auto ${careerGoal.length >= 180 ? 'text-amber-500' : 'text-kt-slate'}`}>
                   {careerGoal.length}/200
                 </span>
               </div>
@@ -571,65 +621,65 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
       case 'review':
         return (
           <div className={containerClass}>
-            <div className="flex items-center gap-3 pb-5 mb-8 border-b border-[#e5e8ef]">
-              <div className="p-3 rounded-xl bg-[#FCD116] text-[#1A1A2E] shadow-sm">
+            <div className="flex items-center gap-3 pb-5 mb-8 border-b border-kt-border">
+              <div className="p-3 rounded-xl bg-kt-gold text-kt-near-black">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="font-display font-bold text-xl text-[#1A1A2E]">
+                <h2 className="font-display font-bold text-xl text-kt-near-black">
                   {lang === "fil" ? "Suriin ang Iyong Profile" : "Review Your Profile"}
                 </h2>
-                <p className="text-sm text-[#6B7280] mt-1">
+                <p className="text-sm text-kt-slate mt-1">
                   {lang === "fil" ? "Siguraduhin tama ang lahat ng impormasyon" : "Make sure all information is correct"}
                 </p>
               </div>
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white rounded-2xl p-6 border border-[#e5e8ef] space-y-4 shadow-sm">
+              <div className="bg-white rounded-2xl p-6 border border-kt-border space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <span className="text-xs font-bold uppercase text-[#6B7280] tracking-wider">{lang === 'fil' ? 'Edad' : 'Age'}</span>
-                    <p className="text-sm font-bold text-[#1A1A2E] mt-1">{age} {lang === 'fil' ? 'taong gulang' : 'years old'}</p>
+                    <span className="text-xs font-semibold text-kt-slate">{lang === 'fil' ? 'Edad' : 'Age'}</span>
+                    <p className="text-sm font-bold text-kt-near-black mt-1">{age} {lang === 'fil' ? 'taong gulang' : 'years old'}</p>
                   </div>
                   <div>
-                    <span className="text-xs font-bold uppercase text-[#6B7280] tracking-wider">{lang === 'fil' ? 'Edukasyon' : 'Education'}</span>
-                    <p className="text-sm font-bold text-[#1A1A2E] mt-1">{education}</p>
+                    <span className="text-xs font-semibold text-kt-slate">{lang === 'fil' ? 'Edukasyon' : 'Education'}</span>
+                    <p className="text-sm font-bold text-kt-near-black mt-1">{education}</p>
                   </div>
                 </div>
                 <div>
-                  <span className="text-xs font-bold uppercase text-[#6B7280] tracking-wider">{lang === 'fil' ? 'Lokasyon' : 'Location'}</span>
-                  <p className="text-sm font-bold text-[#1A1A2E] mt-1">
+                  <span className="text-xs font-semibold text-kt-slate">{lang === 'fil' ? 'Lokasyon' : 'Location'}</span>
+                  <p className="text-sm font-bold text-kt-near-black mt-1">
                     {PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion} — {selectedProvince}
                   </p>
                 </div>
                 <div>
-                  <span className="text-xs font-bold uppercase text-[#6B7280] tracking-wider">{lang === 'fil' ? 'Mga Interes' : 'Interests'}</span>
+                  <span className="text-xs font-semibold text-kt-slate">{lang === 'fil' ? 'Mga Interes' : 'Interests'}</span>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {customInterests.length > 0 ? customInterests.map((interest, idx) => (
-                      <span key={idx} className="bg-[#E8F0FE] text-[#0F3D91] px-3 py-1 rounded-full text-xs font-medium border border-[#d4e3ff]">
+                      <span key={idx} className="bg-kt-blue-light text-kt-blue px-3 py-1 rounded-full text-xs font-medium border border-kt-blue-soft">
                         {interest}
                       </span>
                     )) : (
-                      <span className="text-sm text-[#6B7280] italic">{lang === 'fil' ? 'Walang napiling interes' : 'No interests selected'}</span>
+                      <span className="text-sm text-kt-slate italic">{lang === 'fil' ? 'Walang napiling interes' : 'No interests selected'}</span>
                     )}
                   </div>
                 </div>
                 <div>
-                  <span className="text-xs font-bold uppercase text-[#6B7280] tracking-wider">{lang === 'fil' ? 'Mga Galing' : 'Skills'}</span>
+                  <span className="text-xs font-semibold text-kt-slate">{lang === 'fil' ? 'Mga Galing' : 'Skills'}</span>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {customSkills.length > 0 ? customSkills.map((skill, idx) => (
-                      <span key={idx} className="bg-[#E8F0FE] text-[#0F3D91] px-3 py-1 rounded-full text-xs font-medium border border-[#d4e3ff]">
+                      <span key={idx} className="bg-kt-blue-light text-kt-blue px-3 py-1 rounded-full text-xs font-medium border border-kt-blue-soft">
                         {skill}
                       </span>
                     )) : (
-                       <span className="text-sm text-[#6B7280] italic">{lang === 'fil' ? 'Walang napiling kakayahan' : 'No skills selected'}</span>
+                       <span className="text-sm text-kt-slate italic">{lang === 'fil' ? 'Walang napiling kakayahan' : 'No skills selected'}</span>
                     )}
                   </div>
                 </div>
                 <div>
-                  <span className="text-xs font-bold uppercase text-[#6B7280] tracking-wider">{lang === 'fil' ? 'Plano' : 'Career Goal'}</span>
-                  <p className="text-sm font-bold text-[#1A1A2E] mt-1">{careerGoal || <span className="italic text-[#6B7280]">{lang === 'fil' ? 'Walang sinulat na plano' : 'No goal written'}</span>}</p>
+                  <span className="text-xs font-semibold text-kt-slate">{lang === 'fil' ? 'Plano' : 'Career Goal'}</span>
+                  <p className="text-sm font-bold text-kt-near-black mt-1">{careerGoal || <span className="italic text-kt-slate">{lang === 'fil' ? 'Walang sinulat na plano' : 'No goal written'}</span>}</p>
                 </div>
               </div>
 
@@ -639,17 +689,17 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                 type="button"
                 onClick={handleSubmitProfile}
                 disabled={isMatching || (customInterests.length === 0 && !careerGoal)}
-                className={`w-full rounded-2xl py-5 text-base font-bold shadow-lg transition-all flex items-center justify-center gap-3 ${
+                className={`w-full rounded-2xl py-5 text-base font-bold transition-all flex items-center justify-center gap-3 ${
                   isMatching
-                    ? "bg-[#fffbe6] text-[#92710a] cursor-wait border-2 border-[#FCD116]"
+                    ? "bg-kt-gold-light text-kt-gold-ink cursor-wait border-2 border-kt-gold"
                     : customInterests.length === 0 && !careerGoal
-                    ? "bg-[#F8F9FC] text-[#6B7280] cursor-not-allowed border-2 border-dashed border-[#e5e8ef]"
-                    : "bg-[#0F3D91] hover:bg-[#1a52c4] text-white hover:shadow-xl hover:-translate-y-1 active:translate-y-0"
+                    ? "bg-kt-bg text-kt-slate cursor-not-allowed border-2 border-dashed border-kt-border"
+                    : "bg-kt-blue hover:bg-kt-blue-mid text-white hover:shadow-xl hover:-translate-y-1 active:translate-y-0"
                 }`}
               >
                 {isMatching ? (
                   <>
-                    <span className="animate-spin inline-block h-6 w-6 border-[3px] border-[#FCD116] border-t-transparent rounded-full" />
+                    <span className="animate-spin inline-block h-6 w-6 border-[3px] border-kt-gold border-t-transparent rounded-full" />
                     <span className="font-extrabold">{lang === "fil" ? "Sinusuri ng AI ang iyong profile..." : "AI is analyzing your profile..."}</span>
                   </>
                 ) : (
@@ -685,13 +735,13 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
           <div className={containerClass}>
             <div className="text-center py-12">
               <div className="relative w-16 h-16 mx-auto mb-6">
-                <div className="absolute inset-0 rounded-full border-4 border-[#E8F0FE]" />
-                <div className="absolute inset-0 rounded-full border-4 border-[#0F3D91] border-t-transparent animate-spin" />
+                <div className="absolute inset-0 rounded-full border-4 border-kt-blue-light" />
+                <div className="absolute inset-0 rounded-full border-4 border-kt-blue border-t-transparent animate-spin" />
               </div>
-              <h3 className="font-display text-xl font-bold text-[#1A1A2E] mb-2">
+              <h3 className="font-display text-xl font-bold text-kt-near-black mb-2">
                 {lang === 'fil' ? 'Sinusuri ng AI...' : 'AI is analyzing...'}
               </h3>
-              <p className="text-[#6B7280] transition-opacity duration-500" key={processingStepIndex}>
+              <p className="text-kt-slate transition-opacity duration-500" role="status" key={processingStepIndex}>
                 {processingSteps[processingStepIndex]}
               </p>
             </div>
@@ -714,7 +764,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
     return (
       <div className={containerClass}>
         {matchError && (
-          <div id="matching-error" className="p-6 rounded-2xl border border-red-200 flex items-start gap-4 bg-red-50 text-red-700 max-w-2xl mx-auto shadow-lg mb-8">
+          <div id="matching-error" role="alert" className="p-6 rounded-2xl border border-red-200 flex items-start gap-4 bg-red-50 text-red-700 max-w-2xl mx-auto shadow-lg mb-8">
             <div className="p-2 rounded-xl bg-red-100">
               <AlertCircle className="h-6 w-6 shrink-0" />
             </div>
@@ -726,28 +776,36 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
         )}
 
         {matchResult && Array.isArray(matchResult.recommendedCourses) && (
-          <div id="matching-results-section" className="space-y-8">
+          <div id="matching-results-section" className="space-y-8" aria-live="polite">
             <div className="text-center max-w-2xl mx-auto">
-              <span className="inline-flex items-center gap-2 bg-[#f0fdf4] text-[#166534] font-extrabold text-xs px-4 py-2 rounded-full border border-[#bbf7d0] uppercase tracking-wider mb-4">
+              <span className="inline-flex items-center gap-2 bg-kt-success-light text-kt-success-ink font-extrabold text-xs px-4 py-2 rounded-full border border-kt-success-border uppercase tracking-wider mb-4">
                 <CheckCircle2 className="h-4 w-4" /> {lang === 'fil' ? 'Nakakita ng Tugma!' : 'Found a Match!'}
               </span>
-              <h2 className="font-display font-extrabold text-2xl text-[#1A1A2E] sm:text-3xl">
+              <h2 className="font-display font-extrabold text-2xl text-kt-near-black sm:text-3xl">
                 {lang === 'fil' ? 'Ang Iyong AI Report sa Pagtutugma ng Kurso' : 'Your AI Course Match Report'}
               </h2>
-              <p className="text-sm text-[#6B7280] mt-3 leading-relaxed">
+              <p className="text-sm text-kt-slate mt-3 leading-relaxed">
                 {lang === 'fil' ? 'Narito ang sadyang dinisenyo na pagsusuri pagkatapos tingnan ang iyong edad, lokasyon, at kakayahan.' : 'Here is your personalized analysis based on your age, location, and skills.'}
               </p>
+              {matchResult?._isLocalFallback && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center gap-2 text-amber-700 text-xs font-semibold max-w-2xl mx-auto mt-4">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  {lang === "fil" 
+                    ? "AI offline — nagpapakita ng smart matches base sa iyong profile" 
+                    : "AI offline — showing smart matches based on your profile"}
+                </div>
+              )}
             </div>
 
             {/* AI Summary card */}
-            <div className="bg-[#E8F0FE] border border-[#d4e3ff] rounded-3xl p-8 shadow-lg max-w-3xl mx-auto">
-              <h4 className="font-display font-extrabold text-base text-[#1A1A2E] mb-4 flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-[#0F3D91] text-white">
+            <div className="bg-kt-blue-light border border-kt-blue-soft rounded-3xl p-8 max-w-3xl mx-auto">
+              <h4 className="font-display font-extrabold text-base text-kt-near-black mb-4 flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-kt-blue text-white">
                   <Sparkles className="h-5 w-5" />
                 </div>
                 {lang === 'fil' ? 'AI Counseling Insights:' : 'AI Counseling Insights:'}
               </h4>
-              <p className="text-base text-[#1A1A2E] leading-relaxed font-medium italic">
+              <p className="text-base text-kt-near-black leading-relaxed font-medium italic prose-pretty">
                 "{matchResult.matchedSummary || (lang === 'fil' ? 'Walang summary available.' : 'No summary available.')}"
               </p>
             </div>
@@ -757,40 +815,40 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
               {matchResult.recommendedCourses.map((recCourse, idx) => (
                 <div 
                   key={idx} 
-                  className="bg-white rounded-2xl border border-[#e5e8ef] shadow-[0_4px_32px_rgba(15,61,145,0.07)] overflow-hidden hover:shadow-lg transition-all flex flex-col h-full card-hover group"
+                  className="bg-white rounded-2xl border border-kt-border overflow-hidden hover:shadow-[0_4px_32px_rgba(15,61,145,0.07)] transition-all flex flex-col h-full card-hover group"
                 >
                   {/* Percent badge heading */}
-                  <div className="bg-[#F8F9FC] px-6 py-5 border-b border-[#e5e8ef] flex justify-between items-center">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">
+                  <div className="bg-kt-bg px-6 py-5 border-b border-kt-border flex justify-between items-center">
+                    <span className="text-xs font-semibold text-kt-slate">
                       {lang === 'fil' ? 'Inirerekomendang Tugma' : 'Recommended Match'} #{idx + 1}
                     </span>
-                    <span className="flex items-center gap-1 font-mono text-sm font-bold px-3 py-1.5 rounded-full bg-[#0F3D91] text-white">
+                    <span className="flex items-center gap-1 font-mono text-sm font-bold px-3 py-1.5 rounded-full bg-kt-blue text-white">
                       {recCourse.matchScore}% {lang === 'fil' ? 'Tugma' : 'Match'}
                     </span>
                   </div>
 
                   <div className="p-6 flex-1 flex flex-col justify-between">
                     <div>
-                      <span className="inline-block text-xs font-extrabold font-mono text-[#0F3D91] bg-[#E8F0FE] px-3 py-1.5 rounded-lg border border-[#d4e3ff]">
+                      <span className="inline-block text-xs font-extrabold font-mono text-kt-blue bg-kt-blue-light px-3 py-1.5 rounded-lg border border-kt-blue-soft">
                         {lang === 'fil' ? 'Kodigo' : 'Code'}: {recCourse.courseCode}
                       </span>
-                      <h3 className="font-display font-bold text-lg text-[#1A1A2E] mt-4 leading-tight">
+                      <h3 className="font-display font-bold text-lg text-kt-near-black mt-4 leading-tight break-words">
                         {recCourse.courseName}
                       </h3>
                       
-                      <p className="text-sm text-[#6B7280] mt-4 leading-relaxed bg-[#F8F9FC] p-4 rounded-2xl border border-[#e5e8ef]">
-                        <strong className="text-[#1A1A2E]">{lang === 'fil' ? 'Bakit para sa iyo:' : 'Why it\'s for you:'}</strong> "{recCourse.reasonForYouth}"
+                      <p className="text-sm text-kt-slate mt-4 leading-relaxed bg-kt-bg p-4 rounded-2xl border border-kt-border prose-pretty">
+                        <strong className="text-kt-near-black">{lang === 'fil' ? 'Bakit para sa iyo:' : 'Why it\'s for you:'}</strong> "{recCourse.reasonForYouth}"
                       </p>
                     </div>
 
-                    <div className="mt-8 pt-5 border-t border-[#e5e8ef] space-y-4">
+                    <div className="mt-8 pt-5 border-t border-kt-border space-y-4">
                       <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-xl bg-[#E8F0FE] text-[#0F3D91] mt-0.5">
+                        <div className="p-2 rounded-xl bg-kt-blue-light text-kt-blue mt-0.5">
                           <Briefcase className="h-5 w-5" />
                         </div>
                         <div>
-                          <span className="block text-xs uppercase tracking-wider text-[#6B7280] font-semibold">{lang === 'fil' ? 'Oportunidad sa Trabaho' : 'Job Opportunity'}</span>
-                          <span className="block text-sm font-extrabold text-[#0F3D91] mt-1">{recCourse.immediateJobTitle}</span>
+                          <span className="block text-xs text-kt-slate font-semibold">{lang === 'fil' ? 'Oportunidad sa Trabaho' : 'Job Opportunity'}</span>
+                          <span className="block text-sm font-extrabold text-kt-blue mt-1">{recCourse.immediateJobTitle}</span>
                         </div>
                       </div>
 
@@ -802,7 +860,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                               onChatAboutCourse(recCourse.courseCode, recCourse.courseName);
                             }
                           }}
-                          className="flex-1 rounded-2xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white font-bold text-sm py-3 text-center flex items-center justify-center gap-2 shadow-md shadow-[#E8F0FE] hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                          className="flex-1 rounded-2xl bg-kt-blue hover:bg-kt-blue-mid text-white font-bold text-sm py-3 text-center flex items-center justify-center gap-2 hover:shadow-lg hover:-translate-y-0.5 transition-all"
                         >
                           <MessageSquare className="h-4 w-4" />
                           <span>{lang === 'fil' ? 'Itanong sa Chat' : 'Ask in Chat'}</span>
@@ -814,7 +872,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                               onExploreCourse(recCourse.courseCode, matchResult?.targetSectors);
                             }
                           }}
-                          className="rounded-2xl border border-[#d4e3ff] text-[#0F3D91] hover:bg-[#E8F0FE] font-bold text-sm px-5 hover:-translate-y-0.5 transition-all"
+                          className="rounded-2xl border border-kt-blue-soft text-kt-blue hover:bg-kt-blue-light font-bold text-sm px-5 hover:-translate-y-0.5 transition-all"
                         >
                           {lang === 'fil' ? 'Detalye' : 'Details'}
                         </button>
@@ -826,12 +884,12 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
             </div>
 
             {/* Enrollment Tips & Next Steps */}
-            <div className="bg-[#0F3D91] rounded-3xl p-5 md:p-8 text-white border border-[#0F3D91]/20 shadow-[0_4px_32px_rgba(15,61,145,0.15)] mt-10 relative overflow-hidden" id="matching-result-enrollment-card">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#FCD116]/10 rounded-full blur-3xl" />
+            <div className="bg-kt-blue rounded-3xl p-5 md:p-8 text-white border border-kt-blue/20 mt-10 relative overflow-hidden" id="matching-result-enrollment-card">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-kt-gold/10 rounded-full blur-3xl" />
               
               <div className="relative flex flex-col md:flex-row gap-8 items-start justify-between">
                 <div className="max-w-2xl">
-                    <h3 className="font-display font-black text-xl text-[#FCD116] flex items-center gap-3">
+                    <h3 className="font-display font-black text-xl text-kt-gold flex items-center gap-3">
                     <div className="p-2 rounded-xl bg-white/10">
                       <CheckCircle2 className="h-6 w-6" />
                     </div>
@@ -842,12 +900,12 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                   </p>
                   <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="bg-white/10 rounded-2xl p-5 border border-white/20 space-y-2 hover:bg-white/15 transition-all">
-                      <span className="block text-xs text-white/60 font-bold uppercase tracking-wider">{lang === 'fil' ? 'Kailangang Dokumento #1' : 'Required Document #1'}</span>
+                      <span className="block text-xs text-white/60 font-semibold">{lang === 'fil' ? 'Kailangang Dokumento #1' : 'Required Document #1'}</span>
                       <span className="block text-sm font-bold text-white">PSA Birth Certificate</span>
                       <span className="block text-xs text-white/60">{lang === 'fil' ? 'Patunay na ikaw ay Pilipino at sapat sa edad.' : 'Proof of Filipino citizenship and age eligibility.'}</span>
                     </div>
                     <div className="bg-white/10 rounded-2xl p-5 border border-white/20 space-y-2 hover:bg-white/15 transition-all">
-                      <span className="block text-xs text-white/60 font-bold uppercase tracking-wider">{lang === 'fil' ? 'Kailangang Dokumento #2' : 'Required Document #2'}</span>
+                      <span className="block text-xs text-white/60 font-semibold">{lang === 'fil' ? 'Kailangang Dokumento #2' : 'Required Document #2'}</span>
                       <span className="block text-sm font-bold text-white">{lang === 'fil' ? 'Diploma o ALS Certificate' : 'Diploma or ALS Certificate'}</span>
                       <span className="block text-xs text-white/60">{lang === 'fil' ? 'Kung wala pa, sertipiko ng kahirapan mula sa barangay ay tinatanggap.' : 'If unavailable, a barangay certificate of indigency is accepted.'}</span>
                     </div>
@@ -861,7 +919,7 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
                         onGoToChat();
                       }
                     }}
-                    className="rounded-2xl bg-[#FCD116] hover:bg-[#c9a700] text-[#1A1A2E] font-bold text-sm py-4 px-6 flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+                    className="rounded-2xl bg-kt-gold hover:bg-kt-gold-dark text-kt-near-black font-bold text-sm py-4 px-6 flex items-center justify-center gap-3 transition-all hover:shadow-xl hover:-translate-y-1"
                   >
                     <span>{lang === 'fil' ? 'Kausapin ang AI Tagapayo' : 'Chat with AI Counselor'}</span>
                     <ArrowRight className="h-5 w-5" />
@@ -882,19 +940,43 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
             </div>
 
             <div className="text-center">
-              <button
-                onClick={() => {
-                  setCustomInterests([]);
-                  setCustomSkills([]);
-                  setCareerGoal('');
-                  setInterestInput('');
-                  setSkillInput('');
-                  goToStep('basic');
-                }}
-                className="rounded-2xl bg-[#E8F0FE] hover:bg-[#d4e3ff] text-[#0F3D91] font-bold text-sm py-3 px-6 transition-all"
-              >
-                {lang === 'fil' ? 'Simulang Muli' : 'Start Over'}
-              </button>
+              {!confirmReset ? (
+                <button
+                  onClick={() => setConfirmReset(true)}
+                  className="rounded-2xl bg-kt-blue-light hover:bg-kt-blue-soft text-kt-blue font-bold text-sm py-3 px-6 transition-all"
+                >
+                  {lang === 'fil' ? 'Simulang Muli' : 'Start Over'}
+                </button>
+              ) : (
+                <div className="bg-kt-danger-light border border-kt-danger-border rounded-2xl p-4 inline-flex flex-col items-center gap-3">
+                  <p className="text-sm font-bold text-kt-danger-ink">
+                    {lang === 'fil' ? 'Sigurado ka bang gusto mong simulan muli? Mawawala ang iyong mga resulta.' : 'Are you sure you want to start over? Your results will be lost.'}
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => {
+                        setCustomInterests([]);
+                        setCustomSkills([]);
+                        setCareerGoal('');
+                        setInterestInput('');
+                        setSkillInput('');
+                        if (onResetProfile) onResetProfile();
+                        setConfirmReset(false);
+                        goToStep('basic');
+                      }}
+                      className="rounded-xl bg-kt-danger text-white font-bold text-sm py-2 px-5 hover:bg-kt-danger/90 transition-all"
+                    >
+                      {lang === 'fil' ? 'Oo, simulan muli' : 'Yes, start over'}
+                    </button>
+                    <button
+                      onClick={() => setConfirmReset(false)}
+                      className="rounded-xl bg-white text-kt-near-black font-bold text-sm py-2 px-5 border border-kt-border hover:bg-kt-bg transition-all"
+                    >
+                      {lang === 'fil' ? 'Huwag na' : 'Cancel'}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -918,21 +1000,21 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
             <span>{validationError}</span>
           </div>
         )}
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-[#e5e8ef]">
+        <div className="flex items-center justify-between mt-8 pt-6 border-t border-kt-border">
           <button
             onClick={prevStep}
             disabled={isFirstStep}
             className={`flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-all touch-manipulation ${
               isFirstStep
-                ? 'bg-[#F8F9FC] text-[#e5e8ef] cursor-not-allowed'
-                : 'bg-[#E8F0FE] text-[#0F3D91] hover:bg-[#d4e3ff] shadow-sm hover:shadow-md'
+                ? 'bg-kt-bg text-kt-border cursor-not-allowed'
+                : 'bg-kt-blue-light text-kt-blue hover:bg-kt-blue-soft hover:shadow-md'
             }`}
           >
             <ArrowLeft className="h-4 w-4" />
             {lang === 'fil' ? 'Bumalik' : 'Back'}
           </button>
 
-          <div className="text-sm text-[#6B7280] font-medium">
+          <div className="text-sm text-kt-slate font-medium">
             {lang === 'fil' ? `Hakbang ${stepIndex + 1} ng ${stepOrder.length}` : `Step ${stepIndex + 1} of ${stepOrder.length}`}
           </div>
 
@@ -941,8 +1023,8 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
               onClick={nextStep}
               className={`flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-all touch-manipulation ${
                 isNextValid
-                  ? 'bg-[#0F3D91] text-white hover:bg-[#1a52c4] shadow-lg hover:shadow-xl hover:-translate-y-0.5'
-                  : 'bg-[#F8F9FC] text-[#6B7280] cursor-not-allowed opacity-50'
+                  ? 'bg-kt-blue text-white hover:bg-kt-blue-mid hover:shadow-xl hover:-translate-y-0.5'
+                  : 'bg-kt-bg text-kt-slate cursor-not-allowed opacity-50'
               }`}
             >
               {lang === 'fil' ? 'Sunod' : 'Next'}
@@ -958,8 +1040,8 @@ export default function AssessmentWizard(props: AssessmentWizardProps) {
     <div className="w-full max-w-4xl mx-auto">
       {renderStepIndicator()}
       
-      <div className="bg-white rounded-2xl border border-[#e5e8ef] shadow-[0_4px_32px_rgba(15,61,145,0.07)] overflow-hidden">
-        <div className="h-1.5 bg-[#0F3D91]" />
+      <div className="bg-white rounded-2xl border border-kt-border overflow-hidden">
+        <div className="h-1.5 bg-kt-blue" />
         <div className="p-6 md:p-8">
           {renderStepContent()}
           {renderNavigation()}

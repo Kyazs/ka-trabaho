@@ -498,7 +498,7 @@ export default function App() {
 
   // Job matching handler
   const handleSubmitJobMatching = async () => {
-    if (isJobMatching) return; // Prevent double submission
+    if (isJobMatching) return;
 
     setIsJobMatching(true);
     setJobMatchError(null);
@@ -514,18 +514,32 @@ export default function App() {
       careerGoal: careerGoal.trim()
     };
 
+    const localScored = scoreJobs({
+      interests: customInterests,
+      practicalSkills: customSkills,
+      careerGoal: careerGoal.trim(),
+      education,
+      region: selectedRegion,
+    });
+
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
       const response = await fetch("/api/job-recommendation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profile),
+        body: JSON.stringify({
+          ...profile,
+          candidates: localScored.map(s => ({
+            code: s.code,
+            localScore: s.localScore,
+            reasonKeys: s.reasonKeys,
+          })),
+        }),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
 
-      // Update rate limit tracking from headers
       const remainingHeader = response.headers.get('X-RateLimit-Remaining');
       const resetHeader = response.headers.get('X-RateLimit-Reset');
       if (remainingHeader) {
@@ -547,7 +561,6 @@ export default function App() {
 
       const data = await response.json();
 
-      
       if (!data || !Array.isArray(data.recommendedJobs)) {
         throw new Error("Invalid response format from server");
       }
@@ -555,8 +568,7 @@ export default function App() {
       setJobMatchResult(data);
       
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      setJobMatchError(message || (lang === "fil" ? "Hindi namin ma-konekta sa aming AI server. Subukang muli o manu-manong tignan ang mga sektor sa itaas." : "We can't connect to our AI server. Please try again or browse sectors manually above."));
+      setJobMatchResult(localJobResult(lang, localScored));
     } finally {
       setIsJobMatching(false);
     }
@@ -604,6 +616,8 @@ export default function App() {
     setIsSendingMessage(true);
 
     // Context user profile
+    const topMatchedCourses = matchResult?.recommendedCourses?.slice(0, 3).map(c => c.courseCode) || [];
+
     const userProfile = {
       age,
       education,
@@ -611,7 +625,8 @@ export default function App() {
       province: selectedProvince,
       interests: customInterests.join(", "),
       practicalSkills: customSkills.join(", "),
-      careerGoal
+      careerGoal,
+      topMatchedCourses,
     };
 
     try {
@@ -1500,6 +1515,14 @@ export default function App() {
                   <p className="text-sm text-kt-slate mt-3 max-w-2xl mx-auto leading-relaxed prose-pretty">
                     {jobMatchResult.matchedSummary}
                   </p>
+                  {jobMatchResult._isLocalFallback && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center gap-2 text-amber-700 text-xs font-semibold max-w-2xl mx-auto mt-4">
+                      <AlertTriangle className="h-4 w-4 shrink-0" />
+                      {lang === "fil" 
+                        ? "AI offline — nagpapakita ng smart matches base sa iyong profile" 
+                        : "AI offline — showing smart matches based on your profile"}
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
