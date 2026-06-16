@@ -38,6 +38,7 @@ import AssessmentWizard from "./components/AssessmentWizard";
 import ProfileMiniForm from "./components/ProfileMiniForm";
 import { PHILIPPINES_REGIONS, SECTORS_DATA, TESDA_FAQ, TESDA_FAQ_EN, Sector } from "./data/tesdaData";
 import { UserProfile, MatchingResult, ChatMessage, JobMatchCourse, JobMatchResult } from "./types";
+import { scoreCourses, scoreJobs, localCourseResult, localJobResult } from './lib/matchingEngine';
 
 const ChatBubble = React.memo(function ChatBubble({ msg }: { msg: ChatMessage }) {
   return (
@@ -401,13 +402,13 @@ export default function App() {
 
   // Core API call: Match Profile
   const handleSubmitProfile = async () => {
-    if (isMatching) return; // Prevent double submission
+    if (isMatching) return;
 
     setIsMatching(true);
     setMatchError(null);
     setMatchResult(null);
 
-    const profile: UserProfile = {
+    const profile = {
       age,
       education,
       region: selectedRegion,
@@ -417,6 +418,13 @@ export default function App() {
       careerGoal: careerGoal.trim()
     };
 
+    const localScored = scoreCourses({
+      interests: customInterests,
+      practicalSkills: customSkills,
+      careerGoal: careerGoal.trim(),
+      education,
+      region: selectedRegion,
+    });
 
     try {
       const controller = new AbortController();
@@ -424,12 +432,18 @@ export default function App() {
       const response = await fetch("/api/recommendation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profile),
+        body: JSON.stringify({
+          ...profile,
+          candidates: localScored.map(s => ({
+            code: s.code,
+            localScore: s.localScore,
+            reasonKeys: s.reasonKeys,
+          })),
+        }),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
       
-      // Update rate limit tracking from headers
       const remainingHeader = response.headers.get('X-RateLimit-Remaining');
       const resetHeader = response.headers.get('X-RateLimit-Reset');
       if (remainingHeader) {
@@ -455,16 +469,13 @@ export default function App() {
 
       const data = await response.json();
 
-
       if (!data || !Array.isArray(data.recommendedCourses)) {
-
         setMatchError(lang === "fil" ? "Nakatanggap ang server ng kakaibang sagot. Subukang muli, o gamitin ang fallback na rekomendasyon." : "The server returned an unexpected response. Please try again, or use the fallback recommendation.");
         return;
       }
       
       setMatchResult(data);
       
-      // Auto pre-populate Chatbot perspective with context
       const regionText = PHILIPPINES_REGIONS.find(r => r.code === selectedRegion)?.name || selectedRegion;
       setChatMessages(prev => [
         ...prev,
@@ -479,9 +490,8 @@ export default function App() {
       ]);
 
     } catch {
-      setMatchError(lang === "fil" ? "Hindi namin makakonek sa aming AI server ngayon. Huwag mag-alala! Maaari mo pa ring mano-manong tingnan ang mga kurso sa 'Sektor at Kurso' tab sa itaas." : "We can't connect to our AI server right now. Don't worry! You can still manually browse courses in the 'Course & Job Explorer' tab above.");
+      setMatchResult(localCourseResult(lang, localScored));
     } finally {
-
       setIsMatching(false);
     }
   };
