@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-16T00:00:00Z",
+  "title": "Design System: Ka-TrabaHO",
+  "extensions": {
+    "colorMeta": {
+      "depth-blue": {
+        "role": "primary",
+        "displayName": "Depth Blue",
+        "canonical": "oklch(35% 0.15 260)",
+        "tonalRamp": ["#071d47", "#0a2a6a", "#0F3D91", "#1a52c4", "#2d6ce0", "#5a8ef0", "#a3c4ff", "#d4e3ff", "#E8F0FE", "#f0f5ff"]
+      },
+      "depth-blue-mid": {
+        "role": "primary",
+        "displayName": "Depth Blue Mid",
+        "canonical": "oklch(45% 0.17 260)",
+        "tonalRamp": ["#071d47", "#0a2a6a", "#0F3D91", "#1a52c4", "#2d6ce0", "#5a8ef0", "#a3c4ff", "#d4e3ff", "#E8F0FE", "#f0f5ff"]
+      },
+      "depth-blue-light": {
+        "role": "neutral",
+        "displayName": "Depth Blue Light",
+        "canonical": "oklch(95% 0.02 260)",
+        "tonalRamp": ["#071d47", "#0a2a6a", "#0F3D91", "#1a52c4", "#2d6ce0", "#5a8ef0", "#a3c4ff", "#d4e3ff", "#E8F0FE", "#f0f5ff"]
+      },
+      "depth-blue-soft": {
+        "role": "neutral",
+        "displayName": "Depth Blue Soft",
+        "canonical": "oklch(90% 0.04 260)",
+        "tonalRamp": ["#071d47", "#0a2a6a", "#0F3D91", "#1a52c4", "#2d6ce0", "#5a8ef0", "#a3c4ff", "#d4e3ff", "#E8F0FE", "#f0f5ff"]
+      },
+      "sunshine-gold": {
+        "role": "secondary",
+        "displayName": "Sunshine Gold",
+        "canonical": "oklch(85% 0.18 95)",
+        "tonalRamp": ["#4a3800", "#6e5400", "#8a6a00", "#a68000", "#c9a700", "#FCD116", "#fdd84a", "#fee88a", "#fef4c8", "#fffbeb"]
+      },
+      "sunshine-gold-dark": {
+        "role": "secondary",
+        "displayName": "Sunshine Gold Dark",
+        "canonical": "oklch(65% 0.16 95)",
+        "tonalRamp": ["#4a3800", "#6e5400", "#8a6a00", "#a68000", "#c9a700", "#FCD116", "#fdd84a", "#fee88a", "#fef4c8", "#fffbeb"]
+      },
+      "near-black": {
+        "role": "neutral",
+        "displayName": "Near Black",
+        "canonical": "oklch(18% 0.03 270)",
+        "tonalRamp": ["#0d0d1a", "#1A1A2E", "#2a2a42", "#3d3d58", "#555570", "#707088", "#9090a5", "#b0b0c2", "#d0d0de", "#eeeef4"]
+      },
+      "slate": {
+        "role": "neutral",
+        "displayName": "Slate",
+        "canonical": "oklch(52% 0.01 260)",
+        "tonalRamp": ["#1e1e2e", "#2d2d3e", "#404050", "#555568", "#6B7280", "#8888a0", "#a5a5b8", "#c0c0d0", "#d8d8e5", "#f0f0f5"]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Border",
+        "canonical": "oklch(92% 0.01 260)",
+        "tonalRamp": ["#c0c4ce", "#c8ccd6", "#d0d4de", "#d8dce6", "#e0e4ee", "#e5e8ef", "#eaecf2", "#eff1f5", "#f4f5f9", "#f8f9fc"]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Background",
+        "canonical": "oklch(97% 0.005 260)",
+        "tonalRamp": ["#c0c4ce", "#c8ccd6", "#d0d4de", "#d8dce6", "#e0e4ee", "#e5e8ef", "#eaecf2", "#eff1f5", "#f4f5f9", "#F8F9FC"]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": ["#e0e0e0", "#e8e8e8", "#efefef", "#f3f3f3", "#f6f6f6", "#f8f8f8", "#fafafa", "#fcfcfc", "#fefefe", "#ffffff"]
+      },
+      "success-green": {
+        "role": "tertiary",
+        "displayName": "Success Green",
+        "canonical": "oklch(52% 0.14 155)",
+        "tonalRamp": ["#052e16", "#064e28", "#15803d", "#16a34a", "#22c55e", "#4ade80", "#86efac", "#bbf7d0", "#dcfce7", "#f0fdf4"]
+      },
+      "chat-purple": {
+        "role": "tertiary",
+        "displayName": "Chat Purple",
+        "canonical": "oklch(38% 0.19 300)",
+        "tonalRamp": ["#1e0a3c", "#2e1065", "#4c1d95", "#5b21b6", "#6d28d9", "#8b5cf6", "#a78bfa", "#c4b5fd", "#ddd6fe", "#f3f0ff"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headlines only. Maximum one per page."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headers, card titles, page headers."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Sub-section labels, course names, job titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Descriptions, chat messages, explanations. Max 65ch line length."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Eyebrows, category tags, field labels, badges."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Course codes, salary figures, data values."
+      }
+    },
+    "shadows": [
+      {
+        "name": "brand-whisper",
+        "value": "0 4px 32px rgba(15,61,145,0.07)",
+        "purpose": "Default card shadow on hover/focus. Diffuse, brand-tinted glow."
+      },
+      {
+        "name": "lift",
+        "value": "0 20px 40px -12px rgba(0,0,0,0.15)",
+        "purpose": "Dramatic card-lift hover effect paired with translateY(-4px)."
+      },
+      {
+        "name": "nav-glow",
+        "value": "0 -4px 6px -1px rgba(0,0,0,0.05)",
+        "purpose": "Bottom navigation bar top-edge shadow."
+      },
+      {
+        "name": "stat-card-glow",
+        "value": "0 4px 6px -1px color-mix(in srgb, #0F3D91 20%, transparent)",
+        "purpose": "Gradient stat card shadow, tinted with Depth Blue."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Default easing for state transitions (focus, hover)."
+      },
+      {
+        "name": "ease-out-smooth",
+        "value": "cubic-bezier(0, 0, 0.2, 1)",
+        "purpose": "Entry animations, fade-ins, slide-ups."
+      },
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Micro-interactions: button presses, toggle states."
+      },
+      {
+        "name": "duration-normal",
+        "value": "200ms",
+        "purpose": "Standard transitions: hover effects, focus rings."
+      },
+      {
+        "name": "duration-slow",
+        "value": "400ms",
+        "purpose": "Page transitions, content reveals, loading states."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action button. Always includes an icon left of label.",
+      "html": "<button class=\"ds-btn-primary\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z\"/></svg>Start Assessment</button>",
+      "css": ".ds-btn-primary { display: flex; align-items: center; justify-content: center; gap: 8px; background: #0F3D91; color: #fff; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-weight: 700; font-size: 16px; padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; transition: background 0.2s, transform 0.15s; } .ds-btn-primary:hover { background: #1a52c4; transform: translateY(-2px); } .ds-btn-primary:active { transform: scale(0.95); } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; } .ds-btn-primary:focus-visible { outline: 2px solid #0F3D91; outline-offset: 2px; } .ds-icon { width: 20px; height: 20px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Ghost/outline button for secondary actions. No icon required.",
+      "html": "<button class=\"ds-btn-secondary\">Browse Courses</button>",
+      "css": ".ds-btn-secondary { display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; color: #0F3D91; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-weight: 600; font-size: 15px; padding: 14px 24px; border-radius: 12px; border: 1.5px solid #d4e3ff; cursor: pointer; transition: background 0.2s; } .ds-btn-secondary:hover { background: #E8F0FE; } .ds-btn-secondary:active { background: #d4e3ff; } .ds-btn-secondary:focus-visible { outline: 2px solid #0F3D91; outline-offset: 2px; }"
+    },
+    {
+      "name": "Blue Chip",
+      "kind": "chip",
+      "refersTo": "chip-blue",
+      "description": "Default chip for interest tags, category labels, sector indicators.",
+      "html": "<span class=\"ds-chip-blue\">Computers & Gaming</span>",
+      "css": ".ds-chip-blue { display: inline-flex; align-items: center; background: #E8F0FE; color: #0F3D91; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-weight: 600; font-size: 13px; padding: 6px 14px; border-radius: 9999px; border: 1px solid #d4e3ff; transition: background-color 0.2s ease; }"
+    },
+    {
+      "name": "Gold Chip",
+      "kind": "chip",
+      "refersTo": "chip-gold",
+      "description": "Selected/highlighted state chip.",
+      "html": "<span class=\"ds-chip-gold\">Mag-abroad</span>",
+      "css": ".ds-chip-gold { display: inline-flex; align-items: center; background: #fffbe6; color: #92710a; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-weight: 600; font-size: 13px; padding: 6px 14px; border-radius: 9999px; border: 1px solid #FCD116; transition: background-color 0.2s ease; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Standard content card. Flat at rest, shadow on hover.",
+      "html": "<div class=\"ds-card\"><h4 class=\"ds-card-title\">Computer Systems Servicing NC II</h4><p class=\"ds-card-body\">Learn to install, configure, and maintain computer systems and networks.</p></div>",
+      "css": ".ds-card { background: #fff; border-radius: 16px; border: 1px solid #e5e8ef; padding: 20px; transition: transform 0.3s ease, box-shadow 0.3s ease; } .ds-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -12px rgba(0,0,0,0.15); } .ds-card-title { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-weight: 700; font-size: 14px; color: #1A1A2E; margin: 0 0 8px 0; } .ds-card-body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-weight: 400; font-size: 12px; color: #6B7280; line-height: 1.7; margin: 0; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Standard text input with search icon. Focus shows Depth Blue ring.",
+      "html": "<div class=\"ds-input-wrap\"><svg class=\"ds-input-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input class=\"ds-input\" type=\"text\" placeholder=\"Search courses...\"></div>",
+      "css": ".ds-input-wrap { position: relative; } .ds-input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #6B7280; pointer-events: none; } .ds-input { width: 100%; background: #fff; border: 1px solid #e5e8ef; border-radius: 12px; padding: 12px 16px 12px 40px; font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-weight: 500; font-size: 14px; color: #1A1A2E; transition: border-color 0.2s, box-shadow 0.2s; outline: none; } .ds-input:focus { border-color: #0F3D91; box-shadow: 0 0 0 3px #E8F0FE; } .ds-input::placeholder { color: #6B7280; }"
+    },
+    {
+      "name": "Active Nav Tab",
+      "kind": "nav",
+      "refersTo": "nav-tab-active",
+      "description": "Active navigation tab in top navbar.",
+      "html": "<a class=\"ds-nav-tab-active\" href=\"#\"><svg class=\"ds-nav-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z\"/></svg><span>AI Matcher</span></a>",
+      "css": ".ds-nav-tab-active { display: flex; align-items: center; gap: 8px; background: #E8F0FE; color: #0F3D91; font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-weight: 600; font-size: 14px; padding: 8px 16px; border-radius: 12px; text-decoration: none; border: 1px solid #d4e3ff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); } .ds-nav-icon { width: 16px; height: 16px; }"
+    },
+    {
+      "name": "User Chat Bubble",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Chat message from the user. Depth Blue background with white text.",
+      "html": "<div class=\"ds-chat-user\"><div class=\"ds-chat-user-text\">May allowance po ba habang nag-aaral sa TESDA?</div><div class=\"ds-chat-user-time\">2:30 PM</div></div>",
+      "css": ".ds-chat-user { background: #0F3D91; color: #fff; border-radius: 16px 16px 4px 16px; padding: 12px 20px; max-width: 75%; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); } .ds-chat-user-text { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-weight: 500; font-size: 14px; line-height: 1.5; word-break: break-word; } .ds-chat-user-time { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 8px; }"
+    },
+    {
+      "name": "Model Chat Bubble",
+      "kind": "custom",
+      "refersTo": "card-default",
+      "description": "Chat message from Ka-TrabaHO AI. White card on tinted background.",
+      "html": "<div class=\"ds-chat-model\"><div class=\"ds-chat-model-text">Oo! May daily allowance na ₱160 habang nag-aaral ka sa TESDA. Libre rin ang tuition at training materials.</div><div class=\"ds-chat-model-time\">2:30 PM</div></div>",
+      "css": ".ds-chat-model { background: #fff; color: #1A1A2E; border: 1px solid #e5e8ef; border-radius: 16px 16px 16px 4px; padding: 12px 20px; max-width: 75%; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); white-space: pre-line; } .ds-chat-model-text { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-weight: 500; font-size: 14px; line-height: 1.5; word-break: break-word; } .ds-chat-model-time { font-size: 11px; color: #6B7280; margin-top: 8px; }"
+    },
+    {
+      "name": "Stat Card",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Signature gradient stat card for key metrics. Depth Blue gradient with white text.",
+      "html": "<div class=\"ds-stat-card\"><div class=\"ds-stat-number\">300<span class=\"ds-stat-suffix\">+</span></div><div class=\"ds-stat-label\">Courses across 5 sectors</div></div>",
+      "css": ".ds-stat-card { background: linear-gradient(135deg, #0F3D91 0%, #1a52c4 100%); color: #fff; border-radius: 16px; padding: 24px; text-align: center; box-shadow: 0 4px 6px -1px rgba(15,61,145,0.2); } .ds-stat-number { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-weight: 800; font-size: 32px; line-height: 1; } .ds-stat-suffix { font-size: 24px; } .ds-stat-label { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-weight: 500; font-size: 13px; margin-top: 8px; opacity: 0.9; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Open Doorstep",
+    "overview": "A doorway always left open. No barriers, no gatekeeping — step through and the path is lit. Every screen in Ka-TrabaHO is that doorstep: welcoming, clear, and always pointing forward. The design rejects both the stiffness of government portals and the coldness of corporate dashboards. Instead, it borrows the warmth of a neighbor's front gate — you walk up, you see the way in, and nobody asks for your credentials at the door.\n\nThe palette is anchored in two colors drawn from the Philippine flag: Depth Blue for trust and structure, Sunshine Gold for hope and energy. These are not decorative choices — they carry cultural recognition. A Filipino youth seeing deep navy and golden yellow instinctively reads \"official, but ours.\" The blue does the structural work; the gold does the emotional work. Everything else is neutral canvas so the two flag colors breathe.\n\nThe system is mobile-first by conviction, not by compromise. The audience is on basic smartphones with prepaid data. Every pixel, every request, every animation frame must justify itself against a 3G connection and a 5.5-inch screen.",
+    "keyCharacteristics": [
+      "Resting calm, lifted on touch — cards are flat at rest; depth appears only on interaction",
+      "Flag-anchored palette — Depth Blue structures, Sunshine Gold energizes; neutral carries the content",
+      "Mobile-first density — generous touch targets, no wasted vertical space, single-column default",
+      "Bilingual by design — every label and error message exists in Taglish and English as first-class copies",
+      "One action per screen — the next step is always visible, always tappable"
+    ],
+    "rules": [
+      { "name": "The Two-Anchor Rule", "body": "Depth Blue and Sunshine Gold are the only saturated colors on any given screen. All other hues are semantic and context-bound — they appear only when the state demands them, never as decoration.", "section": "colors" },
+      { "name": "The Neutral-90 Rule", "body": "At least 90% of any screen's surface area is neutral (background, white cards, slate text, borders). The anchors punctuate; they do not paint.", "section": "colors" },
+      { "name": "The Weight-Gap Rule", "body": "A heading and its adjacent body text must differ by at least 200 in font-weight. If a headline is 700 and the description beneath it is 600, the hierarchy collapses.", "section": "typography" },
+      { "name": "The Rest-Flat Rule", "body": "No element casts a shadow at rest. Shadows are reserved for hover, focus, and modal overlays. If a card has a shadow with no user interaction, the shadow is ambient noise and must be removed.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Depth Blue and Sunshine Gold as the only saturated colors on any screen. All other hues are semantic and appear only when state demands them.",
+      "Do keep cards flat at rest with 1px #e5e8ef borders. Shadows appear only on hover/focus.",
+      "Do pair Plus Jakarta Sans at 700-900 weight with Inter at 400-500. The weight gap IS the hierarchy.",
+      "Do use generous line-height (1.7) for body text — the audience reads on small screens and needs breathing room.",
+      "Do ensure every interactive element has a visible focus indicator (3px Depth Blue Light ring) and a minimum 44px touch target.",
+      "Do write every label, error message, and celebration in both Taglish and English as first-class copy.",
+      "Do use the brand-tinted shadow for hover states — the blue tint ties depth to the brand.",
+      "Do surface the next concrete action on every screen. Dead ends are failures."
+    ],
+    "donts": [
+      "Don't create the look of a government portal — dense text walls, tiny fonts, outdated layouts, bureaucratic tone. Ka-TrabaHO must never feel like paperwork.",
+      "Don't create the look of a corporate SaaS dashboard — navy-and-white tables, metric dashboards, HR-manager aesthetics.",
+      "Don't use ambient shadows on resting cards. Flat-at-rest is the doctrine.",
+      "Don't use gradient text (background-clip: text with gradient). Use solid Depth Blue for emphasis via weight or size.",
+      "Don't use border-left or border-right greater than 1px as a colored accent stripe on cards or list items.",
+      "Don't use more than two saturated non-semantic colors on any single screen.",
+      "Don't use slate (#6B7280) for body text on tinted backgrounds without verifying ≥4.5:1 contrast.",
+      "Don't use tiny uppercase tracked eyebrows on every section. One deliberate eyebrow on the hero is voice; eyebrows everywhere is AI grammar.",
+      "Don't use numbered section markers (01 / 02 / 03) as default scaffolding."
+    ]
+  }
+}

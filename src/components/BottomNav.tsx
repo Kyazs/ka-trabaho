@@ -27,10 +27,10 @@ export default function BottomNav({ lang }: BottomNavProps) {
   return (
     <nav
       id="bottom-nav"
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] safe-area-bottom md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-kt-border shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] safe-area-bottom md:hidden"
       aria-label="Mobile navigation"
     >
-      <div className="flex items-center justify-around h-16" role="tablist">
+      <div className="flex items-center justify-around h-16">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = currentTab === tab.id;
@@ -39,22 +39,21 @@ export default function BottomNav({ lang }: BottomNavProps) {
               key={tab.id}
               to={tab.path}
               className={`flex flex-col items-center justify-center gap-0.5 w-full h-full transition-all touch-manipulation active-tap ${
-                isActive ? "text-[#0F3D91]" : "text-[#6B7280]"
+                isActive ? "text-kt-blue" : "text-kt-slate"
               }`}
-              role="tab"
-              aria-selected={isActive}
+              aria-current={isActive ? "page" : undefined}
               aria-label={lang === "fil" ? tab.labelFil : tab.label}
             >
               <div className={`relative ${isActive ? "-mt-1" : ""}`}>
                 {isActive && (
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-[#0F3D91] rounded-full" />
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-kt-blue rounded-full" />
                 )}
                 <Icon
                   className="h-6 w-6 transition-all"
                   strokeWidth={isActive ? 2.5 : 2}
                 />
               </div>
-              <span className="text-[11px] font-semibold leading-none">
+              <span className="text-xs font-semibold leading-none">
                 {lang === "fil" ? tab.labelFil : tab.label}
               </span>
             </Link>

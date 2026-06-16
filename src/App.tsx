@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { marked } from "marked";
 import { 
   Sparkles, 
   MapPin, 
@@ -42,17 +43,56 @@ import { PHILIPPINES_REGIONS, SECTORS_DATA, TESDA_FAQ, TESDA_FAQ_EN, Sector } fr
 import { UserProfile, MatchingResult, ChatMessage, JobMatchCourse, JobMatchResult } from "./types";
 import { scoreCourses, scoreJobs, localCourseResult, localJobResult } from './lib/matchingEngine';
 
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+});
+
+const ALLOWED_TAGS = new Set(['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'ol', 'li', 'h3', 'h4', 'hr']);
+
+const renderMarkdown = (text: string): string => {
+  const html = marked.parse(text) as string;
+  const el = document.createElement('div');
+  el.innerHTML = html;
+  const clean = (node: Node) => {
+    const children = Array.from(node.childNodes);
+    for (const child of children) {
+      if (child.nodeType === Node.ELEMENT_NODE) {
+        const tag = (child as Element).tagName.toLowerCase();
+        if (!ALLOWED_TAGS.has(tag)) {
+          while (child.firstChild) node.insertBefore(child.firstChild, child);
+          node.removeChild(child);
+        } else {
+          (child as Element).removeAttribute('style');
+          (child as Element).removeAttribute('class');
+          (child as Element).removeAttribute('id');
+          (child as Element).removeAttribute('href');
+          clean(child);
+        }
+      }
+    }
+  };
+  clean(el);
+  return el.innerHTML;
+};
+
 const ChatBubble = React.memo(function ChatBubble({ msg }: { msg: ChatMessage }) {
+  const isAi = msg.role === "model";
+  const rendered = useMemo(() => isAi ? renderMarkdown(msg.text) : "", [isAi, msg.text]);
   return (
     <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} max-w-full animate-slide-in`}>
       <div
         className={`rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm leading-relaxed max-w-[80%] sm:max-w-[75%] ${
           msg.role === "user"
             ? "bg-kt-blue text-white rounded-tr-none"
-            : "bg-white text-kt-near-black border border-kt-border rounded-tl-none whitespace-pre-line"
+            : "bg-white text-kt-near-black border border-kt-border rounded-tl-none"
         }`}
       >
-        <div className="font-medium break-words">{msg.text}</div>
+        {isAi ? (
+          <div className="font-medium break-words prose-sm [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_h3]:text-base [&_h3]:font-bold [&_h3]:mt-2 [&_h3]:mb-1 [&_h4]:text-sm [&_h4]:font-bold [&_h4]:mt-2 [&_h4]:mb-1 [&_hr]:border-kt-border [&_hr]:my-2" dangerouslySetInnerHTML={{ __html: rendered }} />
+        ) : (
+          <div className="font-medium break-words">{msg.text}</div>
+        )}
         <div className={`text-xs mt-2 ${msg.role === "user" ? "text-white/70" : "text-kt-slate"}`}>
           {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>

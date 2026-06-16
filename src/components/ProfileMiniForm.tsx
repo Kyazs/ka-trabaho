@@ -1,6 +1,8 @@
 import React from "react";
-import { Sparkles, Award, Check, AlertTriangle } from "lucide-react";
+import { Sparkles, Award, Check, AlertTriangle, ChevronDown } from "lucide-react";
 import { ProfileMiniFormProps } from "../types";
+
+const TAG_LIMIT = 4;
 
 export default function ProfileMiniForm(props: ProfileMiniFormProps) {
   const {
@@ -23,6 +25,14 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
   } = props;
 
   const isReady = customInterests.length > 0 || careerGoal.trim().length >= 5;
+
+  const [showMoreInterests, setShowMoreInterests] = React.useState(false);
+  const [showMoreSkills, setShowMoreSkills] = React.useState(false);
+
+  const visibleInterests = showMoreInterests ? QUICK_INTERESTS : QUICK_INTERESTS.slice(0, TAG_LIMIT);
+  const visibleSkills = showMoreSkills ? QUICK_SKILLS : QUICK_SKILLS.slice(0, TAG_LIMIT);
+  const hasMoreInterests = QUICK_INTERESTS.length > TAG_LIMIT;
+  const hasMoreSkills = QUICK_SKILLS.length > TAG_LIMIT;
 
   const copy = {
     title: isReady
@@ -64,16 +74,16 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
   };
 
   return (
-    <div className="bg-[#F8F9FC] rounded-2xl p-5 border border-[#e5e8ef] space-y-6">
+    <div className="bg-white rounded-2xl p-5 border border-kt-border space-y-6">
       <div className="flex items-start gap-3">
-        <div className="p-2.5 rounded-xl bg-[#0F3D91] text-white shrink-0">
+        <div className="p-2.5 rounded-xl bg-kt-blue text-white shrink-0">
           <Sparkles className="h-5 w-5" />
         </div>
         <div>
-          <h3 className="font-display font-bold text-base text-[#1A1A2E]">
+          <h3 className="font-display font-bold text-base text-kt-near-black">
             {copy.title[lang]}
           </h3>
-          <p className="text-xs text-[#6B7280] mt-1 leading-relaxed">
+          <p className="text-xs text-kt-slate mt-1 leading-relaxed">
             {copy.subtitle[lang]}
           </p>
         </div>
@@ -81,11 +91,11 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
 
       {/* Interests */}
       <div className="space-y-3">
-        <label className="block text-xs font-bold uppercase tracking-wider text-[#6B7280]">
+        <label htmlFor="mini-interest-input" className="block text-xs font-bold text-kt-slate">
           {copy.interestsLabel[lang]}
         </label>
         <div className="flex flex-wrap gap-2">
-          {QUICK_INTERESTS.map((int) => {
+          {visibleInterests.map((int) => {
             const selected = customInterests.includes(int.label);
             return (
               <button
@@ -94,8 +104,8 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
                 onClick={() => toggleInterestTag(int.label)}
                 className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all touch-manipulation ${
                   selected
-                    ? "bg-[#0F3D91] text-white shadow-sm"
-                    : "bg-[#E8F0FE] border border-[#d4e3ff] text-[#0F3D91] hover:bg-[#d4e3ff]"
+                    ? "bg-kt-blue text-white"
+                    : "bg-kt-blue-light border border-kt-blue-soft text-kt-blue hover:bg-kt-blue-soft"
                 }`}
               >
                 {selected && <Check className="h-3.5 w-3.5" />}
@@ -103,18 +113,32 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
               </button>
             );
           })}
+          {hasMoreInterests && (
+            <button
+              type="button"
+              onClick={() => setShowMoreInterests(!showMoreInterests)}
+              className="inline-flex items-center gap-1 rounded-full px-3.5 py-2 text-xs font-semibold text-kt-blue bg-kt-bg border border-kt-border hover:bg-kt-blue-light transition-all touch-manipulation"
+              aria-expanded={showMoreInterests}
+            >
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${showMoreInterests ? "rotate-180" : ""}`} />
+              {showMoreInterests
+                ? (lang === "fil" ? "Wala na" : "Less")
+                : (lang === "fil" ? `+${QUICK_INTERESTS.length - TAG_LIMIT} pa` : `+${QUICK_INTERESTS.length - TAG_LIMIT} more`)}
+            </button>
+          )}
         </div>
         <form onSubmit={handleAddCustomInterest} className="flex gap-2">
           <input
+            id="mini-interest-input"
             type="text"
             value={interestInput}
             onChange={(e) => setInterestInput(e.target.value)}
             placeholder={copy.interestPlaceholder[lang]}
-            className="flex-1 rounded-xl border border-[#e5e8ef] bg-white px-3 py-2 text-sm focus:border-[#0F3D91] focus:ring-3 focus:ring-[#E8F0FE] focus:outline-none transition-all"
+            className="flex-1 rounded-xl border border-kt-border bg-white px-3 py-2 text-sm focus:border-kt-blue focus:ring-3 focus:ring-kt-blue-light focus:outline-none transition-all"
           />
           <button
             type="submit"
-            className="rounded-xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white px-4 py-2 text-xs font-bold shadow-md transition-all"
+            className="rounded-xl bg-kt-blue hover:bg-kt-blue-mid active:scale-95 text-white px-4 py-2 text-xs font-bold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
           >
             {copy.addBtn[lang]}
           </button>
@@ -124,12 +148,13 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
             {customInterests.map((interest, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1 bg-[#E8F0FE] text-[#0F3D91] px-2.5 py-1 rounded-full text-xs font-medium border border-[#d4e3ff]"
+                className="inline-flex items-center gap-1 bg-kt-blue-light text-kt-blue px-2.5 py-1 rounded-full text-xs font-medium border border-kt-blue-soft"
               >
                 {interest}
                 <button
                   onClick={() => toggleInterestTag(interest)}
-                  className="text-[#0F3D91]/60 hover:text-[#0F3D91] font-bold"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-kt-blue/50 hover:text-kt-danger font-bold rounded-full hover:bg-kt-danger-light transition-colors"
+                  aria-label={lang === 'fil' ? `Alisin ang ${interest}` : `Remove ${interest}`}
                 >
                   ×
                 </button>
@@ -141,11 +166,11 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
 
       {/* Optional Skills */}
       <div className="space-y-3">
-        <label className="block text-xs font-bold uppercase tracking-wider text-[#6B7280]">
+        <label htmlFor="mini-skill-input" className="block text-xs font-bold text-kt-slate">
           {copy.skillsLabel[lang]}
         </label>
         <div className="flex flex-wrap gap-2">
-          {QUICK_SKILLS.map((skill) => {
+          {visibleSkills.map((skill) => {
             const selected = customSkills.includes(skill.label);
             return (
               <button
@@ -154,8 +179,8 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
                 onClick={() => toggleSkillTag(skill.label)}
                 className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all touch-manipulation ${
                   selected
-                    ? "bg-[#FCD116] text-[#1A1A2E] shadow-sm"
-                    : "bg-[#fffbe6] border border-[#FCD116] text-[#92710a] hover:bg-[#FCD116]/20"
+                    ? "bg-kt-blue text-white"
+                    : "bg-kt-blue-light border border-kt-blue-soft text-kt-blue hover:bg-kt-blue-soft"
                 }`}
               >
                 {selected && <Check className="h-3.5 w-3.5" />}
@@ -163,18 +188,32 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
               </button>
             );
           })}
+          {hasMoreSkills && (
+            <button
+              type="button"
+              onClick={() => setShowMoreSkills(!showMoreSkills)}
+              className="inline-flex items-center gap-1 rounded-full px-3.5 py-2 text-xs font-semibold text-kt-blue bg-kt-bg border border-kt-border hover:bg-kt-blue-light transition-all touch-manipulation"
+              aria-expanded={showMoreSkills}
+            >
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${showMoreSkills ? "rotate-180" : ""}`} />
+              {showMoreSkills
+                ? (lang === "fil" ? "Wala na" : "Less")
+                : (lang === "fil" ? `+${QUICK_SKILLS.length - TAG_LIMIT} pa` : `+${QUICK_SKILLS.length - TAG_LIMIT} more`)}
+            </button>
+          )}
         </div>
         <form onSubmit={handleAddCustomSkill} className="flex gap-2">
           <input
+            id="mini-skill-input"
             type="text"
             value={skillInput}
             onChange={(e) => setSkillInput(e.target.value)}
             placeholder={copy.skillPlaceholder[lang]}
-            className="flex-1 rounded-xl border border-[#e5e8ef] bg-white px-3 py-2 text-sm focus:border-[#0F3D91] focus:ring-3 focus:ring-[#E8F0FE] focus:outline-none transition-all"
+            className="flex-1 rounded-xl border border-kt-border bg-white px-3 py-2 text-sm focus:border-kt-blue focus:ring-3 focus:ring-kt-blue-light focus:outline-none transition-all"
           />
           <button
             type="submit"
-            className="rounded-xl bg-[#0F3D91] hover:bg-[#1a52c4] text-white px-4 py-2 text-xs font-bold shadow-md transition-all"
+            className="rounded-xl bg-kt-blue hover:bg-kt-blue-mid active:scale-95 text-white px-4 py-2 text-xs font-bold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
           >
             {copy.addBtn[lang]}
           </button>
@@ -184,12 +223,13 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
             {customSkills.map((skill, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1 bg-[#E8F0FE] text-[#0F3D91] px-2.5 py-1 rounded-full text-xs font-medium border border-[#d4e3ff]"
+                className="inline-flex items-center gap-1 bg-kt-blue-light text-kt-blue px-2.5 py-1 rounded-full text-xs font-medium border border-kt-blue-soft"
               >
                 {skill}
                 <button
                   onClick={() => toggleSkillTag(skill)}
-                  className="text-[#0F3D91]/60 hover:text-[#0F3D91] font-bold"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-kt-blue/50 hover:text-kt-danger font-bold rounded-full hover:bg-kt-danger-light transition-colors"
+                  aria-label={lang === 'fil' ? `Alisin ang ${skill}` : `Remove ${skill}`}
                 >
                   ×
                 </button>
@@ -201,10 +241,11 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
 
       {/* Career Goal */}
       <div className="space-y-2">
-        <label className="block text-xs font-bold uppercase tracking-wider text-[#6B7280]">
+        <label htmlFor="mini-career-goal" className="block text-xs font-bold text-kt-slate">
           {copy.goalLabel[lang]}
         </label>
         <textarea
+          id="mini-career-goal"
           rows={3}
           value={careerGoal}
           onChange={(e) => {
@@ -212,11 +253,11 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
             if (value.length <= 200) setCareerGoal(value);
           }}
           placeholder={copy.goalHint[lang]}
-          className="w-full border border-[#e5e8ef] bg-white rounded-xl px-3 py-2.5 text-sm focus:border-[#0F3D91] focus:ring-3 focus:ring-[#E8F0FE] focus:outline-none transition-all resize-none"
+          className="w-full border border-kt-border bg-white rounded-xl px-3 py-2.5 text-sm focus:border-kt-blue focus:ring-3 focus:ring-kt-blue-light focus:outline-none transition-all resize-none"
           maxLength={200}
         />
         <div className="flex justify-end items-center">
-          <span className={`text-xs ${careerGoal.length >= 180 ? "text-amber-500" : "text-[#6B7280]"}`}>
+          <span className={`text-xs ${careerGoal.length >= 180 ? "text-amber-500" : "text-kt-slate"}`}>
             {careerGoal.length}/200
           </span>
         </div>
@@ -244,7 +285,7 @@ export default function ProfileMiniForm(props: ProfileMiniFormProps) {
         <div className="text-center">
           <button
             onClick={onGoToFullAssessment}
-            className="text-xs font-bold text-[#0F3D91] hover:underline decoration-dotted"
+            className="text-xs font-bold text-kt-blue hover:underline decoration-dotted"
           >
             {copy.fullAssessmentLink[lang]}
           </button>

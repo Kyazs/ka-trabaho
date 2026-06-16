@@ -384,23 +384,8 @@ export const sanitizeOutput = (output: string | null | undefined): string => {
   
   let sanitized = output;
   
-  // Strip markdown formatting
-  sanitized = sanitized
-    .replace(/^#{1,6}\s+/gm, '')
-    .replace(/\*{1,3}([^*]+)\*{1,3}/g, '$1')
-    .replace(/_{1,3}([^_]+)_{1,3}/g, '$1')
-    .replace(/~~([^~]+)~~/g, '$1')
-    .replace(/^[-*]\s+/gm, '')
-    .replace(/^---+\s*$/gm, '')
-    .replace(/```[\s\S]*?```/g, '')
-    .replace(/`([^`]+)`/g, '$1');
-  
-  // Strip ALL HTML using xss (keeps only plain text, no DOM dependency)
-  sanitized = xss(sanitized, {
-    whiteList: {},
-    stripIgnoreTag: true,
-    stripIgnoreTagBody: ['script']
-  });
+  // Remove code blocks (prevent code injection in rendered output)
+  sanitized = sanitized.replace(/```[\s\S]*?```/g, '');
   
   // Detect and redact system prompt leakage
   const systemPromptLeakagePatterns = [
