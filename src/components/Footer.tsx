@@ -41,6 +41,12 @@ const NAV_LINKS = [
   { path: "/faq", key: "faq" as const },
 ];
 
+const LEGAL_ROUTES: { key: "privacy" | "accessibility" | "dataPolicy"; to: string }[] = [
+  { key: "privacy", to: "/privacy" },
+  { key: "accessibility", to: "/accessibility" },
+  { key: "dataPolicy", to: "/data-policy" },
+];
+
 const SOCIAL_LINKS = [
   { url: "https://github.com/Kyazs", key: "github" as const, Icon: Github },
   { url: "https://www.caspersantos.dev/", key: "portfolio" as const, Icon: Globe },
@@ -100,15 +106,14 @@ export default function Footer({ lang }: FooterProps) {
                 {t(COPY.legalLabel)}
               </div>
               <nav aria-label={t(COPY.legalLabel)} className="flex flex-col gap-0.5">
-                {(["privacy", "accessibility", "dataPolicy"] as const).map((key) => (
-                  <a
+                {LEGAL_ROUTES.map(({ key, to }) => (
+                  <Link
                     key={key}
-                    href="#"
-                    onClick={(e) => e.preventDefault()}
+                    to={to}
                     className="text-[13px] text-kt-near-black font-medium hover:text-kt-blue min-h-[44px] inline-flex items-center touch-manipulation"
                   >
                     {t(COPY[key])}
-                  </a>
+                  </Link>
                 ))}
               </nav>
             </div>

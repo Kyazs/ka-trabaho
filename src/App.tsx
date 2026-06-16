@@ -34,6 +34,7 @@ import Navbar from "./components/Navbar";
 import PageHeader from "./components/PageHeader";
 import BottomNav from "./components/BottomNav";
 import Footer from "./components/Footer";
+import LegalPage from "./components/LegalPage";
 import LandingPage from "./components/LandingPage";
 import AssessmentWizard from "./components/AssessmentWizard";
 import ProfileMiniForm from "./components/ProfileMiniForm";
@@ -85,7 +86,7 @@ const getSectorIcon = (iconName: string) => {
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const VALID_TABS = ["landing", "match", "explorer", "jobs", "chat", "faq"];
+  const VALID_TABS = ["landing", "match", "explorer", "jobs", "chat", "faq", "privacy", "accessibility", "data-policy"];
   const rawTab = location.pathname === "/" ? "landing" : location.pathname.slice(1);
   const currentTab = VALID_TABS.includes(rawTab) ? rawTab : "landing";
   useEffect(() => {
@@ -1660,10 +1661,14 @@ export default function App() {
 
       </>)}
 
+      {currentTab === "privacy" && <LegalPage pageKey="privacy" lang={lang} />}
+      {currentTab === "accessibility" && <LegalPage pageKey="accessibility" lang={lang} />}
+      {currentTab === "data-policy" && <LegalPage pageKey="dataPolicy" lang={lang} />}
+
       </main>
 
       {currentTab !== "chat" && <Footer lang={lang} />}
-       <BottomNav lang={lang} />
+       {!["chat", "privacy", "accessibility", "data-policy"].includes(currentTab) && <BottomNav lang={lang} />}
     </div>
   );
 }
