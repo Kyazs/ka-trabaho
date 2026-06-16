@@ -56,7 +56,7 @@ export default function Footer({ lang }: FooterProps) {
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           <div className="flex-1 min-w-0">
             <div className="font-display text-xl font-extrabold text-kt-blue">
-              ka-traba<span className="text-kt-gold">HO</span>
+              Ka-Traba<span className="text-kt-gold">HO</span>
             </div>
             <p className="text-[13px] text-kt-slate leading-[1.7] mt-3 max-w-[320px]">
               {t(COPY.tagline)}
@@ -82,7 +82,7 @@ export default function Footer({ lang }: FooterProps) {
               <div className="text-xs font-bold text-kt-slate uppercase tracking-[0.08em] mb-3">
                 {t(COPY.navLabel)}
               </div>
-              <nav className="flex flex-col gap-0.5">
+              <nav aria-label={t(COPY.navLabel)} className="flex flex-col gap-0.5">
                 {NAV_LINKS.map(({ path, key }) => (
                   <Link
                     key={key}
@@ -99,7 +99,7 @@ export default function Footer({ lang }: FooterProps) {
               <div className="text-xs font-bold text-kt-slate uppercase tracking-[0.08em] mb-3">
                 {t(COPY.legalLabel)}
               </div>
-              <nav className="flex flex-col gap-0.5">
+              <nav aria-label={t(COPY.legalLabel)} className="flex flex-col gap-0.5">
                 {(["privacy", "accessibility", "dataPolicy"] as const).map((key) => (
                   <a
                     key={key}
