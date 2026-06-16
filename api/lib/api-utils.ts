@@ -39,7 +39,7 @@ export const getTesdaGroundingContext = () => {
     context += `  Accredited TESDA Courses:\n`;
     sector.courses.forEach(course => {
       context += `    * [Code: ${course.code}] ${course.name} (${course.level}, Duration: ${course.duration})\n`;
-      context += `      Entry Requirements: ${course.entryReq}\n`;
+      context += `      Entry Requirements: ${typeof course.entryReq === 'string' ? course.entryReq : course.entryReq.en}\n`;
       context += `      Skills Taught: ${course.skillsAcquired.join(", ")}\n`;
     });
   });
@@ -90,14 +90,14 @@ export const FALLBACK_RECOMMENDATION = {
       courseName: "Computer Systems Servicing NC II",
       matchScore: 90,
       reasonForYouth: "Dahil hilig mo ang teknolohiya at computer games, bagay sa iyo ang pagse-setup at pag-repair ng computer networks!",
-      immediateJobTitle: "Computer Repair & Network Technician"
+      immediateJobTitle: "Technical Support / Help Desk Representative (BPO)"
     },
     {
-      courseCode: "TOU-BAR2",
-      courseName: "Barista NC II",
+      courseCode: "ICT-CCS2",
+      courseName: "Contact Center Services NC II",
       matchScore: 85,
-      reasonForYouth: "Gusto mong makasalamuha ang tao at gumawa ng mga kape. Mabilis makakuha ng trabaho sa mga café ngayon.",
-      immediateJobTitle: "Specialty Café Barista"
+      reasonForYouth: "Kung marunong kang makipag-usap at may clear na diction, mabilis makakuha ng trabaho sa BPO — ang pinakamalaking employer ng TVET grads!",
+      immediateJobTitle: "BPO Customer Service / Chat Support Agent"
     }
   ],
   faqTip: "Pumunta sa pinakamalapit na TESDA Regional/Provincial Office upang mag-apply ng libreng scholarship at ₱160 daily allowance!"
@@ -107,18 +107,18 @@ export const FALLBACK_JOB_RECOMMENDATION = {
   matchedSummary: "Mabuhay! Batay sa iyong profile, narito ang mga posibleng trabaho na akma sa iyong kakayahan. Para sa mas detalyadong job matching, maaari mong kausapin ang AI counselor.",
   recommendedJobs: [
     {
-      jobTitle: "Computer Repair & Network Technician",
+      jobTitle: "Technical Support / Help Desk Representative (BPO)",
       matchScore: 90,
-      reasonForYouth: "Dahil may interes ka sa teknolohiya at computer, ang pag-aayos at pag-maintain ng computer networks ay magandang simula.",
+      reasonForYouth: "Dahil may interes ka sa teknolohiya at computer, ang BPO tech support ay magandang simula — maraming openings sa NCR, Cebu, at Iloilo.",
       sectorId: "ict",
-      requiredCourseCodes: ["ICT-CSS2"]
+      requiredCourseCodes: ["ICT-CSS2", "ICT-CCS2"]
     },
     {
-      jobTitle: "Specialty Café Barista",
+      jobTitle: "BPO Customer Service / Chat Support Agent",
       matchScore: 85,
-      reasonForYouth: "Kung gusto mong makasalamuha ang tao at gumawa ng kape, mabilis makakuha ng trabaho sa mga café.",
-      sectorId: "tourism",
-      requiredCourseCodes: ["TOU-BAR2"]
+      reasonForYouth: "Kung magaling kang makipag-usap, ang BPO industry ang pinakamabilis na daan patungo sa trabaho — entry-level na ₱18K-₱26K/month.",
+      sectorId: "ict",
+      requiredCourseCodes: ["ICT-CCS2"]
     }
   ],
   faqTip: "Pumunta sa pinakamalapit na TESDA Regional/Provincial Office para sa libreng assessment at job placement assistance."
