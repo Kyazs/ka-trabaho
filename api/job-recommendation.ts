@@ -38,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Simple health check for GET requests
   if (req.method === 'GET') {
     await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 200, false, startTime);
-    return res.json({ status: 'ok', endpoint: 'job-recommendation', env: isDummyKey ? 'dummy' : 'live' });
+    return res.json({ status: 'ok', endpoint: 'job-recommendation' });
   }
 
   if (req.method !== 'POST') {
@@ -64,6 +64,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       careerGoal
     } = validation.data;
 
+    const candidates = validation.data.candidates;
+
     if (isDummyKey) {
       await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 200, false, startTime);
       return res.json(FALLBACK_JOB_RECOMMENDATION);
@@ -74,13 +76,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const regionName = regionInfo?.name || region;
     const topSectors = regionInfo?.topSectors || [];
 
+    const candidateContext = candidates && candidates.length > 0
+      ? `The local matching engine has already pre-scored these job candidates for this student. Your job is to:
+1. Confirm these are good matches or suggest better alternatives from the full catalog
+2. Write warm, personalized Taglish reasons for each recommended job
+3. Adjust matchScores if needed (keep between 70-99)
+
+Pre-scored job candidates:
+${candidates.map((c: any) => `- [${c.code}] ${c.localScore}/99 (Reasons: ${c.reasonKeys.join(', ')})`).join('\n')}`
+      : 'No pre-scored candidates provided. Find the best matches from the full catalog below.';
+
     const systemPrompt = `STRICT JSON OUTPUT REQUIRED. You must return ONLY a valid JSON object. No markdown, no code blocks, no extra text, no explanations outside the JSON.
 
 You are a Filipino career counselor specializing in TESDA vocational job placement for out-of-school youth (aged 15-24) in the Philippines.
 Your tone should be highly encouraging, warm, conversational, and use friendly Taglish (Tagalog-English mix) appropriate for young adults.
 
-Based on the student's profile, recommend 3-5 specific job roles they can realistically pursue after completing TESDA courses.
-Consider their education level, practical skills, interests, and career goals.
+${candidateContext}
+
+Based on the student's profile and the catalog below, recommend 3-5 specific job roles they can realistically pursue after completing TESDA courses.
+${groundContext}
 
 The JSON must match this exact schema with NO extra fields:
 {
@@ -97,7 +111,7 @@ The JSON must match this exact schema with NO extra fields:
   "faqTip": "string (practical next step advice in Taglish)"
 }
 
-${groundContext}`;
+Return ONLY valid JSON, no other text.`;
 
     const userPrompt = `Please recommend 3-5 jobs for this student and return ONLY a JSON object:
 - Age: ${age}
