@@ -39,8 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       return res.json({ 
         status: 'ok', 
-        endpoint: 'recommendation', 
-        env: isDummyKey ? 'dummy' : 'live'
+        endpoint: 'recommendation'
       });
     } catch (err) {
       return res.json({ status: 'error', message: (err as Error).message });
@@ -70,6 +69,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       careerGoal
     } = validation.data;
 
+    const candidates = validation.data.candidates;
+
     if (isDummyKey) {
       await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 200, false, startTime);
       return res.json(FALLBACK_RECOMMENDATION);
@@ -77,12 +78,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const groundContext = getTesdaGroundingContext();
 
+    const candidateContext = candidates && candidates.length > 0
+      ? `The local matching engine has already pre-scored these candidates for this student. Your job is to:
+1. Confirm these are good matches or suggest better alternatives from the full catalog if one is clearly wrong
+2. Write warm, personalized Taglish reasons for each recommended course
+3. Adjust matchScores if you think they should be different (keep between 70-99)
+
+Pre-scored candidates:
+${candidates.map((c: any) => `- [${c.code}] Score: ${c.localScore}/99 (Reasons: ${c.reasonKeys.join(', ')})`).join('\n')}`
+      : 'No pre-scored candidates provided. Find the best matches from the full catalog below.';
+
     const systemPrompt = `STRICT JSON OUTPUT REQUIRED. You must return ONLY a valid JSON object. No markdown, no code blocks, no extra text, no explanations outside the JSON.
 
 You are a Filipino vocational counselor specialist mapping out-of-school youth (aged 15-24) to available free TESDA courses in their province.
 Your tone should be highly encouraging, warm, conversational, and use friendly Taglish (Tagalog-English mix) appropriate for young adults.
-Utilize the following list of active local TESDA sectors, job demands, and courses to make precise matches. Try to align with the provided course codes where possible.
-If there are no exact course matches inside our sector list, you can suggest another well-known real TESDA course code (e.g. Shielded Metal Arc Welding, Automotive, etc.) but explain why.
+
+${candidateContext}
+
+Utilize the following catalog for truth-checking and as the source of all course details:
+${groundContext}
 
 The JSON must match this exact schema with NO extra fields, NO markdown formatting, and NO text before or after the JSON:
 {
@@ -100,7 +114,7 @@ The JSON must match this exact schema with NO extra fields, NO markdown formatti
   "faqTip": "string (practical next step advice in Taglish)"
 }
 
-${groundContext}`;
+Recommend 2 to 3 specific TESDA courses with matchScore between 70 and 99. Return ONLY valid JSON, no other text.`;
 
     const userPrompt = `Please generate a personalized matching analysis for this student and return ONLY a JSON object matching the schema above:
 - Age: ${age}
