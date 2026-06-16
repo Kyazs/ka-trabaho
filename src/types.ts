@@ -21,6 +21,7 @@ export interface MatchingResult {
   targetSectors: string[];
   recommendedCourses: RecommendationCourse[];
   faqTip: string;
+  _isLocalFallback?: boolean;
 }
 
 export interface ChatMessage {
@@ -28,6 +29,53 @@ export interface ChatMessage {
   role: "user" | "model";
   text: string;
   timestamp: Date;
+}
+
+export interface JobMatchCourse {
+  name: string;
+  code: string;
+  duration: string;
+  sectorId: string;
+}
+
+export interface JobMatch {
+  jobTitle: string;
+  matchScore: number;
+  demandLevel: string;
+  averageSalary: string;
+  reasonForYouth: string;
+  description?: string;
+  requiredCourses: JobMatchCourse[];
+}
+
+export interface JobMatchResult {
+  matchedSummary: string;
+  recommendedJobs: JobMatch[];
+  faqTip: string;
+  _isLocalFallback?: boolean;
+}
+
+export interface ScoredCandidate {
+  code: string;
+  localScore: number;
+  reasonKeys: string[];
+}
+
+export interface ScoredCourse extends ScoredCandidate {
+  name: string;
+  level: string;
+  duration: string;
+  sectorId: string;
+  immediateJobTitle: string;
+}
+
+export interface ScoredJob extends ScoredCandidate {
+  jobTitle: string;
+  sectorId: string;
+  averageSalary: string;
+  demandLevel: string;
+  description: string;
+  requiredCourses: JobMatchCourse[];
 }
 
 export type WizardStep = 'basic' | 'interests' | 'skills' | 'goal' | 'review' | 'processing' | 'results';
@@ -84,9 +132,10 @@ export interface AssessmentWizardProps {
   lang: "fil" | "en";
   QUICK_INTERESTS: { label: string; category: string }[];
   QUICK_SKILLS: { label: string; category: string }[];
-  PHILIPPINES_REGIONS: { code: string; name: string; provinces: string[]; topSectors: string[] }[];
+  PHILIPPINES_REGIONS: { code: string; name: string; provinces: string[]; topSectors: string[]; islandGroup: string }[];
   onChatAboutCourse?: (courseCode: string, courseName: string) => void;
   onExploreCourse?: (courseCode: string, targetSectors?: string[]) => void;
   onGoToChat?: () => void;
   onGoToFaq?: () => void;
+  onResetProfile?: () => void;
 }
