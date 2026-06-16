@@ -6,6 +6,39 @@ import xss from 'xss';
 
 dotenv.config();
 
+const memoryRateLimits = new Map<string, { count: number; date: string }>();
+
+const getMemoryRateLimitKey = (ip: string, endpoint: string): string =>
+  `${ip}:${endpoint}:${new Date().toISOString().split('T')[0]}`;
+
+const checkMemoryRateLimit = (ip: string, endpoint: string): { allowed: boolean; remaining: number; resetDate: string; count: number } => {
+  const today = new Date().toISOString().split('T')[0];
+  const resetDate = new Date();
+  resetDate.setHours(24, 0, 0, 0);
+  const key = getMemoryRateLimitKey(ip, endpoint);
+  const entry = memoryRateLimits.get(key);
+
+  if (!entry || entry.date !== today) {
+    memoryRateLimits.set(key, { count: 0, date: today });
+    return { allowed: true, remaining: 5, resetDate: resetDate.toISOString(), count: 0 };
+  }
+
+  const remaining = Math.max(0, 5 - entry.count);
+  return { allowed: entry.count < 5, remaining, resetDate: resetDate.toISOString(), count: entry.count };
+};
+
+const incrementMemoryRateLimit = (ip: string, endpoint: string): void => {
+  const today = new Date().toISOString().split('T')[0];
+  const key = getMemoryRateLimitKey(ip, endpoint);
+  const entry = memoryRateLimits.get(key);
+
+  if (!entry || entry.date !== today) {
+    memoryRateLimits.set(key, { count: 1, date: today });
+  } else {
+    entry.count += 1;
+  }
+};
+
 // Supabase client (lazy init)
 let _supabase: SupabaseClient | null = null;
 
@@ -54,14 +87,26 @@ export const ChatMessageSchema = z.object({
   text: z.string().min(1).max(2000),
 });
 
+export const ScoredCandidateSchema = z.object({
+  code: z.string().max(20),
+  localScore: z.number().int().min(0).max(99),
+  reasonKeys: z.array(z.string().max(30)).max(5),
+});
+
 export const ChatSchema = z.object({
   message: z.string().min(1).max(2000),
   history: z.array(ChatMessageSchema).max(MAX_HISTORY_LENGTH).optional(),
-  userProfile: ProfileSchema.optional(),
+  userProfile: ProfileSchema.extend({
+    topMatchedCourses: z.array(z.string().max(20)).max(3).optional(),
+  }).optional(),
 });
 
-export const JobRecommendationSchema = ProfileSchema;
-export const RecommendationSchema = ProfileSchema;
+export const JobRecommendationSchema = ProfileSchema.extend({
+  candidates: z.array(ScoredCandidateSchema).max(5).optional(),
+});
+export const RecommendationSchema = ProfileSchema.extend({
+  candidates: z.array(ScoredCandidateSchema).max(6).optional(),
+});
 
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
@@ -76,7 +121,10 @@ export const setSecurityHeaders = (res: VercelResponse, remaining: number, reset
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('Content-Security-Policy', "default-src 'self'");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'");
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   res.setHeader('X-RateLimit-Limit', '5');
   res.setHeader('X-RateLimit-Remaining', String(Math.max(0, remaining)));
   res.setHeader('X-RateLimit-Reset', resetDate);
@@ -85,18 +133,17 @@ export const setSecurityHeaders = (res: VercelResponse, remaining: number, reset
 // CORS handler with origin restriction
 export const setCorsHeaders = (req: VercelRequest, res: VercelResponse) => {
   const origin = req.headers.origin || '';
-  const isAllowed = ALLOWED_ORIGINS.includes(origin) || origin.includes('vercel.app');
+  const isAllowed = ALLOWED_ORIGINS.includes(origin);
   
   if (isAllowed) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   } else if (!origin) {
-    // No origin header (e.g., curl, mobile app) - allow but restrict in production
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', process.env.APP_URL || 'https://localhost:3000');
   } else {
-    // Unknown origin - deny for security, but allow same-origin (no origin header)
     res.setHeader('Access-Control-Allow-Origin', process.env.APP_URL || 'https://localhost:3000');
   }
   
+  res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Max-Age', '86400');
@@ -104,19 +151,12 @@ export const setCorsHeaders = (req: VercelRequest, res: VercelResponse) => {
 
 // Extract real client IP from Vercel headers
 export const getClientIp = (req: VercelRequest): string => {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string') {
-    return forwarded.split(',')[0].trim();
-  }
-  if (Array.isArray(forwarded)) {
-    return forwarded[0].split(',')[0].trim();
-  }
   return req.socket?.remoteAddress || 'unknown';
 };
 
 // Check if IP is localhost (dev exemption)
 export const isLocalhost = (ip: string): boolean => {
-  return ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || ip.startsWith('192.168.') || ip.startsWith('10.');
+  return ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
 };
 
 // Body size checker
@@ -177,8 +217,7 @@ export const checkRateLimit = async (ip: string, endpoint: string): Promise<{
 }> => {
   const supabase = getSupabase();
   if (!supabase) {
-    // Fail open if Supabase not configured
-    return { allowed: true, remaining: 5, resetDate: new Date().toISOString(), count: 0 };
+    return checkMemoryRateLimit(ip, endpoint);
   }
   
   const today = new Date().toISOString().split('T')[0];
@@ -197,7 +236,7 @@ export const checkRateLimit = async (ip: string, endpoint: string): Promise<{
     
     if (fetchError && fetchError.code !== 'PGRST116') {
       console.error('[checkRateLimit] Fetch error:', fetchError);
-      return { allowed: true, remaining: 5, resetDate: resetDate.toISOString(), count: 0 };
+      return checkMemoryRateLimit(ip, endpoint);
     }
     
     const count = existing?.request_count || 0;
@@ -211,14 +250,17 @@ export const checkRateLimit = async (ip: string, endpoint: string): Promise<{
     };
   } catch (err) {
     console.error('[checkRateLimit] Error:', err);
-    return { allowed: true, remaining: 5, resetDate: resetDate.toISOString(), count: 0 };
+    return checkMemoryRateLimit(ip, endpoint);
   }
 };
 
 // Increment rate limit counter
 export const incrementRateLimit = async (ip: string, endpoint: string): Promise<void> => {
   const supabase = getSupabase();
-  if (!supabase) return;
+  if (!supabase) {
+    incrementMemoryRateLimit(ip, endpoint);
+    return;
+  }
   
   const today = new Date().toISOString().split('T')[0];
   
