@@ -41,14 +41,23 @@ app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('Content-Security-Policy', "default-src 'self'");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; Referrer-Policy strict-origin-when-cross-origin");
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   next();
 });
 
-// CORS for local development
+const DEV_ALLOWED_ORIGINS = ['http://localhost:3000', 'https://localhost:3000'];
+
 app.use((req, res, next) => {
   const origin = req.headers.origin || '';
-  res.setHeader('Access-Control-Allow-Origin', origin || 'http://localhost:3000');
+  if (DEV_ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (!origin) {
+    res.setHeader('Access-Control-Allow-Origin', DEV_ALLOWED_ORIGINS[0]);
+  }
+  res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') {
@@ -109,13 +118,6 @@ const incrementLocalRateLimit = (ip: string, endpoint: string): void => {
 
 // Extract client IP
 const getClientIp = (req: express.Request): string => {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string') {
-    return forwarded.split(',')[0].trim();
-  }
-  if (Array.isArray(forwarded)) {
-    return forwarded[0].split(',')[0].trim();
-  }
   return req.socket?.remoteAddress || 'unknown';
 };
 
@@ -149,7 +151,8 @@ const validateEducation = (education: string): boolean => [
   'Junior High Undergrad',
   'Senior High School Graduate',
   'ALS Graduate',
-  'Vocational College Undergraduate'
+  'College Level Undergrad',
+  'College Graduate'
 ].includes(education);
 
 // Helper: Provide local context summarizing the TESDA courses we offer to the AI
@@ -596,7 +599,7 @@ ${groundContext}
 
 // Test route
 app.get("/api/test", (req, res) => {
-  res.json({ status: "ok", message: "Server is running", env: process.env.FIREWORKS_API_KEY ? "key-set" : "key-missing" });
+  res.json({ status: "ok", message: "Server is running" });
 });
 
 // Serve assets / Vite middleware

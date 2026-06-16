@@ -23,8 +23,8 @@ const SYNONYM_MAP: Record<string, string[]> = {
 };
 
 const EDUCATION_LEVELS: Record<string, number> = {
+  "College Level Undergrad": 4,
   "College Graduate": 5,
-  "Vocational College Undergraduate": 4,
   "Senior High School Graduate": 3,
   "Junior High School Graduate": 2,
   "Junior High Undergrad": 1.5,

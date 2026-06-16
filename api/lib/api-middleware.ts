@@ -73,7 +73,8 @@ export const ProfileSchema = z.object({
     'Junior High Undergrad',
     'Senior High School Graduate',
     'ALS Graduate',
-    'Vocational College Undergraduate'
+    'College Level Undergrad',
+    'College Graduate'
   ]),
   region: z.string().min(1).max(10),
   province: z.string().max(100).optional(),
@@ -424,7 +425,8 @@ export const VALID_EDUCATION_LEVELS = [
   'Junior High Undergrad',
   'Senior High School Graduate',
   'ALS Graduate',
-  'Vocational College Undergraduate'
+  'College Level Undergrad',
+  'College Graduate'
 ];
 
 export const validateEducation = (education: string): boolean => {
