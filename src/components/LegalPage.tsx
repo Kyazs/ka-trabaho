@@ -45,8 +45,8 @@ const LEGAL_CONTENT: Record<LegalPageProps["pageKey"], LegalPageContent> = {
       {
         heading: { fil: "Data na ipinapadala sa server", en: "Data sent to the server" },
         body: {
-          fil: "Kapag gumamit ka ng AI features (pagtutugma ng kurso, pagtutugma ng trabaho, chat), ang iyong profile at mga mensahe ay ipinapadala sa aming server para sa pagproseso. Ipapasa ng server ang mga ito sa Google Gemini API para sa mga AI na sagot. Hindi iniimbak ng aming server o ng Google ang iyong data pagkatapos ng pagproseso.",
-          en: "When you use AI features (course matching, job matching, chat), your profile and messages are sent to our server for processing. The server forwards them to Google's Gemini API for AI responses. Neither our server nor Google stores your data after processing.",
+          fil: "Ang iyong profile at mensahe ay ipinapadala sa aming server para sa pagproseso. Ipapasa ng server ang mga ito sa aming AI service provider para sa mga AI na sagot. Hindi iniimbak ng aming server o ng AI provider ang iyong data pagkatapos ng pagproseso.",
+          en: "When you use AI features (course matching, job matching, chat), your profile and messages are sent to our server for processing. The server forwards them to our AI service provider for AI responses. Neither our server nor the AI provider stores your data after processing.",
         },
       },
       {
@@ -73,8 +73,8 @@ const LEGAL_CONTENT: Record<LegalPageProps["pageKey"], LegalPageContent> = {
       {
         heading: { fil: "Iba pang partido", en: "Third parties" },
         body: {
-          fil: "Ang Google Gemini API ang tanging third-party na serbisyo na kasangkot, ginagamit lamang para sa AI processing. Hindi kami gumagamit ng analytics trackers, advertising networks, o social media pixels.",
-          en: "Google Gemini API is the only third-party service involved, used solely for AI processing. We do not use analytics trackers, advertising networks, or social media pixels.",
+          fil: "Ang aming AI service provider ang tanging third-party na serbisyo na kasangkot, ginagamit lamang para sa AI processing. Hindi kami gumagamit ng analytics trackers, advertising networks, o social media pixels.",
+          en: "Our AI service provider is the only third-party service involved, used solely for AI processing. We do not use analytics trackers, advertising networks, or social media pixels.",
         },
       },
       {
@@ -177,8 +177,8 @@ const LEGAL_CONTENT: Record<LegalPageProps["pageKey"], LegalPageContent> = {
       {
         heading: { fil: "Ano ang ipinapadala", en: "What's sent to the server" },
         body: {
-          fil: "Kapag humingi ka ng AI matching o chat, ang iyong profile at mensahe ay pansamantalang ipinapadala sa aming server, na ipapasa ito sa Google Gemini API. Ang sagot ay ipinapadala pabalik sa iyo. Hindi man ang server o Google ang nag-iimbak ng iyong data pagkatapos makumpleto ang pagproseso.",
-          en: "When you request AI matching or chat, your profile and messages are temporarily sent to our server, which forwards them to Google's Gemini API. The response is sent back to you. Neither the server nor Google retains your data after processing is complete.",
+          fil: "Kapag humingi ka ng AI matching o chat, ang iyong profile at mensahe ay pansamantalang ipinapadala sa aming server, na ipapasa ito sa aming AI service provider. Ang sagot ay ipinapadala pabalik sa iyo. Hindi man ang server o ang AI provider ang nag-iimbak ng iyong data pagkatapos makumpleto ang pagproseso.",
+          en: "When you request AI matching or chat, your profile and messages are temporarily sent to our server, which forwards them to our AI service provider. The response is sent back to you. Neither the server nor the AI provider retains your data after processing is complete.",
         },
       },
       {
@@ -191,15 +191,15 @@ const LEGAL_CONTENT: Record<LegalPageProps["pageKey"], LegalPageContent> = {
       {
         heading: { fil: "Cookies at trackers", en: "Cookies and trackers" },
         body: {
-          fil: "Ang Ka-TrabaHO ay hindi gumagamit ng cookies, analytics trackers (tulad ng Google Analytics), advertising pixels, o anumang third-party tracking scripts.",
-          en: "Ka-TrabaHO does not use cookies, analytics trackers (like Google Analytics), advertising pixels, or any third-party tracking scripts.",
+          fil: "Ang Ka-TrabaHO ay hindi gumagamit ng cookies, analytics trackers, advertising pixels, o anumang third-party tracking scripts.",
+          en: "Ka-TrabaHO does not use cookies, analytics trackers, advertising pixels, or any third-party tracking scripts.",
         },
       },
       {
         heading: { fil: "Pagbabahagi ng data", en: "Data sharing" },
         body: {
-          fil: "Hindi namin ibinabahagi ang iyong data sa anumang third party maliban sa Google Gemini API para sa layuning paggawa ng AI na sagot lamang. Hindi iniimbak ng Gemini API ang iyong data o ginagamit ito para sa training.",
-          en: "We do not share your data with any third party except Google's Gemini API for the sole purpose of generating AI responses. Gemini API does not store your data or use it for training.",
+          fil: "Hindi namin ibinabahagi ang iyong data sa anumang third party maliban sa aming AI service provider para sa layuning paggawa ng AI na sagot lamang. Hindi iniimbak ng AI provider ang iyong data o ginagamit ito para sa training.",
+          en: "We do not share your data with any third party except our AI service provider for the sole purpose of generating AI responses. The AI provider does not store your data or use it for training.",
         },
       },
       {
