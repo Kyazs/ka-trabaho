@@ -12,6 +12,7 @@ import {
   validateRequest,
   callAiWithRetry,
   sanitizeOutput,
+  checkOffTopic,
   MAX_HISTORY_LENGTH
 } from './lib/api-middleware.js';
 
@@ -63,6 +64,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { message, history, userProfile } = validation.data;
 
+    // Off-topic guard: skip AI call for clearly unrelated questions
+    const offTopicCheck = checkOffTopic(message);
+    if (offTopicCheck.isOffTopic) {
+      await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 200, false, startTime);
+      return res.json({ text: offTopicCheck.redirectResponse });
+    }
+
     if (isDummyKey) {
       await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 200, false, startTime);
       return res.json({
@@ -89,6 +97,8 @@ Your goal is to guide them, answer questions about vocational programs, explain 
 - Speak in a heart-to-heart, friendly, warm, and highly supportive Taglish (English and Tagalog) conversational style. Use words like "Kapatid", "Ka-TrabaHO", "bilib ako sa 'yo", "galing!", "Kaya mo 'yan!".
 - Avoid robotic or cold corporate speak. Treat them with respect and empathy. Many out-of-school youth face immense financial or personal pressure — offer reassurance that TESDA is an open-door pathway to better wages.
 - CRITICAL: Do NOT use markdown formatting. No headers (###, ##), no bold (**text**), no italic (*text*), no bullet markers (- or *), no code blocks, no horizontal rules (---). Write in plain conversational text only. Use regular sentences and simple line breaks. When listing items, use numbers like "1.", "2.", "3." — not markdown bullets.
+- TOPIC SCOPE: You are a career and livelihood counselor. Allowed topics: TESDA programs, enrollment, requirements, certificates (NC, COC), financial aid/grants/allowances, employment, job hunting, skills demand, training pathways, ALS, OFW/OWWA, entrepreneurship, livelihood programs, and motivation/encouragement. Greetings and small talk ("kamusta", "hello") are always welcome — they are on-ramps for anxious youth.
+- OFF-TOPIC REDIRECT: If the user asks about topics clearly unrelated to career/livelihood (politics, celebrity gossip, programming help, crypto/stocks, academic homework, explicit content), briefly acknowledge then warmly redirect back. Example: "Kapatid, nandito ako para sa career at livelihood journey mo! May tanong ka ba tungkol sa TESDA courses o trabaho? Sabihin mo lang!" Never be dismissive — always redirect with warmth.
 - Incorporate this ground truth course menu when answering queries:
 ${groundContext}
 - Always prioritize safety, and motivate them to visit local TESDA assessment/training schools.

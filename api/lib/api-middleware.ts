@@ -596,3 +596,32 @@ export const validateRequest = <T>(schema: z.ZodSchema<T>, data: unknown): Valid
     return { success: false, error: 'Invalid request data' };
   }
 };
+
+// Off-topic pattern guard — catches clearly unrelated questions before AI call
+const OFF_TOPIC_PATTERNS: { pattern: RegExp; label: string }[] = [
+  { pattern: /sino\s+(ang\s+)?presidente|sino\s+(ang\s+)?senador|sino\s+(ang\s+)?mayor|sino\s+(ang\s+)?governor/i, label: 'politics' },
+  { pattern: /eleksyon|election|campaign|vote\s+for|political\s+party|kandidato/i, label: 'politics' },
+  { pattern: /showbiz|celebrity| artista|kapuso|kapamilya|teleserye|loveteam|chismis|chika/i, label: 'gossip' },
+  { pattern: /crypto|bitcoin|ethereum|trading\s+bot|stock\s+market|betting|pustahan|sabong/i, label: 'crypto/gambling' },
+  { pattern: /python|javascript|java\b|c\+\+|html|css|react|node\.js|debug\s+code|compile\s+error|syntax\s+error|git\s+push|npm\s+install/i, label: 'programming' },
+  { pattern: /essay|thesis|research\s+paper|homework|assignment|school\s+project|ip|ip-proj/i, label: 'homework' },
+  { pattern: /porn|sex\s+chat|nudes|onlyfans|hook\s+up|meet\s+up\s+for\s+sex/i, label: 'explicit' },
+];
+
+const OFF_TOPIC_REDIRECT = "Kapatid, sa career at livelihood journey mo ako eksperto! May tanong ka ba tungkol sa TESDA courses, trabaho, o skills training? Sabihin mo lang, nandito ako para sa iyo!";
+
+export const checkOffTopic = (message: string): { isOffTopic: boolean; redirectResponse: string } => {
+  const normalizedMessage = message.toLowerCase().trim();
+
+  if (normalizedMessage.length < 10) {
+    return { isOffTopic: false, redirectResponse: '' };
+  }
+
+  for (const { pattern } of OFF_TOPIC_PATTERNS) {
+    if (pattern.test(normalizedMessage)) {
+      return { isOffTopic: true, redirectResponse: OFF_TOPIC_REDIRECT };
+    }
+  }
+
+  return { isOffTopic: false, redirectResponse: '' };
+};
