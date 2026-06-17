@@ -359,20 +359,20 @@ export const sanitizeInput = (input: string | undefined, maxLength: number = 500
   // Trim and limit length
   sanitized = sanitized.trim().substring(0, maxLength);
   
-  // Block common prompt injection patterns
+  // Redact specific prompt injection phrases (full phrases only — avoid false positives)
   const injectionPatterns = [
-    /ignore\s+(previous|above|the\s+above)/i,
-    /system\s+prompt/i,
-    /you\s+are\s+now/i,
-    /DAN\b/i,
-    /jailbreak/i,
-    /ignore\s+all\s+previous/i,
+    /ignore\s+all\s+previous\s+instructions/i,
+    /ignore\s+(the\s+)?above\s+instructions/i,
+    /ignore\s+(the\s+)?previous\s+instructions/i,
+    /disregard\s+(all\s+)?previous\s+instructions/i,
+    /you\s+are\s+now\s+(?:DAN|an?\s+unfiltered|an?\s+uncensored)/i,
+    /jailbreak\s+(the\s+)?(?:ai|bot|model|system)/i,
+    /act\s+as\s+(?:an?\s+unfiltered|an?\s+uncensored|DAN)\b/i,
+    /system\s+prompt\s*(?:leak|reveal|show|display|print|output)/i,
   ];
   
   for (const pattern of injectionPatterns) {
-    if (pattern.test(sanitized)) {
-      throw new Error('Invalid input: Potential prompt injection detected.');
-    }
+    sanitized = sanitized.replace(pattern, '[redacted]');
   }
   
   return sanitized;
