@@ -42,8 +42,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // Pre-sanitize to truncate long fields before Zod rejects them
+    const preprocessed = { ...req.body };
+    if (preprocessed.message && typeof preprocessed.message === 'string') {
+      preprocessed.message = preprocessed.message.slice(0, 2000);
+    }
+    if (Array.isArray(preprocessed.history)) {
+      preprocessed.history = preprocessed.history.map((item: any) => ({
+        ...item,
+        text: typeof item.text === 'string' ? item.text.slice(0, 2000) : item.text,
+      }));
+    }
+
     // Validate request body with Zod
-    const validation = validateRequest(ChatSchema, req.body);
+    const validation = validateRequest(ChatSchema, preprocessed);
     if (!validation.success) {
       await logAfterRequest(ip, endpoint, req.headers['user-agent'] as string, 400, false, startTime);
       return res.status(400).json({ error: validation.error });

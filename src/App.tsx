@@ -675,7 +675,7 @@ export default function App() {
       // Map history to fit server structure (limit to 20 messages)
       const apiHistory = chatMessages.slice(-20).map(msg => ({
         role: msg.role === "user" ? "user" : "model",
-        text: msg.text
+        text: msg.text.slice(0, 2000)
       }));
 
       const controller = new AbortController();
