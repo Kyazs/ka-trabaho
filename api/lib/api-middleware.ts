@@ -8,6 +8,10 @@ dotenv.config();
 
 const memoryRateLimits = new Map<string, { count: number; date: string }>();
 
+const isProduction = (): boolean => {
+  return !!process.env.VERCEL || process.env.NODE_ENV === 'production';
+};
+
 const getMemoryRateLimitKey = (ip: string, endpoint: string): string =>
   `${ip}:${endpoint}:${new Date().toISOString().split('T')[0]}`;
 
@@ -37,6 +41,12 @@ const incrementMemoryRateLimit = (ip: string, endpoint: string): void => {
   } else {
     entry.count += 1;
   }
+};
+
+const getConservativeRateLimit = (): { allowed: boolean; remaining: number; resetDate: string; count: number } => {
+  const resetDate = new Date();
+  resetDate.setHours(24, 0, 0, 0);
+  return { allowed: false, remaining: 0, resetDate: resetDate.toISOString(), count: 5 };
 };
 
 // Supabase client (lazy init)
@@ -152,6 +162,15 @@ export const setCorsHeaders = (req: VercelRequest, res: VercelResponse) => {
 
 // Extract real client IP from Vercel headers
 export const getClientIp = (req: VercelRequest): string => {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    const ips = typeof forwarded === 'string' ? forwarded : forwarded[0];
+    return ips.split(',')[0].trim();
+  }
+  const realIp = req.headers['x-real-ip'];
+  if (realIp && typeof realIp === 'string') {
+    return realIp.trim();
+  }
   return req.socket?.remoteAddress || 'unknown';
 };
 
@@ -218,6 +237,10 @@ export const checkRateLimit = async (ip: string, endpoint: string): Promise<{
 }> => {
   const supabase = getSupabase();
   if (!supabase) {
+    if (isProduction()) {
+      console.error('[checkRateLimit] No Supabase client in production — using conservative deny-default rate limit');
+      return getConservativeRateLimit();
+    }
     return checkMemoryRateLimit(ip, endpoint);
   }
   
@@ -237,6 +260,10 @@ export const checkRateLimit = async (ip: string, endpoint: string): Promise<{
     
     if (fetchError && fetchError.code !== 'PGRST116') {
       console.error('[checkRateLimit] Fetch error:', fetchError);
+      if (isProduction()) {
+        console.error('[checkRateLimit] Supabase error in production — using conservative deny-default rate limit');
+        return getConservativeRateLimit();
+      }
       return checkMemoryRateLimit(ip, endpoint);
     }
     
@@ -251,6 +278,10 @@ export const checkRateLimit = async (ip: string, endpoint: string): Promise<{
     };
   } catch (err) {
     console.error('[checkRateLimit] Error:', err);
+    if (isProduction()) {
+      console.error('[checkRateLimit] Exception in production — using conservative deny-default rate limit');
+      return getConservativeRateLimit();
+    }
     return checkMemoryRateLimit(ip, endpoint);
   }
 };
@@ -259,7 +290,9 @@ export const checkRateLimit = async (ip: string, endpoint: string): Promise<{
 export const incrementRateLimit = async (ip: string, endpoint: string): Promise<void> => {
   const supabase = getSupabase();
   if (!supabase) {
-    incrementMemoryRateLimit(ip, endpoint);
+    if (!isProduction()) {
+      incrementMemoryRateLimit(ip, endpoint);
+    }
     return;
   }
   

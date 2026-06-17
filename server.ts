@@ -7,6 +7,7 @@ import { SECTORS_DATA, PHILIPPINES_REGIONS } from "./src/data/tesdaData.js"; // 
 dotenv.config({ path: ".env.local" });
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = 3000;
 
 // Enable JSON bodies with size limit
@@ -116,8 +117,17 @@ const incrementLocalRateLimit = (ip: string, endpoint: string): void => {
   }
 };
 
-// Extract client IP
+// Extract client IP (respects x-forwarded-for for reverse proxy setups)
 const getClientIp = (req: express.Request): string => {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    const ips = typeof forwarded === 'string' ? forwarded : forwarded[0];
+    return ips.split(',')[0].trim();
+  }
+  const realIp = req.headers['x-real-ip'];
+  if (realIp && typeof realIp === 'string') {
+    return realIp.trim();
+  }
   return req.socket?.remoteAddress || 'unknown';
 };
 
